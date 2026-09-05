@@ -21,6 +21,12 @@ class Garagem(models.Model):
     )
     email_contato = models.EmailField()
     cidade = models.CharField(max_length=100, default='Catanduva')
+    endereco = models.CharField(max_length=200, blank=True)
+    horario_funcionamento = models.CharField(
+        max_length=150, blank=True, help_text="Ex: Seg a Sex, 8h às 18h"
+    )
+    instagram_url = models.URLField(blank=True)
+    facebook_url = models.URLField(blank=True)
     taxa_juros_mensal_padrao = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal('2.5'),
         help_text="Taxa mensal (%) usada no simulador de financiamento.",

@@ -1,20 +1,19 @@
-{% extends "base.html" %}
+{% extends "storefront/_base_vitrine.html" %}
 
 {% block title %}{{ garagem.nome }}{% endblock %}
 {% block meta_description %}Veículos disponíveis na {{ garagem.nome }}, em {{ garagem.cidade }}.{% endblock %}
 
-{% block content %}
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container">
-        <span class="navbar-brand mb-0 h1">{{ garagem.nome }}</span>
-        <div>
-            <span class="text-white small me-3">{{ garagem.cidade }}</span>
-            <a href="{% url 'storefront:contato' garagem_slug=garagem.slug %}" class="btn btn-outline-light btn-sm">Fale conosco</a>
-        </div>
-    </div>
-</nav>
-
+{% block vitrine_content %}
 <div class="container">
+    {% if cilindradas_disponiveis %}
+        <div class="btn-group flex-wrap mb-4" role="group" aria-label="Filtrar por cilindrada">
+            <a href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}" class="btn btn-sm btn-outline-secondary {% if not cilindrada_selecionada %}active{% endif %}">Todas</a>
+            {% for cc in cilindradas_disponiveis %}
+                <a href="?cilindrada={{ cc }}" class="btn btn-sm btn-outline-secondary {% if cilindrada_selecionada == cc|stringformat:'s' %}active{% endif %}">{{ cc }}cc</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if veiculos_destaque %}
         <h2 class="mb-3">Destaques</h2>
         <div class="row">

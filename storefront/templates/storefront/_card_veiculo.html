@@ -16,7 +16,11 @@
                 <li>Ano: {{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</li>
                 <li>KM: {{ veiculo.quilometragem }}</li>
                 <li>Combustível: {{ veiculo.get_combustivel_display }}</li>
+                {% if veiculo.cilindrada %}<li>Cilindrada: {{ veiculo.cilindrada }}cc</li>{% endif %}
             </ul>
+            {% if veiculo.aceita_troca %}
+                <span class="badge bg-info text-dark mb-2 align-self-start">Aceita troca</span>
+            {% endif %}
             <p class="fw-bold fs-5 mb-3">R$ {{ veiculo.preco }}</p>
             <a href="{% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-primary mt-auto">
                 Ver detalhes

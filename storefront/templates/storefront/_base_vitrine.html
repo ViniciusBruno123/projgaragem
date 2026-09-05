@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand mb-0 h1" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">{{ garagem.nome }}</a>
+        <div>
+            <span class="text-white small me-3">{{ garagem.cidade }}</span>
+            <a href="{% url 'storefront:contato' garagem_slug=garagem.slug %}" class="btn btn-outline-light btn-sm">Fale conosco</a>
+        </div>
+    </div>
+</nav>
+
+{% block vitrine_content %}{% endblock %}
+
+<footer class="bg-dark text-white-50 mt-5 py-4">
+    <div class="container small">
+        <p class="mb-1 text-white"><strong>{{ garagem.nome }}</strong></p>
+        {% if garagem.endereco %}<p class="mb-1">{{ garagem.endereco }} — {{ garagem.cidade }}</p>{% endif %}
+        {% if garagem.horario_funcionamento %}<p class="mb-1">{{ garagem.horario_funcionamento }}</p>{% endif %}
+        {% if garagem.instagram_url or garagem.facebook_url %}
+            <p class="mb-0">
+                {% if garagem.instagram_url %}<a href="{{ garagem.instagram_url }}" class="text-white-50 me-3" target="_blank" rel="noopener">Instagram</a>{% endif %}
+                {% if garagem.facebook_url %}<a href="{{ garagem.facebook_url }}" class="text-white-50" target="_blank" rel="noopener">Facebook</a>{% endif %}
+            </p>
+        {% endif %}
+    </div>
+</footer>
+
+{% include "storefront/_whatsapp_flutuante.html" %}
+{% endblock %}

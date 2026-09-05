@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+{% extends "storefront/_base_vitrine.html" %}
 
 {% block title %}{% if veiculo %}Tenho interesse - {{ veiculo.titulo }}{% else %}Fale conosco{% endif %} - {{ garagem.nome }}{% endblock %}
 
-{% block content %}
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand mb-0 h1" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">{{ garagem.nome }}</a>
-    </div>
-</nav>
-
+{% block vitrine_content %}
 <div class="container" style="max-width: 500px;">
     {% if veiculo %}
         <h1 class="h3">Tenho interesse: {{ veiculo.titulo }}</h1>

@@ -11,10 +11,10 @@ class FotoVeiculoInline(admin.TabularInline):
 @admin.register(Veiculo)
 class VeiculoAdmin(admin.ModelAdmin):
     list_display = (
-        'titulo', 'garagem', 'marca', 'modelo', 'ano_modelo',
-        'quilometragem', 'combustivel', 'preco', 'destaque', 'disponivel',
+        'titulo', 'garagem', 'marca', 'modelo', 'ano_modelo', 'cilindrada',
+        'quilometragem', 'combustivel', 'preco', 'destaque', 'disponivel', 'aceita_troca',
     )
-    list_filter = ('garagem', 'combustivel', 'destaque', 'disponivel')
+    list_filter = ('garagem', 'combustivel', 'destaque', 'disponivel', 'aceita_troca')
     search_fields = ('titulo', 'marca', 'modelo', 'garagem__nome')
     prepopulated_fields = {'slug': ('titulo',)}
     autocomplete_fields = ('garagem',)

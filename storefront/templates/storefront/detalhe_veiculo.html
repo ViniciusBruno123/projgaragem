@@ -1,15 +1,9 @@
-{% extends "base.html" %}
+{% extends "storefront/_base_vitrine.html" %}
 
 {% block title %}{{ veiculo.titulo }} - {{ garagem.nome }}{% endblock %}
 {% block meta_description %}{{ veiculo.titulo }} - {{ veiculo.ano_modelo }}, {{ veiculo.quilometragem }} km, por R$ {{ veiculo.preco }} na {{ garagem.nome }}.{% endblock %}
 
-{% block content %}
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand mb-0 h1" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">{{ garagem.nome }}</a>
-    </div>
-</nav>
-
+{% block vitrine_content %}
 <div class="container">
     <div class="row">
         <div class="col-md-6">
@@ -39,12 +33,16 @@
         </div>
         <div class="col-md-6">
             <h1>{{ veiculo.titulo }}</h1>
+            {% if veiculo.aceita_troca %}
+                <span class="badge bg-info text-dark mb-2">Aceita troca</span>
+            {% endif %}
             <p class="fs-3 fw-bold">R$ {{ veiculo.preco }}</p>
             <ul class="list-group list-group-flush mb-4">
                 <li class="list-group-item">Marca/modelo: {{ veiculo.marca }} {{ veiculo.modelo }}</li>
                 <li class="list-group-item">Ano fabricação/modelo: {{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</li>
                 <li class="list-group-item">Quilometragem: {{ veiculo.quilometragem }} km</li>
                 <li class="list-group-item">Combustível: {{ veiculo.get_combustivel_display }}</li>
+                {% if veiculo.cilindrada %}<li class="list-group-item">Cilindrada: {{ veiculo.cilindrada }}cc</li>{% endif %}
             </ul>
             {% if veiculo.descricao %}
                 <p>{{ veiculo.descricao|linebreaks }}</p>

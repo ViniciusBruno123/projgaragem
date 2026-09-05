@@ -20,10 +20,14 @@ class Veiculo(models.Model):
     ano_modelo = models.PositiveSmallIntegerField()
     quilometragem = models.PositiveIntegerField()
     combustivel = models.CharField(max_length=10, choices=Combustivel.choices)
+    cilindrada = models.PositiveSmallIntegerField(
+        null=True, blank=True, help_text="Cilindradas (cc), quando aplicável. Ex: 160"
+    )
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     descricao = models.TextField(blank=True)
     destaque = models.BooleanField(default=False, help_text="Aparece na frontpage da garagem.")
     disponivel = models.BooleanField(default=True, help_text="Desmarque para ocultar da vitrine (vendido/reservado).")
+    aceita_troca = models.BooleanField(default=False, help_text="Exibe o selo \"Aceita troca\" no anúncio.")
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
