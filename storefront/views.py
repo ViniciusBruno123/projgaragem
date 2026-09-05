@@ -4,26 +4,19 @@ from financing.forms import SimulacaoFinanciamentoForm
 from financing.services import calcular_parcela_price
 from tenants.services import get_garagem_ativa_ou_404
 
+from .forms import FiltroVeiculosForm
+
 
 def frontpage(request, garagem_slug):
     garagem = get_garagem_ativa_ou_404(garagem_slug)
-    veiculos_disponiveis = garagem.veiculos.filter(disponivel=True)
-
-    cilindrada_selecionada = request.GET.get('cilindrada')
-    if cilindrada_selecionada:
-        veiculos_disponiveis = veiculos_disponiveis.filter(cilindrada=cilindrada_selecionada)
-
-    cilindradas_disponiveis = (
-        garagem.veiculos.filter(disponivel=True, cilindrada__isnull=False)
-        .order_by('cilindrada').values_list('cilindrada', flat=True).distinct()
-    )
+    filtro = FiltroVeiculosForm(request.GET or None, garagem=garagem)
+    veiculos_disponiveis = filtro.aplicar(garagem.veiculos.filter(disponivel=True))
 
     return render(request, 'storefront/frontpage.html', {
         'garagem': garagem,
+        'filtro': filtro,
         'veiculos_destaque': veiculos_disponiveis.filter(destaque=True),
         'demais_veiculos': veiculos_disponiveis.filter(destaque=False),
-        'cilindradas_disponiveis': cilindradas_disponiveis,
-        'cilindrada_selecionada': cilindrada_selecionada,
     })
 
 

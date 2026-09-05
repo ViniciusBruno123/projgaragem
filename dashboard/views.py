@@ -7,7 +7,20 @@ from leads.models import Proposta
 from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMixin
 from vehicles.models import Veiculo
 
-from .forms import FotoVeiculoFormSet, VeiculoForm
+from .forms import FotoVeiculoFormSet, GaragemForm, VeiculoForm
+
+
+class DadosGaragemView(GaragemRequiredMixin, UpdateView):
+    form_class = GaragemForm
+    template_name = 'dashboard/dados_garagem.html'
+    success_url = reverse_lazy('dashboard:dados_garagem')
+
+    def get_object(self, queryset=None):
+        return self.garagem
+
+    def form_valid(self, form):
+        messages.success(self.request, "Dados da garagem atualizados com sucesso.")
+        return super().form_valid(form)
 
 
 class AssinaturaView(GaragemRequiredMixin, TemplateView):

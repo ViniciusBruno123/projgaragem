@@ -17,6 +17,7 @@
                 <li>KM: {{ veiculo.quilometragem }}</li>
                 <li>Combustível: {{ veiculo.get_combustivel_display }}</li>
                 {% if veiculo.cilindrada %}<li>Cilindrada: {{ veiculo.cilindrada }}cc</li>{% endif %}
+                {% if veiculo.potencia_motor %}<li>Motor: {{ veiculo.potencia_motor }}</li>{% endif %}
             </ul>
             {% if veiculo.aceita_troca %}
                 <span class="badge bg-info text-dark mb-2 align-self-start">Aceita troca</span>

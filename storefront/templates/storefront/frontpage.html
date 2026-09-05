@@ -5,14 +5,20 @@
 
 {% block vitrine_content %}
 <div class="container">
-    {% if cilindradas_disponiveis %}
-        <div class="btn-group flex-wrap mb-4" role="group" aria-label="Filtrar por cilindrada">
-            <a href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}" class="btn btn-sm btn-outline-secondary {% if not cilindrada_selecionada %}active{% endif %}">Todas</a>
-            {% for cc in cilindradas_disponiveis %}
-                <a href="?cilindrada={{ cc }}" class="btn btn-sm btn-outline-secondary {% if cilindrada_selecionada == cc|stringformat:'s' %}active{% endif %}">{{ cc }}cc</a>
-            {% endfor %}
+    <form method="get" class="row row-cols-1 row-cols-md-3 row-cols-lg-6 g-2 align-items-end mb-4 bg-body-secondary bg-opacity-25 p-3 rounded">
+        {% for field in filtro %}
+            <div class="col">
+                <label class="form-label small mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <div class="col">
+            <button type="submit" class="btn btn-primary btn-sm w-100">Filtrar</button>
         </div>
-    {% endif %}
+        <div class="col">
+            <a href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}" class="btn btn-outline-secondary btn-sm w-100">Limpar</a>
+        </div>
+    </form>
 
     {% if veiculos_destaque %}
         <h2 class="mb-3">Destaques</h2>
@@ -33,7 +39,7 @@
     {% endif %}
 
     {% if not veiculos_destaque and not demais_veiculos %}
-        <p class="text-muted">Nenhum veículo disponível no momento.</p>
+        <p class="text-muted">Nenhum veículo encontrado com esses filtros.</p>
     {% endif %}
 </div>
 {% endblock %}

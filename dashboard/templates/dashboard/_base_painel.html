@@ -8,6 +8,7 @@
             <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:veiculo_list' %}">Veículos</a>
             <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:proposta_list' %}">Propostas</a>
             <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:assinatura' %}">Assinatura</a>
+            <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:dados_garagem' %}">Dados da garagem</a>
             <form method="post" action="{% url 'dashboard:logout' %}" class="d-inline">
                 {% csrf_token %}
                 <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>

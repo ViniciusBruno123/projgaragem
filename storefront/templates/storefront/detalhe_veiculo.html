@@ -38,11 +38,13 @@
             {% endif %}
             <p class="fs-3 fw-bold">R$ {{ veiculo.preco }}</p>
             <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item">Tipo: {{ veiculo.get_tipo_display }}</li>
                 <li class="list-group-item">Marca/modelo: {{ veiculo.marca }} {{ veiculo.modelo }}</li>
                 <li class="list-group-item">Ano fabricação/modelo: {{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</li>
                 <li class="list-group-item">Quilometragem: {{ veiculo.quilometragem }} km</li>
                 <li class="list-group-item">Combustível: {{ veiculo.get_combustivel_display }}</li>
                 {% if veiculo.cilindrada %}<li class="list-group-item">Cilindrada: {{ veiculo.cilindrada }}cc</li>{% endif %}
+                {% if veiculo.potencia_motor %}<li class="list-group-item">Motor: {{ veiculo.potencia_motor }}</li>{% endif %}
             </ul>
             {% if veiculo.descricao %}
                 <p>{{ veiculo.descricao|linebreaks }}</p>

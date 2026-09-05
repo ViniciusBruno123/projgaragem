@@ -1,0 +1,22 @@
+{% extends "dashboard/_base_painel.html" %}
+
+{% block title %}Dados da garagem{% endblock %}
+
+{% block painel_content %}
+<h1>Dados da garagem</h1>
+<p class="text-muted">Essas informações aparecem no rodapé da sua vitrine pública.</p>
+
+<form method="post" style="max-width: 500px;">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <div class="text-danger small">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+{% endblock %}

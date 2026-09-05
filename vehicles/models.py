@@ -4,6 +4,10 @@ from tenants.models import Garagem
 
 
 class Veiculo(models.Model):
+    class Tipo(models.TextChoices):
+        MOTO = 'moto', 'Moto'
+        CARRO = 'carro', 'Carro'
+
     class Combustivel(models.TextChoices):
         GASOLINA = 'gasolina', 'Gasolina'
         ETANOL = 'etanol', 'Etanol'
@@ -12,6 +16,7 @@ class Veiculo(models.Model):
         ELETRICO = 'eletrico', 'Elétrico'
 
     garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE, related_name='veiculos')
+    tipo = models.CharField(max_length=5, choices=Tipo.choices, default=Tipo.MOTO)
     titulo = models.CharField(max_length=150)
     slug = models.SlugField(max_length=170)
     marca = models.CharField(max_length=60)
@@ -21,7 +26,11 @@ class Veiculo(models.Model):
     quilometragem = models.PositiveIntegerField()
     combustivel = models.CharField(max_length=10, choices=Combustivel.choices)
     cilindrada = models.PositiveSmallIntegerField(
-        null=True, blank=True, help_text="Cilindradas (cc), quando aplicável. Ex: 160"
+        null=True, blank=True, help_text="Cilindradas (cc) — apenas para motos. Ex: 160"
+    )
+    potencia_motor = models.DecimalField(
+        max_digits=2, decimal_places=1, null=True, blank=True,
+        help_text="Potência do motor em litros — apenas para carros. Ex: 1.0, 1.6, 2.0",
     )
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     descricao = models.TextField(blank=True)
@@ -39,6 +48,17 @@ class Veiculo(models.Model):
 
     def __str__(self):
         return f"{self.titulo} ({self.garagem.nome})"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        errors = {}
+        if self.tipo == self.Tipo.MOTO and self.potencia_motor:
+            errors['potencia_motor'] = 'Potência do motor é um campo exclusivo para carros.'
+        if self.tipo == self.Tipo.CARRO and self.cilindrada:
+            errors['cilindrada'] = 'Cilindrada é um campo exclusivo para motos.'
+        if errors:
+            raise ValidationError(errors)
 
 
 class FotoVeiculo(models.Model):
