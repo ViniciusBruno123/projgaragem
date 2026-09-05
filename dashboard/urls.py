@@ -14,6 +14,7 @@ urlpatterns = [
     path('veiculos/<int:pk>/editar/', views.VeiculoUpdateView.as_view(), name='veiculo_update'),
     path('veiculos/<int:pk>/excluir/', views.VeiculoDeleteView.as_view(), name='veiculo_delete'),
     path('propostas/', views.PropostaListView.as_view(), name='proposta_list'),
+    path('propostas/<int:pk>/status/', views.AtualizarStatusPropostaView.as_view(), name='proposta_status'),
     path('assinatura/', views.AssinaturaView.as_view(), name='assinatura'),
     path('dados/', views.DadosGaragemView.as_view(), name='dados_garagem'),
 ]

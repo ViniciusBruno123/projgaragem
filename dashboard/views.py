@@ -1,6 +1,7 @@
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
 from leads.models import Proposta
@@ -102,6 +103,17 @@ class PropostaListView(GaragemRequiredMixin, ListView):
 
     def get_queryset(self):
         return self.garagem.propostas.select_related('veiculo').all()
+
+
+class AtualizarStatusPropostaView(GaragemRequiredMixin, View):
+    def post(self, request, pk):
+        proposta = get_object_or_404(self.garagem.propostas, pk=pk)
+        novo_status = request.POST.get('status')
+        if novo_status in Proposta.Status.values:
+            proposta.status = novo_status
+            proposta.save(update_fields=['status'])
+            messages.success(request, "Status da proposta atualizado.")
+        return redirect('dashboard:proposta_list')
 
 
 class VeiculoDeleteView(GaragemRequiredMixin, BloqueiaEdicaoSeInadimplenteMixin, DeleteView):

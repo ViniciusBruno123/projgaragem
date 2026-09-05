@@ -13,6 +13,7 @@
             <th>Telefone</th>
             <th>Veículo</th>
             <th>Mensagem</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -23,9 +24,19 @@
                 <td>{{ proposta.telefone }}</td>
                 <td>{% if proposta.veiculo %}{{ proposta.veiculo.titulo }}{% else %}Contato geral{% endif %}</td>
                 <td>{{ proposta.mensagem|default:"—" }}</td>
+                <td>
+                    <form method="post" action="{% url 'dashboard:proposta_status' pk=proposta.pk %}">
+                        {% csrf_token %}
+                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                            {% for valor, rotulo in proposta.Status.choices %}
+                                <option value="{{ valor }}" {% if proposta.status == valor %}selected{% endif %}>{{ rotulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
             </tr>
         {% empty %}
-            <tr><td colspan="5" class="text-muted">Nenhuma proposta recebida ainda.</td></tr>
+            <tr><td colspan="6" class="text-muted">Nenhuma proposta recebida ainda.</td></tr>
         {% endfor %}
     </tbody>
 </table>

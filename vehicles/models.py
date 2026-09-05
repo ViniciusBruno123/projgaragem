@@ -18,7 +18,7 @@ class Veiculo(models.Model):
     garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE, related_name='veiculos')
     tipo = models.CharField(max_length=5, choices=Tipo.choices, default=Tipo.MOTO)
     titulo = models.CharField(max_length=150)
-    slug = models.SlugField(max_length=170)
+    slug = models.SlugField(max_length=170, blank=True, help_text="Gerado automaticamente a partir do título.")
     marca = models.CharField(max_length=60)
     modelo = models.CharField(max_length=60)
     ano_fabricacao = models.PositiveSmallIntegerField()
@@ -59,6 +59,22 @@ class Veiculo(models.Model):
             errors['cilindrada'] = 'Cilindrada é um campo exclusivo para motos.'
         if errors:
             raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._gerar_slug_unico()
+        super().save(*args, **kwargs)
+
+    def _gerar_slug_unico(self):
+        from django.utils.text import slugify
+
+        base = slugify(self.titulo)
+        slug = base
+        contador = 2
+        while Veiculo.objects.filter(garagem=self.garagem, slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base}-{contador}"
+            contador += 1
+        return slug
 
 
 class FotoVeiculo(models.Model):

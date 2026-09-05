@@ -9,7 +9,7 @@ class VeiculoForm(forms.ModelForm):
     class Meta:
         model = Veiculo
         fields = [
-            'tipo', 'titulo', 'slug', 'marca', 'modelo', 'ano_fabricacao', 'ano_modelo',
+            'tipo', 'titulo', 'marca', 'modelo', 'ano_fabricacao', 'ano_modelo',
             'quilometragem', 'combustivel', 'cilindrada', 'potencia_motor', 'preco', 'descricao',
             'destaque', 'disponivel', 'aceita_troca',
         ]
