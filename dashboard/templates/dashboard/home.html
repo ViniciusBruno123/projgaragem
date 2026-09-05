@@ -5,5 +5,5 @@
 {% block painel_content %}
 <h1>Olá, {{ garagem.nome }}</h1>
 <p>Você tem <strong>{{ total_veiculos }}</strong> veículo(s) cadastrado(s).</p>
-<a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-primary">Gerenciar veículos</a>
+<a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-accent">Gerenciar veículos</a>
 {% endblock %}

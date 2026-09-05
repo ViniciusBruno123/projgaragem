@@ -3,7 +3,7 @@
 {% block title %}{% if veiculo %}Tenho interesse - {{ veiculo.titulo }}{% else %}Fale conosco{% endif %} - {{ garagem.nome }}{% endblock %}
 
 {% block vitrine_content %}
-<div class="container" style="max-width: 500px;">
+<div class="container py-4" style="max-width: 480px;">
     {% if veiculo %}
         <h1 class="h3">Tenho interesse: {{ veiculo.titulo }}</h1>
         <p class="text-muted">Preencha seus dados e você será redirecionado para o WhatsApp da {{ garagem.nome }} com a mensagem pronta.</p>
@@ -23,7 +23,7 @@
                 {% endif %}
             </div>
         {% endfor %}
-        <button type="submit" class="btn btn-success w-100">Enviar e ir para o WhatsApp</button>
+        <button type="submit" class="btn btn-accent w-100">Enviar e ir para o WhatsApp</button>
     </form>
 </div>
 {% endblock %}

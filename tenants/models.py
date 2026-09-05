@@ -1,7 +1,10 @@
+import re
 from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
+
+HEX_COLOR_RE = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
 
 class Garagem(models.Model):
@@ -27,6 +30,10 @@ class Garagem(models.Model):
     )
     instagram_url = models.URLField(blank=True)
     facebook_url = models.URLField(blank=True)
+    cor_destaque = models.CharField(
+        max_length=7, default='#0F5C4D',
+        help_text="Cor de destaque da sua vitrine, em hexadecimal (ex: #0F5C4D).",
+    )
     taxa_juros_mensal_padrao = models.DecimalField(
         max_digits=5, decimal_places=2, default=Decimal('2.5'),
         help_text="Taxa mensal (%) usada no simulador de financiamento.",
@@ -47,7 +54,10 @@ class Garagem(models.Model):
     def clean(self):
         from django.core.exceptions import ValidationError
 
+        errors = {}
         if self.telefone_whatsapp and not self.telefone_whatsapp.isdigit():
-            raise ValidationError({
-                'telefone_whatsapp': 'Use apenas dígitos (DDI + DDD + número), sem espaços ou símbolos.'
-            })
+            errors['telefone_whatsapp'] = 'Use apenas dígitos (DDI + DDD + número), sem espaços ou símbolos.'
+        if self.cor_destaque and not HEX_COLOR_RE.match(self.cor_destaque):
+            errors['cor_destaque'] = 'Use o formato hexadecimal, ex: #0F5C4D.'
+        if errors:
+            raise ValidationError(errors)

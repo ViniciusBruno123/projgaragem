@@ -1,29 +1,24 @@
-{% load static %}
 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-    <div class="card h-100 shadow-sm">
+    <div class="vehicle-card">
         {% with veiculo.fotos.first as foto %}
             {% if foto %}
-                <img src="{{ foto.imagem.url }}" class="card-img-top" alt="{{ veiculo.titulo }}" style="height: 180px; object-fit: cover;">
+                <img src="{{ foto.imagem.url }}" class="photo" alt="{{ veiculo.titulo }}">
             {% else %}
-                <div class="bg-secondary-subtle d-flex align-items-center justify-content-center" style="height: 180px;">
-                    <span class="text-muted">Sem foto</span>
-                </div>
+                <div class="photo-empty">sem foto</div>
             {% endif %}
         {% endwith %}
-        <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ veiculo.titulo }}</h5>
-            <ul class="list-unstyled text-muted small mb-2">
-                <li>Ano: {{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</li>
-                <li>KM: {{ veiculo.quilometragem }}</li>
-                <li>Combustível: {{ veiculo.get_combustivel_display }}</li>
-                {% if veiculo.cilindrada %}<li>Cilindrada: {{ veiculo.cilindrada }}cc</li>{% endif %}
-                {% if veiculo.potencia_motor %}<li>Motor: {{ veiculo.potencia_motor }}</li>{% endif %}
+        <div class="body">
+            {% if veiculo.aceita_troca %}<span class="tag">Aceita troca</span>{% endif %}
+            <h3 class="title">{{ veiculo.titulo }}</h3>
+            <ul class="spec-list">
+                <li><span>Ano</span><span>{{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</span></li>
+                <li><span>Km</span><span>{{ veiculo.quilometragem }}</span></li>
+                <li><span>Combustível</span><span>{{ veiculo.get_combustivel_display }}</span></li>
+                {% if veiculo.cilindrada %}<li><span>Cilindrada</span><span>{{ veiculo.cilindrada }}cc</span></li>{% endif %}
+                {% if veiculo.potencia_motor %}<li><span>Motor</span><span>{{ veiculo.potencia_motor }}</span></li>{% endif %}
             </ul>
-            {% if veiculo.aceita_troca %}
-                <span class="badge bg-info text-dark mb-2 align-self-start">Aceita troca</span>
-            {% endif %}
-            <p class="fw-bold fs-5 mb-3">R$ {{ veiculo.preco }}</p>
-            <a href="{% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-primary mt-auto">
+            <p class="price-tag num">R$ {{ veiculo.preco }}</p>
+            <a href="{% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent mt-auto">
                 Ver detalhes
             </a>
         </div>

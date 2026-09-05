@@ -1,0 +1,297 @@
+/* projgaragem — sistema visual próprio sobre a base do Bootstrap.
+   Bootstrap continua responsável por grid, formulários e o carrossel;
+   tudo que é aparência (cor, tipo, raio, sombra) é redefinido aqui. */
+
+:root {
+  --ink: #1a1a18;
+  --ink-soft: #5b5d56;
+  --paper: #f2f3f1;
+  --paper-2: #e7e8e3;
+  --line: #d3d5ce;
+  --accent: #0f5c4d;
+  --accent-ink: #f2f3f1;
+  --warn: #b8842b;
+  --danger: #a23b2e;
+
+  --font-display: "Big Shoulders", sans-serif;
+  --font-body: "Public Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Redução da presença padrão do Bootstrap: sem cantos arredondados largos,
+     sem sombra decorativa por padrão. */
+  --bs-body-font-family: var(--font-body);
+  --bs-body-color: var(--ink);
+  --bs-body-bg: var(--paper);
+  --bs-border-color: var(--line);
+  --bs-border-radius: 2px;
+  --bs-border-radius-sm: 2px;
+  --bs-border-radius-lg: 2px;
+  --bs-link-color: var(--accent);
+  --bs-link-hover-color: var(--ink);
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, .brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* --- Botões próprios (substituem btn-primary/btn-success do Bootstrap) --- */
+.btn-accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: 2px;
+  transition: opacity 120ms ease;
+}
+.btn-accent:hover,
+.btn-accent:focus {
+  background: var(--accent);
+  color: var(--accent-ink);
+  opacity: 0.85;
+}
+.btn-outline-ink {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.btn-outline-ink:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* --- Cabeçalho e rodapé da vitrine: barra utilitária, não navbar padrão --- */
+.site-header {
+  background: var(--paper);
+  border-bottom: 3px solid var(--ink);
+  padding: 0.9rem 0;
+}
+.site-header .brand {
+  font-size: 1.5rem;
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 1;
+}
+.site-header .brand:hover {
+  color: var(--accent);
+}
+.site-header .meta {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  margin-top: 3rem;
+  padding: 1.75rem 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+.site-footer strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.site-footer a {
+  color: var(--ink-soft);
+}
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+/* --- Botão flutuante de WhatsApp: menos "bolha de app", mais etiqueta --- */
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.6rem 1rem;
+  border-radius: 2px;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.whatsapp-float:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* --- Barra de filtros: toolbar funcional, não card flutuante --- */
+.filter-bar {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 1rem;
+}
+.filter-bar label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+
+/* --- Card de veículo: plano, com borda fina, preço como etiqueta --- */
+.vehicle-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 120ms ease;
+}
+.vehicle-card:hover {
+  border-color: var(--ink);
+}
+.vehicle-card .photo {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid var(--line);
+}
+.vehicle-card .photo-empty {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper-2);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+.vehicle-card .body {
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.vehicle-card .title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 0.35rem;
+}
+.spec-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.spec-list li {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dotted var(--line);
+  padding: 0.15rem 0;
+}
+.spec-list li span:last-child {
+  color: var(--ink);
+}
+
+.price-tag {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--ink);
+  margin: 0.25rem 0 0.75rem;
+}
+
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 2px;
+  margin-bottom: 0.5rem;
+  align-self: flex-start;
+}
+
+/* --- Seções da frontpage --- */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 2rem 0 1.25rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.5rem;
+}
+.section-heading h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+.section-heading .count {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* --- Painel interno (dono da garagem): mesma base, sem cor de tenant --- */
+.panel-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.9rem 0;
+}
+.panel-header .brand {
+  color: var(--paper);
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+.panel-header a.btn,
+.panel-header form .btn {
+  border: 1px solid var(--paper-2);
+  color: var(--paper);
+  background: transparent;
+  border-radius: 2px;
+  font-size: 0.8rem;
+}
+.panel-header a.btn:hover,
+.panel-header form .btn:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.table > :not(caption) > * > * {
+  font-family: var(--font-body);
+}
+.table .num {
+  font-family: var(--font-mono);
+}

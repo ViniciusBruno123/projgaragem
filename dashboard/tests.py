@@ -22,6 +22,7 @@ class DadosGaragemViewTests(TestCase):
             'horario_funcionamento': 'Seg a Sex, 9h às 17h',
             'instagram_url': 'https://instagram.com/garagemteste',
             'facebook_url': '',
+            'cor_destaque': '#123456',
         })
         self.assertRedirects(resp, url)
 

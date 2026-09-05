@@ -4,15 +4,15 @@
 {% block meta_description %}{{ veiculo.titulo }} - {{ veiculo.ano_modelo }}, {{ veiculo.quilometragem }} km, por R$ {{ veiculo.preco }} na {{ garagem.nome }}.{% endblock %}
 
 {% block vitrine_content %}
-<div class="container">
+<div class="container py-4">
     <div class="row">
         <div class="col-md-6">
             {% if veiculo.fotos.all %}
-                <div id="carouselFotos" class="carousel slide mb-4">
+                <div id="carouselFotos" class="carousel slide mb-4" style="border: 1px solid var(--line);">
                     <div class="carousel-inner">
                         {% for foto in veiculo.fotos.all %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <img src="{{ foto.imagem.url }}" class="d-block w-100" alt="{{ veiculo.titulo }}">
+                                <img src="{{ foto.imagem.url }}" class="d-block w-100" alt="{{ veiculo.titulo }}" style="aspect-ratio: 4/3; object-fit: cover;">
                             </div>
                         {% endfor %}
                     </div>
@@ -26,62 +26,56 @@
                     {% endif %}
                 </div>
             {% else %}
-                <div class="bg-secondary-subtle d-flex align-items-center justify-content-center mb-4" style="height: 300px;">
-                    <span class="text-muted">Sem fotos</span>
-                </div>
+                <div class="photo-empty mb-4" style="aspect-ratio: 4/3;">sem fotos</div>
             {% endif %}
         </div>
         <div class="col-md-6">
+            {% if veiculo.aceita_troca %}<span class="tag">Aceita troca</span>{% endif %}
             <h1>{{ veiculo.titulo }}</h1>
-            {% if veiculo.aceita_troca %}
-                <span class="badge bg-info text-dark mb-2">Aceita troca</span>
-            {% endif %}
-            <p class="fs-3 fw-bold">R$ {{ veiculo.preco }}</p>
-            <ul class="list-group list-group-flush mb-4">
-                <li class="list-group-item">Tipo: {{ veiculo.get_tipo_display }}</li>
-                <li class="list-group-item">Marca/modelo: {{ veiculo.marca }} {{ veiculo.modelo }}</li>
-                <li class="list-group-item">Ano fabricação/modelo: {{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</li>
-                <li class="list-group-item">Quilometragem: {{ veiculo.quilometragem }} km</li>
-                <li class="list-group-item">Combustível: {{ veiculo.get_combustivel_display }}</li>
-                {% if veiculo.cilindrada %}<li class="list-group-item">Cilindrada: {{ veiculo.cilindrada }}cc</li>{% endif %}
-                {% if veiculo.potencia_motor %}<li class="list-group-item">Motor: {{ veiculo.potencia_motor }}</li>{% endif %}
+            <p class="price-tag num">R$ {{ veiculo.preco }}</p>
+            <ul class="spec-list mb-4" style="font-size: 0.9rem;">
+                <li><span>Tipo</span><span>{{ veiculo.get_tipo_display }}</span></li>
+                <li><span>Marca/modelo</span><span>{{ veiculo.marca }} {{ veiculo.modelo }}</span></li>
+                <li><span>Ano fab./modelo</span><span>{{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</span></li>
+                <li><span>Quilometragem</span><span>{{ veiculo.quilometragem }} km</span></li>
+                <li><span>Combustível</span><span>{{ veiculo.get_combustivel_display }}</span></li>
+                {% if veiculo.cilindrada %}<li><span>Cilindrada</span><span>{{ veiculo.cilindrada }}cc</span></li>{% endif %}
+                {% if veiculo.potencia_motor %}<li><span>Motor</span><span>{{ veiculo.potencia_motor }}</span></li>{% endif %}
             </ul>
             {% if veiculo.descricao %}
                 <p>{{ veiculo.descricao|linebreaks }}</p>
             {% endif %}
-            <a href="{% url 'storefront:enviar_proposta' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-success btn-lg">
+            <a href="{% url 'storefront:enviar_proposta' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent btn-lg">
                 Tenho interesse
             </a>
         </div>
     </div>
 
-    <div class="row mt-4">
+    <div class="row mt-5">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="h5 card-title">Simular financiamento</h2>
-                    <form method="get">
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }}
-                            </div>
-                        {% endfor %}
-                        <button type="submit" class="btn btn-primary">Calcular</button>
-                    </form>
+            <div class="filter-bar">
+                <h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Simular financiamento</h2>
+                <form method="get">
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-accent">Calcular</button>
+                </form>
 
-                    {% if parcela %}
-                        <p class="mt-3 mb-0">
-                            Aproximadamente <strong>{{ form.cleaned_data.numero_parcelas }}x de R$ {{ parcela }}</strong>
-                            (taxa estimada de {{ garagem.taxa_juros_mensal_padrao }}% ao mês).
-                        </p>
-                    {% elif valor_financiado is not None and valor_financiado <= 0 %}
-                        <p class="text-danger mt-3 mb-0">O valor de entrada não pode ser maior ou igual ao preço do veículo.</p>
-                    {% endif %}
-                    <p class="text-muted small mt-3 mb-0">
-                        Valores estimados, sujeitos a aprovação de crédito. Não constitui proposta de financiamento.
+                {% if parcela %}
+                    <p class="mt-3 mb-0">
+                        Aproximadamente <strong class="num">{{ form.cleaned_data.numero_parcelas }}x de R$ {{ parcela }}</strong>
+                        (taxa estimada de {{ garagem.taxa_juros_mensal_padrao }}% ao mês).
                     </p>
-                </div>
+                {% elif valor_financiado is not None and valor_financiado <= 0 %}
+                    <p class="mt-3 mb-0" style="color: var(--danger);">O valor de entrada não pode ser maior ou igual ao preço do veículo.</p>
+                {% endif %}
+                <p class="text-muted small mt-3 mb-0">
+                    Valores estimados, sujeitos a aprovação de crédito. Não constitui proposta de financiamento.
+                </p>
             </div>
         </div>
     </div>
