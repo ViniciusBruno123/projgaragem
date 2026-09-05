@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{% if veiculo %}Tenho interesse - {{ veiculo.titulo }}{% else %}Fale conosco{% endif %} - {{ garagem.nome }}{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand mb-0 h1" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">{{ garagem.nome }}</a>
+    </div>
+</nav>
+
+<div class="container" style="max-width: 500px;">
+    {% if veiculo %}
+        <h1 class="h3">Tenho interesse: {{ veiculo.titulo }}</h1>
+        <p class="text-muted">Preencha seus dados e você será redirecionado para o WhatsApp da {{ garagem.nome }} com a mensagem pronta.</p>
+    {% else %}
+        <h1 class="h3">Fale com {{ garagem.nome }}</h1>
+        <p class="text-muted">Preencha seus dados e você será redirecionado para o WhatsApp da garagem.</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success w-100">Enviar e ir para o WhatsApp</button>
+    </form>
+</div>
+{% endblock %}

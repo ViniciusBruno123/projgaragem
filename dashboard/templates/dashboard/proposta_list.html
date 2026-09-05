@@ -1,0 +1,32 @@
+{% extends "dashboard/_base_painel.html" %}
+
+{% block title %}Propostas recebidas{% endblock %}
+
+{% block painel_content %}
+<h1>Propostas recebidas</h1>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Veículo</th>
+            <th>Mensagem</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for proposta in propostas %}
+            <tr>
+                <td>{{ proposta.criado_em|date:"d/m/Y H:i" }}</td>
+                <td>{{ proposta.nome }}</td>
+                <td>{{ proposta.telefone }}</td>
+                <td>{% if proposta.veiculo %}{{ proposta.veiculo.titulo }}{% else %}Contato geral{% endif %}</td>
+                <td>{{ proposta.mensagem|default:"—" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-muted">Nenhuma proposta recebida ainda.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

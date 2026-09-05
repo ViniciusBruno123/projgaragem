@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ garagem.nome }}{% endblock %}
+{% block meta_description %}Veículos disponíveis na {{ garagem.nome }}, em {{ garagem.cidade }}.{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">{{ garagem.nome }}</span>
+        <div>
+            <span class="text-white small me-3">{{ garagem.cidade }}</span>
+            <a href="{% url 'storefront:contato' garagem_slug=garagem.slug %}" class="btn btn-outline-light btn-sm">Fale conosco</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    {% if veiculos_destaque %}
+        <h2 class="mb-3">Destaques</h2>
+        <div class="row">
+            {% for veiculo in veiculos_destaque %}
+                {% include "storefront/_card_veiculo.html" %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if demais_veiculos %}
+        <h2 class="mb-3 mt-4">Outros veículos</h2>
+        <div class="row">
+            {% for veiculo in demais_veiculos %}
+                {% include "storefront/_card_veiculo.html" %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not veiculos_destaque and not demais_veiculos %}
+        <p class="text-muted">Nenhum veículo disponível no momento.</p>
+    {% endif %}
+</div>
+{% endblock %}
