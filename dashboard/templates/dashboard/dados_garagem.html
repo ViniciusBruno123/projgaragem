@@ -4,7 +4,7 @@
 
 {% block painel_content %}
 <h1>Dados da garagem</h1>
-<p class="text-muted">Essas informações aparecem no rodapé da sua vitrine pública.</p>
+<p class="text-muted">Essas informações aparecem na sua vitrine pública. A taxa de juros é a usada no simulador de financiamento.</p>
 
 <form method="post" style="max-width: 500px;">
     {% csrf_token %}
@@ -12,6 +12,7 @@
         <div class="mb-3">
             <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
             {{ field }}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
             {% if field.errors %}
                 <div class="text-danger small">{{ field.errors }}</div>
             {% endif %}

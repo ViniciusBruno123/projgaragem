@@ -8,3 +8,5 @@ staticfiles/
 
 # binários compilados de skills (específicos de plataforma, reinstaláveis via `npx impeccable install`)
 .claude/skills/*/scripts/bin/
+
+test-artifacts/

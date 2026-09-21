@@ -2,6 +2,7 @@
 Django settings for projgaragem project.
 """
 
+from decimal import Decimal
 from pathlib import Path
 
 import environ
@@ -158,6 +159,9 @@ PLATFORM_ADMIN_EMAIL = env('PLATFORM_ADMIN_EMAIL')
 DIAS_ATRASO_PARA_AVISO_ADMIN = env.int('DIAS_ATRASO_PARA_AVISO_ADMIN', default=5)
 PLANO_MENSALIDADE_PADRAO = env('PLANO_MENSALIDADE_PADRAO', default='99.90')
 SITE_URL = env('SITE_URL', default='http://localhost:8000')
+
+# Usada no simulador só se a garagem não informar taxa e o Banco Central nunca tiver sido consultado
+TAXA_JUROS_ESTIMADA = Decimal('2.00')
 
 # Identificação da plataforma nos textos legais (termos de uso e privacidade)
 PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='projgaragem')

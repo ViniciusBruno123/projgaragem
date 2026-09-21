@@ -69,4 +69,13 @@
   }
 
   document.querySelectorAll('[data-carrossel]').forEach(iniciar);
+
+  // No celular o filtro começa recolhido (se não houver filtro ativo), para os
+  // destaques aparecerem na primeira tela; no desktop fica sempre aberto.
+  var celular = window.matchMedia('(max-width: 767.98px)');
+  document.querySelectorAll('details[data-fechar-no-mobile]').forEach(function (detalhes) {
+    function ajustar() { detalhes.open = !celular.matches; }
+    ajustar();
+    celular.addEventListener('change', ajustar);
+  });
 })();

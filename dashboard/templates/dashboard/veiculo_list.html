@@ -8,7 +8,7 @@
     <a href="{% url 'dashboard:veiculo_create' %}" class="btn btn-accent">Novo veículo</a>
 </div>
 
-<table class="table table-striped align-middle">
+<table class="table table-stack align-middle">
     <thead>
         <tr>
             <th>Título</th>
@@ -21,11 +21,11 @@
     <tbody>
         {% for veiculo in veiculos %}
             <tr>
-                <td>{{ veiculo.titulo }}</td>
-                <td class="num">R$ {{ veiculo.preco }}</td>
-                <td>{% if veiculo.destaque %}Sim{% else %}Não{% endif %}</td>
-                <td>{% if veiculo.disponivel %}Sim{% else %}Não{% endif %}</td>
-                <td class="text-end">
+                <td data-label="Título">{{ veiculo.titulo }}</td>
+                <td class="num" data-label="Preço">R$ {{ veiculo.preco|floatformat:"2g" }}</td>
+                <td data-label="Destaque">{% if veiculo.destaque %}Sim{% else %}Não{% endif %}</td>
+                <td data-label="Disponível">{% if veiculo.disponivel %}Sim{% else %}Não{% endif %}</td>
+                <td class="text-end acoes">
                     <a href="{% url 'dashboard:veiculo_update' pk=veiculo.pk %}" class="btn btn-sm btn-outline-ink">Editar</a>
                     <a href="{% url 'dashboard:veiculo_delete' pk=veiculo.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
                 </td>

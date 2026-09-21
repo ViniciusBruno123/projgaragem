@@ -6,7 +6,9 @@
 
 {% block vitrine_content %}
 <div class="container">
-    <form method="get" class="filter-bar row row-cols-1 row-cols-md-3 row-cols-lg-6 g-2 align-items-end my-4">
+    <details class="filtro-mobile my-4" open{% if not filtro_ativo %} data-fechar-no-mobile{% endif %}>
+    <summary class="btn btn-outline-ink w-100">Filtrar veículos{% if filtro_ativo %} (filtros ativos){% endif %}</summary>
+    <form method="get" class="filter-bar row row-cols-1 row-cols-md-3 row-cols-lg-6 g-2 align-items-end">
         {% for field in filtro %}
             <div class="col">
                 <label class="form-label mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -20,6 +22,7 @@
             <a href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}" class="btn btn-outline-ink btn-sm w-100">Limpar</a>
         </div>
     </form>
+    </details>
 
     {% if veiculos_destaque %}
         <div class="section-heading">

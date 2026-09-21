@@ -60,13 +60,18 @@
 
                 {% if parcela %}
                     <p class="mt-3 mb-0">
-                        Aproximadamente <strong class="num">{{ form.cleaned_data.numero_parcelas }}x de R$ {{ parcela }}</strong>
-                        (taxa estimada de {{ garagem.taxa_juros_mensal_padrao }}% ao mês).
+                        Aproximadamente <strong class="num">{{ form.cleaned_data.numero_parcelas }}x de R$ {{ parcela|floatformat:"2g" }}</strong>.
                     </p>
                 {% elif valor_financiado is not None and valor_financiado <= 0 %}
                     <p class="mt-3 mb-0" style="color: var(--danger);">O valor de entrada não pode ser maior ou igual ao preço do veículo.</p>
                 {% endif %}
-                <p class="text-muted small mt-3 mb-0">
+                <p class="small mt-3 mb-1">
+                    Taxa considerada: <span class="num">{{ taxa.valor }}% ao mês</span> —
+                    {% if taxa.origem == 'garagem' %}taxa informada pela garagem.
+                    {% elif taxa.origem == 'mercado' %}média de mercado do Banco Central (ref. {{ taxa.referencia|date:"m/Y" }}).
+                    {% else %}taxa estimada.{% endif %}
+                </p>
+                <p class="text-muted small mb-0">
                     Valores estimados, sujeitos a aprovação de crédito. Não constitui proposta de financiamento.
                 </p>
             </div>

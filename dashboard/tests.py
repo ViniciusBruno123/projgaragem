@@ -1,11 +1,13 @@
 import shutil
 import tempfile
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from PIL import Image
 
+from financing.models import TaxaReferencia
 from leads.models import Proposta
 from tenants.models import Garagem
 from vehicles.models import FotoVeiculo, Veiculo
@@ -156,3 +158,44 @@ class UploadDeFotoViewTests(TestCase):
         foto.refresh_from_db()
         self.assertEqual(foto.imagem.name, nome_original)
         self.assertEqual(foto.veiculo.titulo, 'Moto Teste Revisada')
+
+
+class TaxaDeJurosNoPainelTests(TestCase):
+    def setUp(self):
+        dono = User.objects.create_user('dono_juros', 'dono_juros@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Juros', slug='garagem-juros',
+            telefone_whatsapp='5517999999999', email_contato='dono_juros@example.com',
+        )
+        self.client.login(username='dono_juros', password='senha12345')
+        self.url = reverse('dashboard:dados_garagem')
+
+    def _salvar(self, taxa):
+        return self.client.post(self.url, {
+            'endereco': '', 'horario_funcionamento': '', 'instagram_url': '', 'facebook_url': '',
+            'cor_destaque': '#0F5C4D', 'taxa_juros_mensal_padrao': taxa,
+        })
+
+    def test_dono_informa_a_propria_taxa(self):
+        self.assertRedirects(self._salvar('1.99'), self.url)
+        self.garagem.refresh_from_db()
+        self.assertEqual(str(self.garagem.taxa_juros_mensal_padrao), '1.99')
+
+    def test_em_branco_volta_a_usar_a_media_de_mercado(self):
+        self.garagem.taxa_juros_mensal_padrao = '1.99'
+        self.garagem.save()
+        self.assertRedirects(self._salvar(''), self.url)
+        self.garagem.refresh_from_db()
+        self.assertIsNone(self.garagem.taxa_juros_mensal_padrao)
+
+    def test_taxa_absurda_ou_negativa_e_recusada(self):
+        for invalida in ('25', '-1'):
+            resp = self._salvar(invalida)
+            self.assertEqual(resp.status_code, 200)
+            self.garagem.refresh_from_db()
+            self.assertIsNone(self.garagem.taxa_juros_mensal_padrao)
+
+    def test_pagina_mostra_a_media_de_mercado_vigente(self):
+        TaxaReferencia.objects.create(fonte='bcb-sgs-25471', referencia=date(2026, 7, 1), taxa_mensal='1.98')
+        resp = self.client.get(self.url)
+        self.assertContains(resp, '1,98% ao mês (ref. 07/2026)')

@@ -17,25 +17,25 @@ class Veiculo(models.Model):
 
     garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE, related_name='veiculos')
     tipo = models.CharField(max_length=5, choices=Tipo.choices, default=Tipo.MOTO)
-    titulo = models.CharField(max_length=150)
+    titulo = models.CharField('Título', max_length=150)
     slug = models.SlugField(max_length=170, blank=True, help_text="Gerado automaticamente a partir do título.")
     marca = models.CharField(max_length=60)
     modelo = models.CharField(max_length=60)
-    ano_fabricacao = models.PositiveSmallIntegerField()
-    ano_modelo = models.PositiveSmallIntegerField()
-    quilometragem = models.PositiveIntegerField()
-    combustivel = models.CharField(max_length=10, choices=Combustivel.choices)
+    ano_fabricacao = models.PositiveSmallIntegerField('Ano de fabricação')
+    ano_modelo = models.PositiveSmallIntegerField('Ano do modelo')
+    quilometragem = models.PositiveIntegerField('Quilometragem (km)')
+    combustivel = models.CharField('Combustível', max_length=10, choices=Combustivel.choices)
     cilindrada = models.PositiveSmallIntegerField(
-        null=True, blank=True, help_text="Cilindradas (cc) — apenas para motos. Ex: 160"
+        'Cilindrada (cc)', null=True, blank=True, help_text="Cilindradas (cc) — apenas para motos. Ex: 160"
     )
     potencia_motor = models.DecimalField(
-        max_digits=2, decimal_places=1, null=True, blank=True,
+        'Potência do motor (litros)', max_digits=2, decimal_places=1, null=True, blank=True,
         help_text="Potência do motor em litros — apenas para carros. Ex: 1.0, 1.6, 2.0",
     )
-    preco = models.DecimalField(max_digits=10, decimal_places=2)
-    descricao = models.TextField(blank=True)
-    destaque = models.BooleanField(default=False, help_text="Aparece na frontpage da garagem.")
-    disponivel = models.BooleanField(default=True, help_text="Desmarque para ocultar da vitrine (vendido/reservado).")
+    preco = models.DecimalField('Preço (R$)', max_digits=10, decimal_places=2)
+    descricao = models.TextField('Descrição', blank=True)
+    destaque = models.BooleanField(default=False, help_text="Aparece no carrossel de destaques da vitrine.")
+    disponivel = models.BooleanField('Disponível', default=True, help_text="Desmarque para ocultar da vitrine (vendido/reservado).")
     aceita_troca = models.BooleanField(default=False, help_text="Exibe o selo \"Aceita troca\" no anúncio.")
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -87,9 +87,9 @@ class Veiculo(models.Model):
 
 class FotoVeiculo(models.Model):
     veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE, related_name='fotos')
-    imagem = models.ImageField(upload_to='veiculos/%Y/%m/')
-    principal = models.BooleanField(default=False)
-    ordem = models.PositiveSmallIntegerField(default=0)
+    imagem = models.ImageField('Foto', upload_to='veiculos/%Y/%m/')
+    principal = models.BooleanField('Foto principal', default=False)
+    ordem = models.PositiveSmallIntegerField('Ordem de exibição', default=0)
 
     class Meta:
         verbose_name = 'Foto do veículo'

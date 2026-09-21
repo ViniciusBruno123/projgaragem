@@ -2,6 +2,7 @@ import re
 from decimal import Decimal
 
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 HEX_COLOR_RE = re.compile(r'^#[0-9A-Fa-f]{6}$')
@@ -35,8 +36,9 @@ class Garagem(models.Model):
         help_text="Cor de destaque da sua vitrine, em hexadecimal (ex: #0F5C4D).",
     )
     taxa_juros_mensal_padrao = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal('2.5'),
-        help_text="Taxa mensal (%) usada no simulador de financiamento.",
+        'Taxa de juros própria (% ao mês)', max_digits=5, decimal_places=2, null=True, blank=True,
+        validators=[MinValueValidator(Decimal('0')), MaxValueValidator(Decimal('20'))],
+        help_text="Opcional. Em branco, o simulador usa a taxa média de mercado do Banco Central.",
     )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.ATIVO)
     suspensa_manualmente_em = models.DateTimeField(null=True, blank=True)

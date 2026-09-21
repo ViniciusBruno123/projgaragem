@@ -48,8 +48,12 @@ h1, h2, h3, h4, h5, .brand {
 }
 
 a {
+  color: var(--accent);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+}
+a:hover {
+  color: var(--ink);
 }
 
 /* --- Botões próprios (substituem btn-primary/btn-success do Bootstrap) --- */
@@ -445,6 +449,110 @@ html {
 .carrossel-btn--proximo { right: -0.75rem; }
 .carrossel--curto .carrossel-btn {
   display: none;
+}
+
+/* --- Filtro da vitrine: botão que abre/fecha no celular, sempre aberto no desktop --- */
+.filtro-mobile > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.filtro-mobile > summary::-webkit-details-marker {
+  display: none;
+}
+.filtro-mobile > form {
+  margin-top: 0.5rem;
+}
+@media (min-width: 768px) {
+  .filtro-mobile > summary {
+    display: none;
+  }
+  .filtro-mobile > form {
+    margin-top: 0;
+  }
+}
+
+/* --- Celular: tabelas viram cards empilhados, com o rótulo de cada dado --- */
+@media (max-width: 767.98px) {
+  .table-stack,
+  .table-stack tbody,
+  .table-stack tr,
+  .table-stack td {
+    display: block;
+    width: 100%;
+  }
+  .table-stack thead {
+    display: none;
+  }
+  .table-stack tr {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.85rem;
+  }
+  .table-stack td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.45rem 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    text-align: right;
+  }
+  .table-stack td::before {
+    content: attr(data-label);
+    flex: none;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+  }
+  .table-stack td.acoes {
+    justify-content: flex-end;
+  }
+  .table-stack td form {
+    flex: 1;
+  }
+}
+
+/* --- Celular: alvos de toque confortáveis e campos com 16 px (o iPhone dá zoom abaixo disso) --- */
+@media (max-width: 767.98px) {
+  .btn,
+  .form-control,
+  .form-select {
+    min-height: 44px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .form-control,
+  .form-select,
+  .form-control-sm,
+  .form-select-sm {
+    font-size: 1rem;
+  }
+  .site-footer {
+    padding-bottom: 5rem; /* espaço para o botão flutuante do WhatsApp */
+  }
+  .site-footer a {
+    display: inline-block;
+    padding: 0.4rem 0;
+  }
+  .form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .site-header .brand,
+  .panel-header .brand {
+    display: inline-block;
+    padding: 0.35rem 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

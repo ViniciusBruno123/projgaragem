@@ -9,7 +9,7 @@
     e apague o que não for mais necessário. <a href="{% url 'termos_uso' %}">Ver termos</a>.
 </p>
 
-<table class="table table-striped align-middle">
+<table class="table table-stack align-middle">
     <thead>
         <tr>
             <th>Data</th>
@@ -23,12 +23,12 @@
     <tbody>
         {% for proposta in propostas %}
             <tr>
-                <td>{{ proposta.criado_em|date:"d/m/Y H:i" }}</td>
-                <td>{{ proposta.nome }}</td>
-                <td>{{ proposta.telefone }}</td>
-                <td>{% if proposta.veiculo %}{{ proposta.veiculo.titulo }}{% else %}Contato geral{% endif %}</td>
-                <td>{{ proposta.mensagem|default:"—" }}</td>
-                <td>
+                <td data-label="Data">{{ proposta.criado_em|date:"d/m/Y H:i" }}</td>
+                <td data-label="Nome">{{ proposta.nome }}</td>
+                <td data-label="Telefone">{{ proposta.telefone }}</td>
+                <td data-label="Veículo">{% if proposta.veiculo %}{{ proposta.veiculo.titulo }}{% else %}Contato geral{% endif %}</td>
+                <td data-label="Mensagem">{{ proposta.mensagem|default:"—" }}</td>
+                <td data-label="Status">
                     <form method="post" action="{% url 'dashboard:proposta_status' pk=proposta.pk %}">
                         {% csrf_token %}
                         <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
