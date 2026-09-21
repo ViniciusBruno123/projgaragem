@@ -2,9 +2,22 @@ from django.shortcuts import get_object_or_404, render
 
 from financing.forms import SimulacaoFinanciamentoForm
 from financing.services import calcular_parcela_price
+from tenants.legal import contexto_plataforma
 from tenants.services import get_garagem_ativa_ou_404
 
 from .forms import FiltroVeiculosForm
+
+# Agrupa por tipo (motos antes de carros) para que cada linha da vitrine tenha fotos
+# na mesma proporção; dentro do grupo, os mais recentes primeiro.
+ORDEM_VITRINE = ('-tipo', '-criado_em')
+
+
+def politica_privacidade(request, garagem_slug):
+    garagem = get_garagem_ativa_ou_404(garagem_slug)
+    return render(request, 'storefront/politica_privacidade.html', {
+        'garagem': garagem,
+        **contexto_plataforma(),
+    })
 
 
 def frontpage(request, garagem_slug):
@@ -15,8 +28,8 @@ def frontpage(request, garagem_slug):
     return render(request, 'storefront/frontpage.html', {
         'garagem': garagem,
         'filtro': filtro,
-        'veiculos_destaque': veiculos_disponiveis.filter(destaque=True),
-        'demais_veiculos': veiculos_disponiveis.filter(destaque=False),
+        'veiculos_destaque': veiculos_disponiveis.filter(destaque=True).order_by(*ORDEM_VITRINE),
+        'demais_veiculos': veiculos_disponiveis.filter(destaque=False).order_by(*ORDEM_VITRINE),
     })
 
 

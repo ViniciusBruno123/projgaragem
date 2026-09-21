@@ -1,4 +1,5 @@
 {% extends "storefront/_base_vitrine.html" %}
+{% load static %}
 
 {% block title %}{{ garagem.nome }}{% endblock %}
 {% block meta_description %}Veículos disponíveis na {{ garagem.nome }}, em {{ garagem.cidade }}.{% endblock %}
@@ -25,10 +26,20 @@
             <h2>Destaques</h2>
             <span class="count num">{{ veiculos_destaque|length }}</span>
         </div>
-        <div class="row">
-            {% for veiculo in veiculos_destaque %}
-                {% include "storefront/_card_veiculo.html" %}
-            {% endfor %}
+        <div class="carrossel mb-4" data-carrossel data-intervalo="10000">
+            <button type="button" class="carrossel-btn carrossel-btn--anterior" data-carrossel-anterior aria-label="Destaque anterior">
+                <svg class="ico" aria-hidden="true"><use href="#i-anterior"/></svg>
+            </button>
+            <div class="carrossel-trilho" role="region" aria-label="Veículos em destaque" tabindex="0">
+                {% for veiculo in veiculos_destaque %}
+                    <div class="carrossel-item">
+                        {% include "storefront/_card_veiculo.html" %}
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="carrossel-btn carrossel-btn--proximo" data-carrossel-proximo aria-label="Próximo destaque">
+                <svg class="ico" aria-hidden="true"><use href="#i-proximo"/></svg>
+            </button>
         </div>
     {% endif %}
 
@@ -37,15 +48,24 @@
             <h2>Outros veículos</h2>
             <span class="count num">{{ demais_veiculos|length }}</span>
         </div>
-        <div class="row">
-            {% for veiculo in demais_veiculos %}
-                {% include "storefront/_card_veiculo.html" %}
-            {% endfor %}
-        </div>
+        {% regroup demais_veiculos by tipo as demais_por_tipo %}
+        {% for grupo in demais_por_tipo %}
+            <div class="row">
+                {% for veiculo in grupo.list %}
+                    <div class="col-sm-6 col-lg-4 col-xxl-3 mb-4">
+                        {% include "storefront/_card_veiculo.html" %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
     {% endif %}
 
     {% if not veiculos_destaque and not demais_veiculos %}
         <p class="text-muted my-5">Nenhum veículo encontrado com esses filtros.</p>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/vitrine.js' %}"></script>
 {% endblock %}

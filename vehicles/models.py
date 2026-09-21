@@ -10,7 +10,7 @@ class Veiculo(models.Model):
 
     class Combustivel(models.TextChoices):
         GASOLINA = 'gasolina', 'Gasolina'
-        ETANOL = 'etanol', 'Etanol'
+        ETANOL = 'etanol', 'Álcool'
         FLEX = 'flex', 'Flex'
         DIESEL = 'diesel', 'Diesel'
         ELETRICO = 'eletrico', 'Elétrico'
@@ -48,6 +48,14 @@ class Veiculo(models.Model):
 
     def __str__(self):
         return f"{self.titulo} ({self.garagem.nome})"
+
+    @property
+    def ano_curto(self):
+        """Ano só com os dois últimos dígitos: 1999/2000 -> 99/00; iguais aparecem uma vez."""
+        fabricacao = f'{self.ano_fabricacao % 100:02d}'
+        if self.ano_fabricacao == self.ano_modelo:
+            return fabricacao
+        return f'{fabricacao}/{self.ano_modelo % 100:02d}'
 
     def clean(self):
         from django.core.exceptions import ValidationError

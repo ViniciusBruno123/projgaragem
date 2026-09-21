@@ -1,7 +1,7 @@
 {% extends "storefront/_base_vitrine.html" %}
 
 {% block title %}{{ veiculo.titulo }} - {{ garagem.nome }}{% endblock %}
-{% block meta_description %}{{ veiculo.titulo }} - {{ veiculo.ano_modelo }}, {{ veiculo.quilometragem }} km, por R$ {{ veiculo.preco }} na {{ garagem.nome }}.{% endblock %}
+{% block meta_description %}{{ veiculo.titulo }} - {{ veiculo.ano_modelo }}, {{ veiculo.quilometragem|floatformat:"0g" }} km, por R$ {{ veiculo.preco|floatformat:"2g" }} na {{ garagem.nome }}.{% endblock %}
 
 {% block vitrine_content %}
 <div class="container py-4">
@@ -12,7 +12,7 @@
                     <div class="carousel-inner">
                         {% for foto in veiculo.fotos.all %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <img src="{{ foto.imagem.url }}" class="d-block w-100" alt="{{ veiculo.titulo }}" style="aspect-ratio: 4/3; object-fit: cover;">
+                                <img src="{{ foto.imagem.url }}" class="d-block w-100 foto-detalhe foto-{{ veiculo.tipo }}" alt="{{ veiculo.titulo }}">
                             </div>
                         {% endfor %}
                     </div>
@@ -26,22 +26,15 @@
                     {% endif %}
                 </div>
             {% else %}
-                <div class="photo-empty mb-4" style="aspect-ratio: 4/3;">sem fotos</div>
+                <div class="photo-empty foto-{{ veiculo.tipo }} mb-4">sem fotos</div>
             {% endif %}
         </div>
         <div class="col-md-6">
             {% if veiculo.aceita_troca %}<span class="tag">Aceita troca</span>{% endif %}
             <h1>{{ veiculo.titulo }}</h1>
-            <p class="price-tag num">R$ {{ veiculo.preco }}</p>
-            <ul class="spec-list mb-4" style="font-size: 0.9rem;">
-                <li><span>Tipo</span><span>{{ veiculo.get_tipo_display }}</span></li>
-                <li><span>Marca/modelo</span><span>{{ veiculo.marca }} {{ veiculo.modelo }}</span></li>
-                <li><span>Ano fab./modelo</span><span>{{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</span></li>
-                <li><span>Quilometragem</span><span>{{ veiculo.quilometragem }} km</span></li>
-                <li><span>Combustível</span><span>{{ veiculo.get_combustivel_display }}</span></li>
-                {% if veiculo.cilindrada %}<li><span>Cilindrada</span><span>{{ veiculo.cilindrada }}cc</span></li>{% endif %}
-                {% if veiculo.potencia_motor %}<li><span>Motor</span><span>{{ veiculo.potencia_motor }}</span></li>{% endif %}
-            </ul>
+            <p class="text-muted mb-2">{{ veiculo.marca }} {{ veiculo.modelo }} · {{ veiculo.get_tipo_display }}</p>
+            <p class="price-tag num">R$ {{ veiculo.preco|floatformat:"2g" }}</p>
+            {% include "storefront/_specs.html" with detalhado=True %}
             {% if veiculo.descricao %}
                 <p>{{ veiculo.descricao|linebreaks }}</p>
             {% endif %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Termos de uso e privacidade — {{ plataforma_nome }}{% endblock %}
+{% block meta_description %}Termos de uso e política de privacidade para donos de garagem que usam a plataforma {{ plataforma_nome }}.{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span class="brand">{{ plataforma_nome }}</span>
+        <a href="{% url 'dashboard:login' %}" class="btn btn-outline-ink btn-sm">Entrar no painel</a>
+    </div>
+</header>
+
+<main class="container py-4">
+    <article class="prose">
+        <h1>Termos de uso e privacidade</h1>
+        <p class="meta-line num">Para donos de garagem · atualizado em {{ atualizado_em|date:"d/m/Y" }}</p>
+
+        <p>
+            Estes termos valem para quem usa a plataforma <strong>{{ plataforma_nome }}</strong>{% if plataforma_cnpj %} (CNPJ {{ plataforma_cnpj }}){% endif %}
+            para manter a vitrine de veículos da sua garagem. Ao entrar no painel, você concorda com o que está escrito aqui.
+            Se você é cliente de uma garagem e quer saber como seus dados são tratados, veja a política de privacidade no rodapé da vitrine dela.
+        </p>
+
+        <h2>1. O que a plataforma faz</h2>
+        <p>
+            A plataforma hospeda a vitrine pública da sua garagem, oferece um painel para você cadastrar veículos e receber propostas,
+            e um simulador de financiamento com valores estimados. <strong>A plataforma não vende veículos</strong> e não participa da negociação:
+            o contato entre o cliente e a sua garagem acontece por WhatsApp e e-mail, e o atendimento é responsabilidade sua.
+        </p>
+
+        <h2>2. Cadastro e acesso</h2>
+        <p>
+            O cadastro da garagem é feito pela equipe da plataforma. O acesso ao painel é pessoal: guarde sua senha e não a compartilhe.
+            Tudo que for feito com o seu usuário é considerado feito por você. Se suspeitar que alguém acessou sua conta, avise a plataforma pelo e-mail
+            <a href="mailto:{{ plataforma_email }}">{{ plataforma_email }}</a>.
+        </p>
+
+        <h2>3. Mensalidade e atraso</h2>
+        <ul>
+            <li>O uso da plataforma é cobrado por mensalidade recorrente, no valor combinado na contratação, processada pelo Mercado Pago.</li>
+            <li>Se o pagamento atrasar, a edição do estoque no painel é bloqueada, mas a sua vitrine continua no ar por um período.</li>
+            <li>Persistindo o atraso, a plataforma pode suspender a vitrine. A suspensão é decidida pela plataforma, não é automática.</li>
+            <li>Regularizado o pagamento, a edição volta na hora. Vitrine suspensa é reativada pela plataforma.</li>
+        </ul>
+
+        <h2>4. Suas responsabilidades como anunciante</h2>
+        <ul>
+            <li>Preço, quilometragem, ano, estado e fotos dos anúncios precisam ser verdadeiros e estar atualizados. Veículo vendido deve ser marcado como indisponível.</li>
+            <li>Use apenas fotos e textos que você tem direito de publicar.</li>
+            <li>Cumpra a legislação aplicável à venda de veículos e ao consumidor. A plataforma não responde por negócios feitos entre você e seus clientes.</li>
+            <li>Não use a plataforma para fins ilegais nem para enviar mensagens indesejadas aos contatos recebidos.</li>
+        </ul>
+
+        <h2>5. Dados pessoais dos seus clientes (LGPD)</h2>
+        <p>
+            Quando um cliente envia uma proposta ou pede contato, nome, telefone, e-mail e mensagem chegam ao seu painel.
+            Sobre esses dados, a <strong>sua garagem é a controladora</strong> (decide para que usá-los) e a <strong>plataforma é a operadora</strong>
+            (armazena e entrega os dados só para prestar o serviço, seguindo as suas instruções). Por isso, você se compromete a:
+        </p>
+        <ul>
+            <li>usar os dados apenas para atender o pedido do cliente, e não para outras finalidades sem autorização dele;</li>
+            <li>atender os pedidos dos titulares (acesso, correção, exclusão, revogação de consentimento), respondendo em prazo razoável. Quem receber o pedido pode encaminhá-lo à plataforma se precisar de ajuda técnica;</li>
+            <li>manter esses dados em sigilo, sem repassar a terceiros sem base legal, e proteger o acesso ao seu painel;</li>
+            <li>excluir ou anonimizar as propostas que não forem mais necessárias.</li>
+        </ul>
+        <p>
+            A vitrine já exibe ao cliente uma política de privacidade e pede o consentimento dele antes do envio do formulário.
+            Ela informa o seu e-mail de contato como canal para exercer direitos, então mantenha esse e-mail correto em “Dados da garagem”.
+        </p>
+
+        <h2>6. Seus dados pessoais e os da garagem</h2>
+        <p>
+            Sobre os dados de quem contrata a plataforma (nome, e-mail, telefone, endereço e dados da garagem), a plataforma é a controladora.
+            Usamos esses dados para prestar o serviço, cobrar a mensalidade, enviar avisos sobre a conta e manter a segurança do sistema.
+            Os dados de pagamento (cartão, por exemplo) são tratados diretamente pelo Mercado Pago; a plataforma não os armazena.
+            Você pode pedir acesso, correção ou exclusão dos seus dados pelo e-mail <a href="mailto:{{ plataforma_email }}">{{ plataforma_email }}</a>.
+            Alguns dados podem ser mantidos após o encerramento quando a lei exigir, como registros de cobrança.
+        </p>
+
+        <h2>7. Segurança e disponibilidade</h2>
+        <p>
+            Adotamos medidas técnicas para proteger os dados, como acesso por senha e conexão segura. Nenhum sistema é infalível:
+            em caso de incidente que possa afetar seus dados, avisaremos você e, quando necessário, a autoridade competente.
+            A plataforma pode ficar indisponível por manutenção ou por problemas fora do nosso controle, e não garantimos funcionamento ininterrupto.
+        </p>
+
+        <h2>8. Encerramento</h2>
+        <p>
+            Você pode encerrar o uso a qualquer momento avisando a plataforma e cancelando a assinatura no Mercado Pago.
+            A plataforma pode encerrar ou suspender contas que violem estes termos.
+        </p>
+
+        <h2>9. Mudanças e contato</h2>
+        <p>
+            Estes termos podem ser atualizados. A data no topo mostra a última versão, e mudanças relevantes serão avisadas por e-mail.
+            Lei aplicável: legislação brasileira. Dúvidas ou pedidos: <a href="mailto:{{ plataforma_email }}">{{ plataforma_email }}</a>.
+        </p>
+    </article>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p class="mb-0">{{ plataforma_nome }}{% if plataforma_cnpj %} · CNPJ {{ plataforma_cnpj }}{% endif %} · <a href="mailto:{{ plataforma_email }}">{{ plataforma_email }}</a></p>
+    </div>
+</footer>
+{% endblock %}

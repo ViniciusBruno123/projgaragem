@@ -1,0 +1,78 @@
+{% extends "storefront/_base_vitrine.html" %}
+
+{% block title %}Política de privacidade — {{ garagem.nome }}{% endblock %}
+{% block meta_description %}Como {{ garagem.nome }} trata os dados pessoais de quem entra em contato pelo site.{% endblock %}
+
+{% block vitrine_content %}
+<main class="container py-4">
+    <article class="prose">
+        <h1>Política de privacidade</h1>
+        <p class="meta-line num">{{ garagem.nome }} · atualizada em {{ atualizado_em|date:"d/m/Y" }}</p>
+
+        <p>
+            Esta página explica quais dados pessoais coletamos quando você entra em contato com a <strong>{{ garagem.nome }}</strong> por este site,
+            para que usamos e quais são os seus direitos, conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+        </p>
+
+        <h2>1. Quem é responsável pelos seus dados</h2>
+        <p>
+            A responsável é a <strong>{{ garagem.nome }}</strong>, de {{ garagem.cidade }}{% if garagem.endereco %} ({{ garagem.endereco }}){% endif %}.
+            Para falar sobre seus dados, escreva para <a href="mailto:{{ garagem.email_contato }}">{{ garagem.email_contato }}</a>.
+            O site é fornecido pela plataforma {{ plataforma_nome }}, que armazena os dados em nome da garagem e só os trata para manter o serviço funcionando.
+        </p>
+
+        <h2>2. Quais dados coletamos</h2>
+        <ul>
+            <li><strong>Formulário de proposta ou contato:</strong> nome, telefone, e-mail (opcional), mensagem, o veículo pelo qual você se interessou e a data e hora do envio.</li>
+            <li><strong>Simulador de financiamento:</strong> os valores que você digita servem só para calcular na tela. Não guardamos esses valores.</li>
+            <li><strong>Navegação:</strong> o site usa apenas cookies necessários para funcionar com segurança. Não usamos cookies de publicidade nem de rastreamento.</li>
+            <li><strong>Serviços de terceiros:</strong> as fontes e alguns componentes visuais são carregados de provedores externos (Google Fonts e jsDelivr), que podem receber o seu endereço IP quando a página abre.</li>
+        </ul>
+
+        <h2>3. Para que usamos e por quê</h2>
+        <p>
+            Usamos seus dados para responder ao seu contato e conversar sobre o veículo que você quer, e não para outras finalidades.
+            Isso é feito com base no <strong>seu consentimento</strong>, dado ao marcar a caixa antes de enviar o formulário,
+            e nos procedimentos preliminares de uma possível compra, pedidos por você.
+        </p>
+
+        <h2>4. Com quem compartilhamos</h2>
+        <ul>
+            <li>Com a própria {{ garagem.nome }}, que recebe sua proposta no painel e por e-mail.</li>
+            <li>Com a plataforma {{ plataforma_nome }}, que hospeda o site e envia o e-mail de aviso à garagem.</li>
+            <li>Com o WhatsApp: ao enviar o formulário você é levado para uma conversa com a garagem. A partir daí, valem os termos e a política de privacidade do WhatsApp.</li>
+        </ul>
+        <p>Não vendemos seus dados nem os usamos para enviar propaganda de terceiros.</p>
+
+        <h2>5. Por quanto tempo guardamos</h2>
+        <p>
+            Guardamos seus dados pelo tempo necessário para o atendimento e por até 12 meses após o último contato,
+            salvo quando a lei exigir guardar por mais tempo. Você pode pedir a exclusão antes disso.
+        </p>
+
+        <h2>6. Seus direitos</h2>
+        <p>Você pode pedir, a qualquer momento e sem custo:</p>
+        <ul>
+            <li>confirmar se tratamos seus dados e ter acesso a eles;</li>
+            <li>corrigir dados incompletos ou errados;</li>
+            <li>apagar, anonimizar ou bloquear dados desnecessários;</li>
+            <li>saber com quem seus dados foram compartilhados;</li>
+            <li>retirar o consentimento, o que não afeta o que já foi feito antes;</li>
+            <li>receber seus dados em formato que permita levá-los a outro serviço.</li>
+        </ul>
+        <p>
+            Basta escrever para <a href="mailto:{{ garagem.email_contato }}">{{ garagem.email_contato }}</a> informando o nome e o telefone que usou no formulário.
+            Se achar que seus direitos não foram respeitados, você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).
+        </p>
+
+        <h2>7. Segurança</h2>
+        <p>
+            Os dados ficam em ambiente com acesso por senha e conexão segura, e só a garagem e a equipe técnica da plataforma podem vê-los.
+            Se houver um incidente que possa afetar você, avisaremos.
+        </p>
+
+        <h2>8. Mudanças nesta política</h2>
+        <p>Podemos atualizar esta página. A data no topo mostra a última versão.</p>
+    </article>
+</main>
+{% endblock %}

@@ -1,3 +1,7 @@
 from django.shortcuts import render
 
-# Create your views here.
+from .legal import contexto_plataforma
+
+
+def termos_uso(request):
+    return render(request, 'tenants/termos_uso.html', contexto_plataforma())

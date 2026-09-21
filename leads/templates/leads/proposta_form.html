@@ -15,14 +15,27 @@
     <form method="post">
         {% csrf_token %}
         {% for field in form %}
-            <div class="mb-3">
-                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.errors %}
-                    <div class="text-danger small">{{ field.errors }}</div>
-                {% endif %}
-            </div>
+            {% if field.name != 'aceito_privacidade' %}
+                <div class="mb-3">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endfor %}
+
+        <div class="form-check mb-3">
+            {{ form.aceito_privacidade }}
+            <label class="form-check-label small" for="{{ form.aceito_privacidade.id_for_label }}">
+                Li e concordo com a <a href="{% url 'storefront:privacidade' garagem_slug=garagem.slug %}" target="_blank" rel="noopener">política de privacidade</a>
+                e autorizo a {{ garagem.nome }} a usar meus dados para responder a este contato.
+            </label>
+            {% if form.aceito_privacidade.errors %}
+                <div class="text-danger small">{{ form.aceito_privacidade.errors }}</div>
+            {% endif %}
+        </div>
         <button type="submit" class="btn btn-accent w-100">Enviar e ir para o WhatsApp</button>
     </form>
 </div>

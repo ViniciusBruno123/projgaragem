@@ -1,10 +1,12 @@
 from django.contrib import admin
 
+from .forms import FotoVeiculoForm
 from .models import FotoVeiculo, Veiculo
 
 
 class FotoVeiculoInline(admin.TabularInline):
     model = FotoVeiculo
+    form = FotoVeiculoForm
     extra = 1
 
 

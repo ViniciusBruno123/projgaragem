@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.forms import inlineformset_factory
 
 from tenants.models import Garagem
+from vehicles.forms import FotoVeiculoForm as BaseFotoVeiculoForm
 from vehicles.models import FotoVeiculo, Veiculo
 
 
@@ -38,11 +39,7 @@ class VeiculoForm(forms.ModelForm):
                 field.widget.attrs.setdefault('class', 'form-control')
 
 
-class FotoVeiculoForm(forms.ModelForm):
-    class Meta:
-        model = FotoVeiculo
-        fields = ['imagem', 'principal', 'ordem']
-
+class FotoVeiculoForm(BaseFotoVeiculoForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['imagem'].widget.attrs.setdefault('class', 'form-control')

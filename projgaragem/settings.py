@@ -119,6 +119,12 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Fotos de veículos: limite de upload e otimização (ver vehicles/imagens.py)
+FOTO_UPLOAD_MAX_BYTES = 15 * 1024 * 1024
+FOTO_MAX_PIXELS = 50_000_000
+FOTO_LADO_MAXIMO = 1280
+FOTO_QUALIDADE_JPEG = 80
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -152,3 +158,7 @@ PLATFORM_ADMIN_EMAIL = env('PLATFORM_ADMIN_EMAIL')
 DIAS_ATRASO_PARA_AVISO_ADMIN = env.int('DIAS_ATRASO_PARA_AVISO_ADMIN', default=5)
 PLANO_MENSALIDADE_PADRAO = env('PLANO_MENSALIDADE_PADRAO', default='99.90')
 SITE_URL = env('SITE_URL', default='http://localhost:8000')
+
+# Identificação da plataforma nos textos legais (termos de uso e privacidade)
+PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='projgaragem')
+PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')

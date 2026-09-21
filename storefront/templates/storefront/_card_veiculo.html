@@ -1,26 +1,18 @@
-<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-    <div class="vehicle-card">
-        {% with veiculo.fotos.first as foto %}
-            {% if foto %}
-                <img src="{{ foto.imagem.url }}" class="photo" alt="{{ veiculo.titulo }}">
-            {% else %}
-                <div class="photo-empty">sem foto</div>
-            {% endif %}
-        {% endwith %}
-        <div class="body">
-            {% if veiculo.aceita_troca %}<span class="tag">Aceita troca</span>{% endif %}
-            <h3 class="title">{{ veiculo.titulo }}</h3>
-            <ul class="spec-list">
-                <li><span>Ano</span><span>{{ veiculo.ano_fabricacao }}/{{ veiculo.ano_modelo }}</span></li>
-                <li><span>Km</span><span>{{ veiculo.quilometragem }}</span></li>
-                <li><span>Combustível</span><span>{{ veiculo.get_combustivel_display }}</span></li>
-                {% if veiculo.cilindrada %}<li><span>Cilindrada</span><span>{{ veiculo.cilindrada }}cc</span></li>{% endif %}
-                {% if veiculo.potencia_motor %}<li><span>Motor</span><span>{{ veiculo.potencia_motor }}</span></li>{% endif %}
-            </ul>
-            <p class="price-tag num">R$ {{ veiculo.preco }}</p>
-            <a href="{% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent mt-auto">
-                Ver detalhes
-            </a>
-        </div>
+<div class="vehicle-card">
+    {% if veiculo.aceita_troca %}<span class="tag tag--foto">Aceita troca</span>{% endif %}
+    {% with veiculo.fotos.first as foto %}
+        {% if foto %}
+            <img src="{{ foto.imagem.url }}" class="photo foto-{{ veiculo.tipo }}" alt="{{ veiculo.titulo }}" loading="lazy">
+        {% else %}
+            <div class="photo-empty foto-{{ veiculo.tipo }}">sem foto</div>
+        {% endif %}
+    {% endwith %}
+    <div class="body">
+        <h3 class="title">{{ veiculo.titulo }}</h3>
+        {% include "storefront/_specs.html" %}
+        <p class="price-tag num">R$ {{ veiculo.preco|floatformat:"2g" }}</p>
+        <a href="{% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent mt-auto">
+            Ver detalhes
+        </a>
     </div>
 </div>

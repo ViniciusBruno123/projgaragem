@@ -1,9 +1,15 @@
+import shutil
+import tempfile
+
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
+from PIL import Image
 
 from leads.models import Proposta
 from tenants.models import Garagem
+from vehicles.models import FotoVeiculo, Veiculo
+from vehicles.tests import gerar_foto
 
 
 class DadosGaragemViewTests(TestCase):
@@ -81,3 +87,72 @@ class AtualizarStatusPropostaViewTests(TestCase):
 
         self.proposta_a.refresh_from_db()
         self.assertEqual(self.proposta_a.status, Proposta.Status.NOVA)
+
+
+class UploadDeFotoViewTests(TestCase):
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_foto', 'dono_foto@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Foto', slug='garagem-foto',
+            telefone_whatsapp='5517999999999', email_contato='dono_foto@example.com',
+        )
+        self.client.login(username='dono_foto', password='senha12345')
+
+    def _dados_veiculo(self, **extra):
+        return {
+            'tipo': 'moto', 'titulo': 'Moto Teste', 'marca': 'Honda', 'modelo': 'CG',
+            'ano_fabricacao': 2022, 'ano_modelo': 2022, 'quilometragem': 1000,
+            'combustivel': 'flex', 'preco': '10000.00', 'disponivel': 'on',
+            'fotos-TOTAL_FORMS': 1, 'fotos-INITIAL_FORMS': 0,
+            'fotos-MIN_NUM_FORMS': 0, 'fotos-MAX_NUM_FORMS': 1000,
+            **extra,
+        }
+
+    def _criar_com_foto(self):
+        return self.client.post(reverse('dashboard:veiculo_create'), self._dados_veiculo(**{
+            'fotos-0-imagem': gerar_foto((3000, 2000), nome='IMG_0001.JPG'),
+            'fotos-0-principal': 'on', 'fotos-0-ordem': 0,
+        }))
+
+    def test_foto_grande_e_salva_reduzida_em_jpeg(self):
+        resp = self._criar_com_foto()
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+
+        foto = FotoVeiculo.objects.get()
+        self.assertTrue(foto.imagem.name.endswith('.jpg'))
+        with Image.open(foto.imagem.path) as imagem:
+            self.assertEqual(imagem.format, 'JPEG')
+            self.assertEqual(max(imagem.size), 1280)
+
+    @override_settings(FOTO_UPLOAD_MAX_BYTES=1000)
+    def test_foto_acima_do_limite_mostra_erro_e_nao_salva_o_veiculo(self):
+        resp = self._criar_com_foto()
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'o limite é')
+        self.assertEqual(Veiculo.objects.count(), 0)
+        self.assertEqual(FotoVeiculo.objects.count(), 0)
+
+    def test_editar_veiculo_sem_reenviar_foto_nao_reprocessa_o_arquivo(self):
+        self._criar_com_foto()
+        foto = FotoVeiculo.objects.get()
+        nome_original = foto.imagem.name
+
+        resp = self.client.post(
+            reverse('dashboard:veiculo_update', kwargs={'pk': foto.veiculo.pk}),
+            self._dados_veiculo(**{
+                'titulo': 'Moto Teste Revisada',
+                'fotos-TOTAL_FORMS': 2, 'fotos-INITIAL_FORMS': 1,
+                'fotos-0-id': foto.pk, 'fotos-0-veiculo': foto.veiculo.pk,
+                'fotos-0-principal': 'on', 'fotos-0-ordem': 0,
+                'fotos-1-ordem': 0,
+            }),
+        )
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+
+        foto.refresh_from_db()
+        self.assertEqual(foto.imagem.name, nome_original)
+        self.assertEqual(foto.veiculo.titulo, 'Moto Teste Revisada')

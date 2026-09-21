@@ -1,0 +1,29 @@
+{% comment %}
+Dados do veículo em linha, com ícone no lugar do rótulo.
+Espera `veiculo`; com `detalhado` mostra também as unidades (km, cc).
+{% endcomment %}
+<ul class="spec-strip{% if detalhado %} spec-strip--detalhado{% endif %}">
+    <li title="Ano">
+        <svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg>
+        <span class="visually-hidden">Ano:</span>{{ veiculo.ano_curto }}
+    </li>
+    <li title="Quilometragem">
+        <svg class="ico" aria-hidden="true"><use href="#i-odometro"/></svg>
+        <span class="visually-hidden">Quilometragem:</span>{{ veiculo.quilometragem|floatformat:"0g" }}{% if detalhado %} km{% endif %}
+    </li>
+    {% if veiculo.cilindrada %}
+        <li title="Cilindrada">
+            <svg class="ico" aria-hidden="true"><use href="#i-motor"/></svg>
+            <span class="visually-hidden">Cilindrada:</span>{{ veiculo.cilindrada }}{% if detalhado %} cc{% endif %}
+        </li>
+    {% elif veiculo.potencia_motor %}
+        <li title="Motor">
+            <svg class="ico" aria-hidden="true"><use href="#i-motor"/></svg>
+            <span class="visually-hidden">Motor:</span>{{ veiculo.potencia_motor }}
+        </li>
+    {% endif %}
+    <li title="Combustível">
+        <svg class="ico" aria-hidden="true"><use href="#i-combustivel"/></svg>
+        <span class="visually-hidden">Combustível:</span>{{ veiculo.get_combustivel_display }}
+    </li>
+</ul>
