@@ -27,15 +27,22 @@ class DadosGaragemViewTests(TestCase):
         )
         self.client.login(username='dono_dados', password='senha12345')
 
+    def _dados_completos(self, **extra):
+        return {
+            'telefone_whatsapp': '5517999999999', 'endereco': '', 'horario_funcionamento': '',
+            'instagram_url': '', 'facebook_url': '', 'cor_destaque': '#0F5C4D',
+            'cor_titulo': '#1A1A18', 'fonte_titulo': Garagem.FonteTitulo.BIG_SHOULDERS,
+            **extra,
+        }
+
     def test_dono_atualiza_dados_institucionais(self):
         url = reverse('dashboard:dados_garagem')
-        resp = self.client.post(url, {
+        resp = self.client.post(url, self._dados_completos(**{
             'endereco': 'Rua Nova, 100',
             'horario_funcionamento': 'Seg a Sex, 9h às 17h',
             'instagram_url': 'https://instagram.com/garagemteste',
-            'facebook_url': '',
             'cor_destaque': '#123456',
-        })
+        }))
         self.assertRedirects(resp, url)
 
         self.garagem.refresh_from_db()
@@ -47,6 +54,40 @@ class DadosGaragemViewTests(TestCase):
         self.client.logout()
         resp = self.client.get(reverse('dashboard:dados_garagem'))
         self.assertEqual(resp.status_code, 302)
+
+    def test_dono_troca_o_telefone_do_whatsapp(self):
+        url = reverse('dashboard:dados_garagem')
+        resp = self.client.post(url, self._dados_completos(telefone_whatsapp='(17) 98888-7777'))
+        self.assertRedirects(resp, url)
+        self.garagem.refresh_from_db()
+        self.assertEqual(self.garagem.telefone_whatsapp, '5517988887777')
+
+    def test_telefone_sem_ddi_ganha_o_55_automaticamente(self):
+        url = reverse('dashboard:dados_garagem')
+        self.client.post(url, self._dados_completos(telefone_whatsapp='17988887777'))
+        self.garagem.refresh_from_db()
+        self.assertEqual(self.garagem.telefone_whatsapp, '5517988887777')
+
+    def test_telefone_curto_demais_e_recusado(self):
+        url = reverse('dashboard:dados_garagem')
+        resp = self.client.post(url, self._dados_completos(telefone_whatsapp='999'))
+        self.assertEqual(resp.status_code, 200)
+        self.garagem.refresh_from_db()
+        self.assertEqual(self.garagem.telefone_whatsapp, '5517999999999')  # não mudou
+
+    def test_dono_personaliza_cor_e_fonte_do_titulo(self):
+        url = reverse('dashboard:dados_garagem')
+        resp = self.client.post(url, self._dados_completos(
+            cor_titulo='#FFFFFF', fonte_titulo=Garagem.FonteTitulo.OSWALD,
+        ))
+        self.assertRedirects(resp, url)
+        self.garagem.refresh_from_db()
+        self.assertEqual(self.garagem.cor_titulo, '#FFFFFF')
+        self.assertEqual(self.garagem.fonte_titulo, Garagem.FonteTitulo.OSWALD)
+
+        vitrine = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
+        self.assertContains(vitrine, '--brand-color: #FFFFFF;')
+        self.assertContains(vitrine, '--brand-font: "Oswald", sans-serif;')
 
 
 class AtualizarStatusPropostaViewTests(TestCase):
@@ -176,8 +217,10 @@ class TaxaDeJurosNoPainelTests(TestCase):
 
     def _salvar(self, taxa):
         return self.client.post(self.url, {
+            'telefone_whatsapp': '5517999999999',
             'endereco': '', 'horario_funcionamento': '', 'instagram_url': '', 'facebook_url': '',
-            'cor_destaque': '#0F5C4D', 'taxa_juros_mensal_padrao': taxa,
+            'cor_destaque': '#0F5C4D', 'cor_titulo': '#1A1A18',
+            'fonte_titulo': Garagem.FonteTitulo.BIG_SHOULDERS, 'taxa_juros_mensal_padrao': taxa,
         })
 
     def test_dono_informa_a_propria_taxa(self):
@@ -221,8 +264,10 @@ class LogoECapaDaGaragemTests(TestCase):
 
     def test_dono_envia_logo_e_capa_que_sao_reduzidas(self):
         resp = self.client.post(self.url, {
+            'telefone_whatsapp': '5517999999999',
             'endereco': '', 'horario_funcionamento': '', 'instagram_url': '', 'facebook_url': '',
-            'cor_destaque': '#0F5C4D',
+            'cor_destaque': '#0F5C4D', 'cor_titulo': '#1A1A18',
+            'fonte_titulo': Garagem.FonteTitulo.BIG_SHOULDERS,
             'logo': gerar_foto((2000, 2000), nome='logo.png', formato='PNG', modo='RGBA'),
             'capa': gerar_foto((3000, 900), nome='capa.jpg'),
         })

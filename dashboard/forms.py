@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import inlineformset_factory
@@ -16,6 +18,23 @@ class EstiloLoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.setdefault('class', 'form-control')
+
+
+class SelectComPreviaDeFonte(forms.Select):
+    """<select> de fonte com uma amostra "Aa" em cada opção, já na fonte que ela representa.
+
+    O valor de cada escolha é o próprio nome da família (ver Garagem.FonteTitulo), então dá
+    para usá-lo direto como font-family do <option> — sem precisar de uma tabela à parte.
+    Funciona nos navegadores baseados em Chromium e no Firefox; no Safari a "Aa" aparece sem
+    estilo (degrada bem: o texto continua lá, só não fica na fonte de amostra).
+    """
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        if value:
+            option['attrs']['style'] = f"font-family: '{value}', sans-serif;"
+            option['label'] = f"{label} — Aa"
+        return option
 
 
 ORDENACOES_VEICULO = [
@@ -122,10 +141,12 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
     class Meta:
         model = Garagem
         fields = [
-            'logo', 'capa', 'endereco', 'horario_funcionamento', 'instagram_url', 'facebook_url',
-            'cor_destaque', 'taxa_juros_mensal_padrao',
+            'logo', 'capa', 'telefone_whatsapp', 'endereco', 'horario_funcionamento',
+            'instagram_url', 'facebook_url', 'cor_destaque', 'cor_titulo', 'fonte_titulo',
+            'taxa_juros_mensal_padrao',
         ]
         labels = {
+            'telefone_whatsapp': 'Telefone do WhatsApp',
             'endereco': 'Endereço',
             'horario_funcionamento': 'Horário de funcionamento',
             'instagram_url': 'Link do Instagram',
@@ -133,19 +154,26 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
             'cor_destaque': 'Cor da vitrine',
         }
         help_texts = {
+            'telefone_whatsapp': 'Para onde vão as propostas dos clientes. Pode digitar com parênteses e traço.',
             'horario_funcionamento': 'Aparece no rodapé da vitrine.',
             'cor_destaque': 'Cor dos botões e detalhes da sua vitrine e do seu painel.',
         }
         widgets = {
+            'telefone_whatsapp': forms.TextInput(attrs={'placeholder': '(17) 99999-9999'}),
             'horario_funcionamento': forms.TextInput(attrs={'placeholder': 'Ex: Seg a Sex, 8h às 18h'}),
             'cor_destaque': forms.TextInput(attrs={'type': 'color', 'style': 'height: 2.5rem; padding: 0.25rem;'}),
+            'cor_titulo': forms.TextInput(attrs={'type': 'color', 'style': 'height: 2.5rem; padding: 0.25rem;'}),
+            'fonte_titulo': SelectComPreviaDeFonte,
             'taxa_juros_mensal_padrao': forms.NumberInput(attrs={'step': '0.01', 'min': '0', 'placeholder': 'Ex: 1,99'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.setdefault('class', 'form-control')
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs.setdefault('class', 'form-select')
+            else:
+                field.widget.attrs.setdefault('class', 'form-control')
         self.fields['logo'].widget.attrs['accept'] = 'image/*'
         self.fields['capa'].widget.attrs['accept'] = 'image/*'
 
@@ -155,6 +183,14 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
                 "Opcional. Em branco, o simulador usa a média de mercado do Banco Central: "
                 f"{localize(media.taxa_mensal)}% ao mês (ref. {media.referencia:%m/%Y})."
             )
+
+    def clean_telefone_whatsapp(self):
+        # O dono digita como quiser (com DDD entre parênteses, traço etc.); guardamos só
+        # dígitos. Sem DDI, assume Brasil — é o público desta plataforma.
+        numero = re.sub(r'\D', '', self.cleaned_data.get('telefone_whatsapp', ''))
+        if len(numero) in (10, 11):
+            numero = '55' + numero
+        return numero
 
     def clean_logo(self):
         return self._limpar_imagem_otimizada('logo')

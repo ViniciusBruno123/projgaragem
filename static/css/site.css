@@ -91,24 +91,32 @@ a:hover {
 }
 .site-header .brand {
   font-size: 1.5rem;
-  color: var(--ink);
+  color: var(--brand-color, var(--ink));
+  font-family: var(--brand-font, var(--font-display));
   text-decoration: none;
   line-height: 1;
 }
 .site-header .brand:hover {
   color: var(--accent);
 }
+/* Nome da cidade e "Fale conosco" seguem a cor do título: se o dono escolher uma cor clara
+   para o título (por causa de uma capa escura, por exemplo), os três têm que mudar juntos —
+   senão um deles pode sumir contra o fundo. */
 .site-header .meta {
-  color: var(--ink-soft);
+  color: var(--brand-color, var(--ink-soft));
   font-family: var(--font-mono);
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.site-header .btn-outline-ink {
+  color: var(--brand-color, var(--ink));
+  border-color: var(--brand-color, var(--line));
+}
 .brand-logo {
-  height: 2.25rem;
+  height: 4.5rem;
   width: auto;
-  max-width: 8rem;
+  max-width: 16rem;
   object-fit: contain;
   vertical-align: middle;
   margin-right: 0.6rem;
@@ -116,7 +124,8 @@ a:hover {
   border-radius: 2px;
   padding: 2px;
 }
-/* Cabeçalho com capa própria da garagem: texto sobre a foto, sempre claro. */
+/* Cabeçalho com capa própria da garagem: texto sobre a foto, claro por padrão — mas a cor do
+   título escolhida pelo dono (--brand-color) tem prioridade mesmo aqui, se ele a definiu. */
 .site-header--capa {
   background-size: cover;
   background-position: center;
@@ -125,11 +134,11 @@ a:hover {
 }
 .site-header--capa .brand,
 .site-header--capa .meta {
-  color: var(--paper);
+  color: var(--brand-color, var(--paper));
 }
 .site-header--capa .btn-outline-ink {
-  color: var(--paper);
-  border-color: var(--paper);
+  color: var(--brand-color, var(--paper));
+  border-color: var(--brand-color, var(--paper));
 }
 .site-header--capa .btn-outline-ink:hover {
   background: var(--accent);

@@ -9,7 +9,7 @@ class FiltroVeiculosForm(forms.Form):
     tipo = forms.ChoiceField(required=False, label="Tipo")
     marca = forms.ChoiceField(required=False, label="Marca")
     cilindrada = forms.ChoiceField(required=False, label="Cilindrada (motos)")
-    potencia_motor = forms.ChoiceField(required=False, label="Potência do motor (carros)")
+    potencia_motor = forms.ChoiceField(required=False, label="Motor (carros)")
     preco_min = forms.DecimalField(required=False, min_value=Decimal('0'), label="Preço mínimo")
     preco_max = forms.DecimalField(required=False, min_value=Decimal('0'), label="Preço máximo")
 

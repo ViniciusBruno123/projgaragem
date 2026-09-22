@@ -31,16 +31,13 @@
     <thead>
         <tr>
             <th>Foto</th>
-            <th>Tipo</th>
+            <th class="text-center">Tipo</th>
             <th>Título</th>
             <th>Marca / Modelo</th>
-            <th>Ano</th>
-            <th>Km</th>
-            <th>Motor</th>
-            <th>Combustível</th>
+            <th class="text-center">Ano</th>
             <th>Preço</th>
-            <th>Destaque</th>
-            <th>Disponível</th>
+            <th class="text-center">Destaque</th>
+            <th class="text-center">Disponível</th>
             <th></th>
         </tr>
     </thead>
@@ -56,19 +53,12 @@
                         {% endif %}
                     {% endwith %}
                 </td>
-                <td data-label="Tipo">{{ veiculo.get_tipo_display }}</td>
+                <td data-label="Tipo" class="text-center">{{ veiculo.get_tipo_display }}</td>
                 <td data-label="Título">{{ veiculo.titulo }}</td>
                 <td data-label="Marca / Modelo">{{ veiculo.marca }} {{ veiculo.modelo }}</td>
-                <td class="num" data-label="Ano">{{ veiculo.ano_curto }}</td>
-                <td class="num" data-label="Km">{{ veiculo.quilometragem|floatformat:"0g" }}</td>
-                <td class="num" data-label="Motor">
-                    {% if veiculo.cilindrada %}{{ veiculo.cilindrada }} cc
-                    {% elif veiculo.potencia_motor %}{{ veiculo.potencia_motor }}
-                    {% else %}—{% endif %}
-                </td>
-                <td data-label="Combustível">{{ veiculo.get_combustivel_display }}</td>
+                <td class="num text-center" data-label="Ano">{{ veiculo.ano_curto }}</td>
                 <td class="num" data-label="Preço">R$ {{ veiculo.preco|floatformat:"2g" }}</td>
-                <td data-label="Destaque" class="campo-switch">
+                <td data-label="Destaque" class="campo-switch text-center">
                     <form method="post" action="{% url 'dashboard:veiculo_alternar' pk=veiculo.pk campo='destaque' %}">
                         {% csrf_token %}
                         <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
@@ -92,7 +82,7 @@
                 </td>
             </tr>
         {% empty %}
-            <tr><td colspan="12" class="text-muted">Nenhum veículo cadastrado ainda.</td></tr>
+            <tr><td colspan="9" class="text-muted">Nenhum veículo cadastrado ainda.</td></tr>
         {% endfor %}
     </tbody>
 </table>

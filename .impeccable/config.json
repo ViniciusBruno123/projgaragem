@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "dashboard/templates/dashboard/_modal_cortar_foto.html"
+        ],
+        "createdAt": "2026-09-22T23:31:08.332Z",
+        "reason": "img sem src é o alvo dinâmico do modal de corte (Cropper.js); o JS define src via URL.createObjectURL só quando o modal abre, nunca é exibido vazio"
+      }
+    ]
+  }
+}

@@ -10,3 +10,8 @@ staticfiles/
 .claude/skills/*/scripts/bin/
 
 test-artifacts/
+
+# cache local do hook do impeccable (por sessão) e config por desenvolvedor — não são compartilhados;
+# .impeccable/config.json (as ignore-rules combinadas) é a única parte deste diretório versionada.
+.impeccable/hook.cache.json
+.impeccable/config.local.json

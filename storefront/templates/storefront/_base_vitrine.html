@@ -2,9 +2,13 @@
 {% load vitrine_extras %}
 
 {% block extra_head %}
-{% if garagem.cor_destaque %}
-    <style>:root { --accent: {{ garagem.cor_destaque }}; }</style>
-{% endif %}
+<style>
+:root {
+    {% if garagem.cor_destaque %}--accent: {{ garagem.cor_destaque }};{% endif %}
+    {% if garagem.cor_titulo %}--brand-color: {{ garagem.cor_titulo }};{% endif %}
+    --brand-font: "{{ garagem.fonte_titulo|default:'Big Shoulders' }}", sans-serif;
+}
+</style>
 {# Open Graph: o link da vitrine é colado no WhatsApp, então esse preview faz parte do produto. #}
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">

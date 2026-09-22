@@ -1,0 +1,27 @@
+{% comment %}
+Modal de corte de foto, compartilhado por qualquer campo de imagem marcado com
+data-cortar (logo, capa, fotos de veículo). Um só modal por página, reaproveitado
+pelo static/js/cortar_foto.js — inclua este parcial uma vez por página.
+{% endcomment %}
+<div class="modal fade" id="modal-cortar-foto" tabindex="-1" aria-labelledby="modal-cortar-foto-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 mb-0" id="modal-cortar-foto-titulo">Ajustar foto</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="cortar-foto-area">
+                    <img id="cortar-foto-imagem" alt="Foto enviada, para recortar">
+                </div>
+                <p class="text-muted small mt-2 mb-0">
+                    Arraste a grade para escolher o que aparece. As bordas ajustam o zoom.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-ink" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-accent" id="cortar-foto-confirmar">Usar esse corte</button>
+            </div>
+        </div>
+    </div>
+</div>
