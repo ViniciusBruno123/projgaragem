@@ -1,0 +1,20 @@
+# /etc/systemd/system/projgaragem.service
+[Unit]
+Description=projgaragem (gunicorn)
+After=network.target postgresql.service
+
+[Service]
+User=projgaragem
+Group=www-data
+WorkingDirectory=/srv/projgaragem/app
+RuntimeDirectory=projgaragem
+RuntimeDirectoryMode=0755
+ExecStart=/srv/projgaragem/venv/bin/gunicorn projgaragem.wsgi:application -c /srv/projgaragem/app/deploy/gunicorn.conf.py
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

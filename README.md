@@ -46,15 +46,25 @@ menor que 16 px (o iPhone dá zoom nesses campos). Salva um print de cada tela e
 Precisa de internet (o site carrega o Bootstrap e as fontes por CDN) e leva cerca de um minuto, por isso não roda na
 suíte normal.
 
+## Produção
+
+Guia completo, com nginx, gunicorn, PostgreSQL, HTTPS, backup e cron: [deploy/README.md](deploy/README.md).
+As variáveis de ambiente de produção estão comentadas em [.env.production.example](.env.production.example).
+
+Em produção (`DEBUG=False`) o app recusa iniciar com `SECRET_KEY` fraca, sem `ALLOWED_HOSTS` ou sem `SITE_URL` em
+HTTPS, e a mensagem de erro diz o que corrigir. Para usar PostgreSQL basta definir `DATABASE_URL`; sem ela, o app usa
+SQLite (desenvolvimento).
+
 ## Rotinas agendadas (cron)
 
 ```bash
 # todo dia: marca garagens atrasadas e avisa o administrador
 ./venv/bin/python manage.py verificar_inadimplencia
 
-# todo mês: atualiza a taxa média de juros de financiamento de veículos (Banco Central, SGS 25471)
+# toda semana: atualiza a taxa média de juros de financiamento de veículos (Banco Central, SGS 25471).
+# É idempotente: só grava quando o Banco Central publica um mês novo.
 ./venv/bin/python manage.py atualizar_taxa_media
 ```
 
 O simulador usa a taxa que a garagem informar em "Dados da garagem"; em branco, usa essa média de mercado. Se o
-Banco Central estiver fora do ar, o comando falha com erro (o cron avisa) e a última taxa salva continua valendo.
+Banco Central estiver fora do ar, o comando falha com erro e a última taxa salva continua valendo.

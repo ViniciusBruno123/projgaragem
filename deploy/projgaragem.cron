@@ -1,0 +1,14 @@
+# /etc/cron.d/projgaragem
+# A saída vai para o log do sistema: journalctl -t projgaragem-cron
+SHELL=/bin/bash
+APP=/srv/projgaragem/app
+PY=/srv/projgaragem/venv/bin/python
+
+# todo dia às 8h: marca garagens atrasadas e avisa o administrador
+0 8 * * *   projgaragem  cd $APP && $PY manage.py verificar_inadimplencia 2>&1 | logger -t projgaragem-cron
+
+# toda segunda às 9h: atualiza a taxa média de juros (só grava quando o Banco Central publica mês novo)
+0 9 * * 1   projgaragem  cd $APP && $PY manage.py atualizar_taxa_media 2>&1 | logger -t projgaragem-cron
+
+# todo dia às 2h30: backup do banco e das fotos
+30 2 * * *  projgaragem  $APP/deploy/backup.sh 2>&1 | logger -t projgaragem-cron
