@@ -1,17 +1,20 @@
 <div class="vehicle-card">
     {% if veiculo.aceita_troca %}<span class="tag tag--foto">Aceita troca</span>{% endif %}
+    {% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug as url_detalhe %}
     {% with veiculo.fotos.first as foto %}
-        {% if foto %}
-            <img src="{{ foto.imagem.url }}" class="photo foto-{{ veiculo.tipo }}" alt="{{ veiculo.titulo }}" loading="lazy">
-        {% else %}
-            <div class="photo-empty foto-{{ veiculo.tipo }}">sem foto</div>
-        {% endif %}
+        <a href="{{ url_detalhe }}" class="photo-link" {% if foto.imagem.url %}data-fotos-extra="{{ veiculo.fotos_extra_urls }}"{% endif %}>
+            {% if foto %}
+                <img src="{{ foto.imagem.url }}" data-foto-principal="{{ foto.imagem.url }}" class="photo foto-{{ veiculo.tipo }}" alt="{{ veiculo.titulo }}" loading="lazy">
+            {% else %}
+                <div class="photo-empty foto-{{ veiculo.tipo }}">sem foto</div>
+            {% endif %}
+        </a>
     {% endwith %}
     <div class="body">
         <h3 class="title">{{ veiculo.titulo }}</h3>
         {% include "storefront/_specs.html" %}
         <p class="price-tag num">R$ {{ veiculo.preco|floatformat:"2g" }}</p>
-        <a href="{% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent mt-auto">
+        <a href="{{ url_detalhe }}" class="btn btn-accent mt-auto">
             Ver detalhes
         </a>
     </div>

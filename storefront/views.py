@@ -23,7 +23,9 @@ def politica_privacidade(request, garagem_slug):
 def frontpage(request, garagem_slug):
     garagem = get_garagem_ativa_ou_404(garagem_slug)
     filtro = FiltroVeiculosForm(request.GET or None, garagem=garagem)
-    veiculos_disponiveis = filtro.aplicar(garagem.veiculos.filter(disponivel=True))
+    # prefetch_related evita 1 consulta por card (foto principal + prévia do hover, ver
+    # Veiculo.fotos_extra_urls) numa garagem com dezenas de veículos.
+    veiculos_disponiveis = filtro.aplicar(garagem.veiculos.filter(disponivel=True).prefetch_related('fotos'))
 
     return render(request, 'storefront/frontpage.html', {
         'garagem': garagem,

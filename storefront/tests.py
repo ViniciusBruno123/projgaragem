@@ -128,6 +128,60 @@ class ProporcaoFotoPorTipoTests(TestCase):
         self.assertContains(self.client.get(url), 'foto-carro')
 
 
+class FotoClicavelEPreviaNoHoverTests(TestCase):
+    """A foto do card abre o detalhe do veículo, e traz as próximas fotos prontas
+    para a prévia no hover (só o texto da URL — a imagem só baixa se alguém passar
+    o mouse de verdade, ver static/js/vitrine.js)."""
+
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_hover', 'dono_hover@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Hover', slug='garagem-hover',
+            telefone_whatsapp='5517999999999', email_contato='dono_hover@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Moto Hover', marca='Honda',
+            modelo='CG', ano_fabricacao=2021, ano_modelo=2021, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='12000.00',
+        )
+        self.url = reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug})
+        self.url_detalhe = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+
+    def test_foto_e_um_link_para_o_detalhe(self):
+        FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='foto1.jpg'))
+        resp = self.client.get(self.url)
+        self.assertContains(resp, f'<a href="{self.url_detalhe}" class="photo-link"')
+
+    def test_com_varias_fotos_traz_as_extras_para_o_hover_sem_a_principal(self):
+        principal = FotoVeiculo.objects.create(
+            veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='principal.jpg'), principal=True,
+        )
+        extra1 = FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='extra1.jpg'))
+        extra2 = FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='extra2.jpg'))
+
+        resp = self.client.get(self.url)
+        html = resp.content.decode()
+        atributo = f'data-fotos-extra="{extra1.imagem.url}|{extra2.imagem.url}"'
+        self.assertIn(atributo, html)
+        self.assertNotIn(principal.imagem.url + '|', html)  # a principal não repete nas extras
+
+    def test_com_uma_foto_so_nao_ha_extra_para_o_hover(self):
+        FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='unica.jpg'))
+        resp = self.client.get(self.url)
+        self.assertContains(resp, 'data-fotos-extra=""')
+
+    def test_sem_foto_nenhuma_o_card_continua_levando_ao_detalhe(self):
+        resp = self.client.get(self.url)
+        self.assertContains(resp, f'<a href="{self.url_detalhe}" class="photo-link"')
+        self.assertContains(resp, 'sem foto')
+
+
 class IconesECarrosselTests(TestCase):
     def setUp(self):
         dono = User.objects.create_user('dono_icones', 'dono_icones@example.com', 'senha12345')

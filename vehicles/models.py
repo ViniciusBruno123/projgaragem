@@ -57,6 +57,17 @@ class Veiculo(models.Model):
             return fabricacao
         return f'{fabricacao}/{self.ano_modelo % 100:02d}'
 
+    @property
+    def fotos_extra_urls(self):
+        """URLs das próximas fotos (depois da principal), separadas por "|", para o card da
+        vitrine mostrar uma prévia ao passar o mouse (ver static/js/vitrine.js). Só o texto
+        da URL entra na página — a imagem em si só é baixada se o visitante passar o mouse,
+        então isso não pesa a página numa garagem com dezenas de veículos. Usa self.fotos.all()
+        (não um novo .filter()) para reaproveitar o prefetch_related da view, sem consulta extra.
+        """
+        fotos = list(self.fotos.all())[1:4]
+        return '|'.join(foto.imagem.url for foto in fotos)
+
     def clean(self):
         from django.core.exceptions import ValidationError
 

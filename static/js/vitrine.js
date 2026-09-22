@@ -78,4 +78,39 @@
     ajustar();
     celular.addEventListener('change', ajustar);
   });
+
+  // Prévia das próximas fotos ao passar o mouse no card. As URLs já vêm na página
+  // (texto, quase sem peso); a imagem em si só é baixada se alguém passar o mouse de
+  // verdade — numa vitrine com dezenas de veículos, ninguém paira sobre todos ao mesmo
+  // tempo, então isso não vira "carregar tudo de uma vez".
+  var INTERVALO_PREVIA_MS = 900;
+  document.querySelectorAll('.photo-link[data-fotos-extra]').forEach(function (link) {
+    if (reduzMovimento) return;
+    var urls = link.dataset.fotosExtra.split('|').filter(Boolean);
+    var img = link.querySelector('.photo');
+    if (!urls.length || !img) return;
+
+    var original = img.dataset.fotoPrincipal || img.src;
+    var indice = 0;
+    var timer = null;
+
+    function mostrar(i) {
+      indice = i;
+      img.src = indice === 0 ? original : urls[indice - 1];
+    }
+
+    function comecar(evento) {
+      if (evento.pointerType === 'touch') return; // celular não tem "passar o mouse"
+      timer = setInterval(function () { mostrar((indice + 1) % (urls.length + 1)); }, INTERVALO_PREVIA_MS);
+    }
+
+    function parar() {
+      clearInterval(timer);
+      mostrar(0);
+    }
+
+    link.addEventListener('pointerenter', comecar);
+    link.addEventListener('pointerleave', parar);
+    link.addEventListener('focusout', parar);
+  });
 })();
