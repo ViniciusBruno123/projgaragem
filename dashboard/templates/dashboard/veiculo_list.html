@@ -8,11 +8,18 @@
     <a href="{% url 'dashboard:veiculo_create' %}" class="btn btn-accent">Novo veículo</a>
 </div>
 
+<div class="table-responsive">
 <table class="table table-stack align-middle">
     <thead>
         <tr>
             <th>Foto</th>
+            <th>Tipo</th>
             <th>Título</th>
+            <th>Marca / Modelo</th>
+            <th>Ano</th>
+            <th>Km</th>
+            <th>Motor</th>
+            <th>Combustível</th>
             <th>Preço</th>
             <th>Destaque</th>
             <th>Disponível</th>
@@ -31,7 +38,17 @@
                         {% endif %}
                     {% endwith %}
                 </td>
+                <td data-label="Tipo">{{ veiculo.get_tipo_display }}</td>
                 <td data-label="Título">{{ veiculo.titulo }}</td>
+                <td data-label="Marca / Modelo">{{ veiculo.marca }} {{ veiculo.modelo }}</td>
+                <td class="num" data-label="Ano">{{ veiculo.ano_curto }}</td>
+                <td class="num" data-label="Km">{{ veiculo.quilometragem|floatformat:"0g" }}</td>
+                <td class="num" data-label="Motor">
+                    {% if veiculo.cilindrada %}{{ veiculo.cilindrada }} cc
+                    {% elif veiculo.potencia_motor %}{{ veiculo.potencia_motor }}
+                    {% else %}—{% endif %}
+                </td>
+                <td data-label="Combustível">{{ veiculo.get_combustivel_display }}</td>
                 <td class="num" data-label="Preço">R$ {{ veiculo.preco|floatformat:"2g" }}</td>
                 <td data-label="Destaque">{% if veiculo.destaque %}Sim{% else %}Não{% endif %}</td>
                 <td data-label="Disponível">{% if veiculo.disponivel %}Sim{% else %}Não{% endif %}</td>
@@ -41,8 +58,9 @@
                 </td>
             </tr>
         {% empty %}
-            <tr><td colspan="6" class="text-muted">Nenhum veículo cadastrado ainda.</td></tr>
+            <tr><td colspan="12" class="text-muted">Nenhum veículo cadastrado ainda.</td></tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}
