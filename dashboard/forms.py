@@ -18,6 +18,66 @@ class EstiloLoginForm(AuthenticationForm):
             field.widget.attrs.setdefault('class', 'form-control')
 
 
+ORDENACOES_VEICULO = [
+    ('-criado_em', 'Mais recentes'),
+    ('criado_em', 'Mais antigos'),
+    ('preco', 'Preço: menor primeiro'),
+    ('-preco', 'Preço: maior primeiro'),
+    ('-ano_modelo', 'Ano: mais novo primeiro'),
+    ('ano_modelo', 'Ano: mais antigo primeiro'),
+    ('quilometragem', 'Km: menor primeiro'),
+    ('-quilometragem', 'Km: maior primeiro'),
+    ('titulo', 'Título (A-Z)'),
+]
+
+SIM_NAO = [('', 'Todos'), ('sim', 'Sim'), ('nao', 'Não')]
+
+
+class VeiculoPainelFiltroForm(forms.Form):
+    """Filtro e ordenação da lista "Meus veículos". Ao contrário do filtro da
+    vitrine, considera todo o estoque do dono (inclusive indisponível), já que
+    aqui ele está gerenciando, não comprando."""
+
+    tipo = forms.ChoiceField(required=False, label="Tipo")
+    marca = forms.ChoiceField(required=False, label="Marca")
+    disponivel = forms.ChoiceField(required=False, label="Disponível", choices=SIM_NAO)
+    destaque = forms.ChoiceField(required=False, label="Destaque", choices=SIM_NAO)
+    ordenar = forms.ChoiceField(required=False, label="Ordenar por", choices=ORDENACOES_VEICULO)
+
+    def __init__(self, *args, garagem=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        veiculos = garagem.veiculos.all() if garagem else Veiculo.objects.none()
+
+        self.fields['tipo'].choices = [('', 'Todos')] + list(Veiculo.Tipo.choices)
+
+        marcas = veiculos.order_by('marca').values_list('marca', flat=True).distinct()
+        self.fields['marca'].choices = [('', 'Todas')] + [(m, m) for m in marcas]
+
+        for field in self.fields.values():
+            field.widget.attrs.setdefault('class', 'form-select form-select-sm')
+
+    def aplicar(self, queryset):
+        if not self.is_valid():
+            return queryset
+
+        dados = self.cleaned_data
+        if dados.get('tipo'):
+            queryset = queryset.filter(tipo=dados['tipo'])
+        if dados.get('marca'):
+            queryset = queryset.filter(marca=dados['marca'])
+        if dados.get('disponivel') == 'sim':
+            queryset = queryset.filter(disponivel=True)
+        elif dados.get('disponivel') == 'nao':
+            queryset = queryset.filter(disponivel=False)
+        if dados.get('destaque') == 'sim':
+            queryset = queryset.filter(destaque=True)
+        elif dados.get('destaque') == 'nao':
+            queryset = queryset.filter(destaque=False)
+
+        ordenar = dados.get('ordenar')
+        return queryset.order_by(*([ordenar] if ordenar else ['-destaque', '-criado_em']))
+
+
 class VeiculoForm(forms.ModelForm):
     class Meta:
         model = Veiculo

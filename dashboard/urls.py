@@ -44,6 +44,7 @@ urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     path('veiculos/', views.VeiculoListView.as_view(), name='veiculo_list'),
     path('veiculos/novo/', views.VeiculoCreateView.as_view(), name='veiculo_create'),
+    path('veiculos/<int:pk>/alternar/<str:campo>/', views.AlternarCampoVeiculoView.as_view(), name='veiculo_alternar'),
     path('veiculos/<int:pk>/editar/', views.VeiculoUpdateView.as_view(), name='veiculo_update'),
     path('veiculos/<int:pk>/excluir/', views.VeiculoDeleteView.as_view(), name='veiculo_delete'),
     path('propostas/', views.PropostaListView.as_view(), name='proposta_list'),

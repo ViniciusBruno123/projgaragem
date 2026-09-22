@@ -598,12 +598,28 @@ html {
     letter-spacing: 0.05em;
     color: var(--ink-soft);
   }
-  .table-stack td.acoes {
+  .table-stack td.acoes,
+  .table-stack td.campo-switch {
     justify-content: flex-end;
   }
   .table-stack td form {
     flex: 1;
   }
+  .table-stack td.campo-switch form {
+    flex: none;
+  }
+}
+
+/* --- Switch (destaque/disponível na lista de veículos): cor da garagem --- */
+.form-check-input:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+.form-check-input:focus {
+  border-color: var(--accent);
+  box-shadow: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 /* --- Celular: alvos de toque confortáveis e campos com 16 px (o iPhone dá zoom abaixo disso) --- */

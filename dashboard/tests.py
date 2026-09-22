@@ -311,3 +311,134 @@ class RecuperarSenhaTests(TestCase):
     def test_link_invalido_nao_permite_trocar_a_senha(self):
         resp = self.client.get(reverse('dashboard:senha_redefinir', kwargs={'uidb64': 'invalido', 'token': 'x'}))
         self.assertContains(resp, 'inválido')
+
+
+class AlternarCampoVeiculoViewTests(TestCase):
+    def setUp(self):
+        dono_a = User.objects.create_user('dono_a_alt', 'a_alt@example.com', 'senha12345')
+        self.garagem_a = Garagem.objects.create(
+            dono=dono_a, nome='Garagem A Alternar', slug='garagem-a-alternar',
+            telefone_whatsapp='5517999999999', email_contato='a_alt@example.com',
+        )
+        self.veiculo_a = Veiculo.objects.create(
+            garagem=self.garagem_a, tipo=Veiculo.Tipo.MOTO, titulo='Moto A', marca='Honda', modelo='CG',
+            ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='10000.00',
+        )
+
+        dono_b = User.objects.create_user('dono_b_alt', 'b_alt@example.com', 'senha12345')
+        garagem_b = Garagem.objects.create(
+            dono=dono_b, nome='Garagem B Alternar', slug='garagem-b-alternar',
+            telefone_whatsapp='5517999999998', email_contato='b_alt@example.com',
+        )
+        self.veiculo_b = Veiculo.objects.create(
+            garagem=garagem_b, tipo=Veiculo.Tipo.CARRO, titulo='Carro B', marca='Fiat', modelo='Uno',
+            ano_fabricacao=2018, ano_modelo=2018, quilometragem=50000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='20000.00',
+        )
+
+        self.client.login(username='dono_a_alt', password='senha12345')
+
+    def _url(self, veiculo, campo):
+        return reverse('dashboard:veiculo_alternar', kwargs={'pk': veiculo.pk, 'campo': campo})
+
+    def test_alterna_destaque_do_proprio_veiculo(self):
+        self.assertFalse(self.veiculo_a.destaque)
+        resp = self.client.post(self._url(self.veiculo_a, 'destaque'))
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.veiculo_a.refresh_from_db()
+        self.assertTrue(self.veiculo_a.destaque)
+
+        # Clicar de novo desliga.
+        self.client.post(self._url(self.veiculo_a, 'destaque'))
+        self.veiculo_a.refresh_from_db()
+        self.assertFalse(self.veiculo_a.destaque)
+
+    def test_alterna_disponivel_do_proprio_veiculo(self):
+        self.assertTrue(self.veiculo_a.disponivel)
+        self.client.post(self._url(self.veiculo_a, 'disponivel'))
+        self.veiculo_a.refresh_from_db()
+        self.assertFalse(self.veiculo_a.disponivel)
+
+    def test_nao_alterna_veiculo_de_outra_garagem(self):
+        resp = self.client.post(self._url(self.veiculo_b, 'destaque'))
+        self.assertEqual(resp.status_code, 404)
+        self.veiculo_b.refresh_from_db()
+        self.assertFalse(self.veiculo_b.destaque)
+
+    def test_campo_fora_da_lista_permitida_e_recusado(self):
+        resp = self.client.post(self._url(self.veiculo_a, 'preco'))
+        self.assertEqual(resp.status_code, 404)
+        self.veiculo_a.refresh_from_db()
+        self.assertEqual(str(self.veiculo_a.preco), '10000.00')
+
+    def test_mantem_filtro_da_lista_ao_voltar(self):
+        resp = self.client.post(self._url(self.veiculo_a, 'destaque'), {'proximo': '/painel/veiculos/?tipo=moto'})
+        self.assertRedirects(resp, '/painel/veiculos/?tipo=moto')
+
+    def test_url_externa_em_proximo_e_ignorada(self):
+        resp = self.client.post(self._url(self.veiculo_a, 'destaque'), {'proximo': 'https://outrosite.com/roubo'})
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+
+    def test_bloqueado_quando_garagem_esta_atrasada(self):
+        self.garagem_a.status = Garagem.Status.ATRASADO
+        self.garagem_a.save()
+        resp = self.client.post(self._url(self.veiculo_a, 'destaque'))
+        self.assertRedirects(resp, reverse('dashboard:assinatura'))
+        self.veiculo_a.refresh_from_db()
+        self.assertFalse(self.veiculo_a.destaque)
+
+
+class FiltroEOrdenacaoDeVeiculosTests(TestCase):
+    def setUp(self):
+        dono = User.objects.create_user('dono_filtro', 'dono_filtro@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Filtro', slug='garagem-filtro',
+            telefone_whatsapp='5517999999999', email_contato='dono_filtro@example.com',
+        )
+        self.moto_barata = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Moto Barata', marca='Honda', modelo='CG',
+            ano_fabricacao=2015, ano_modelo=2015, quilometragem=60000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='8000.00', disponivel=True,
+        )
+        self.carro_caro = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.CARRO, titulo='Carro Caro', marca='Toyota', modelo='Corolla',
+            ano_fabricacao=2023, ano_modelo=2023, quilometragem=5000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='120000.00', disponivel=False,
+        )
+        self.client.login(username='dono_filtro', password='senha12345')
+        self.url = reverse('dashboard:veiculo_list')
+
+    def test_sem_filtro_mostra_todos_do_mais_recente_para_o_mais_antigo(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(list(resp.context['veiculos']), [self.carro_caro, self.moto_barata])
+
+    def test_filtro_por_tipo(self):
+        resp = self.client.get(self.url, {'tipo': 'moto'})
+        self.assertEqual(list(resp.context['veiculos']), [self.moto_barata])
+
+    def test_filtro_por_disponibilidade(self):
+        resp = self.client.get(self.url, {'disponivel': 'nao'})
+        self.assertEqual(list(resp.context['veiculos']), [self.carro_caro])
+
+    def test_ordena_por_preco_crescente(self):
+        resp = self.client.get(self.url, {'ordenar': 'preco'})
+        self.assertEqual(list(resp.context['veiculos']), [self.moto_barata, self.carro_caro])
+
+    def test_ordena_por_preco_decrescente(self):
+        resp = self.client.get(self.url, {'ordenar': '-preco'})
+        self.assertEqual(list(resp.context['veiculos']), [self.carro_caro, self.moto_barata])
+
+    def test_filtro_so_considera_veiculos_da_propria_garagem(self):
+        outro_dono = User.objects.create_user('dono_filtro_b', 'b@example.com', 'senha12345')
+        outra_garagem = Garagem.objects.create(
+            dono=outro_dono, nome='Outra Garagem', slug='outra-garagem-filtro',
+            telefone_whatsapp='5517999999998', email_contato='b@example.com',
+        )
+        Veiculo.objects.create(
+            garagem=outra_garagem, tipo=Veiculo.Tipo.MOTO, titulo='Moto de Outra Garagem', marca='Yamaha',
+            modelo='Factor', ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='9000.00',
+        )
+        resp = self.client.get(self.url)
+        self.assertEqual(list(resp.context['veiculos']), [self.carro_caro, self.moto_barata])

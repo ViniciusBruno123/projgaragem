@@ -8,6 +8,24 @@
     <a href="{% url 'dashboard:veiculo_create' %}" class="btn btn-accent">Novo veículo</a>
 </div>
 
+<details class="filtro-mobile mb-3" open>
+    <summary class="btn btn-outline-ink w-100">Filtrar e ordenar{% if filtro_ativo %} (filtros ativos){% endif %}</summary>
+    <form method="get" class="filter-bar row row-cols-1 row-cols-md-3 row-cols-lg-6 g-2 align-items-end">
+        {% for field in filtro %}
+            <div class="col">
+                <label class="form-label mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <div class="col">
+            <button type="submit" class="btn btn-accent btn-sm w-100">Aplicar</button>
+        </div>
+        <div class="col">
+            <a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-outline-ink btn-sm w-100">Limpar</a>
+        </div>
+    </form>
+</details>
+
 <div class="table-responsive">
 <table class="table table-stack align-middle">
     <thead>
@@ -50,8 +68,24 @@
                 </td>
                 <td data-label="Combustível">{{ veiculo.get_combustivel_display }}</td>
                 <td class="num" data-label="Preço">R$ {{ veiculo.preco|floatformat:"2g" }}</td>
-                <td data-label="Destaque">{% if veiculo.destaque %}Sim{% else %}Não{% endif %}</td>
-                <td data-label="Disponível">{% if veiculo.disponivel %}Sim{% else %}Não{% endif %}</td>
+                <td data-label="Destaque" class="campo-switch">
+                    <form method="post" action="{% url 'dashboard:veiculo_alternar' pk=veiculo.pk campo='destaque' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" role="switch" onchange="this.form.submit()" {% if veiculo.destaque %}checked{% endif %} aria-label="Destacar {{ veiculo.titulo }} na vitrine">
+                        </div>
+                    </form>
+                </td>
+                <td data-label="Disponível" class="campo-switch">
+                    <form method="post" action="{% url 'dashboard:veiculo_alternar' pk=veiculo.pk campo='disponivel' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="proximo" value="{{ request.get_full_path }}">
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" role="switch" onchange="this.form.submit()" {% if veiculo.disponivel %}checked{% endif %} aria-label="{{ veiculo.titulo }} disponível na vitrine">
+                        </div>
+                    </form>
+                </td>
                 <td class="text-end acoes">
                     <a href="{% url 'dashboard:veiculo_update' pk=veiculo.pk %}" class="btn btn-sm btn-outline-ink">Editar</a>
                     <a href="{% url 'dashboard:veiculo_delete' pk=veiculo.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>

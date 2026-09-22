@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
@@ -9,7 +11,7 @@ from leads.models import Proposta
 from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMixin
 from vehicles.models import Veiculo
 
-from .forms import FotoVeiculoFormSet, GaragemForm, VeiculoForm
+from .forms import FotoVeiculoFormSet, GaragemForm, VeiculoForm, VeiculoPainelFiltroForm
 from .security import bloqueado, limpar_falhas, registrar_falha
 
 
@@ -71,7 +73,37 @@ class VeiculoListView(GaragemRequiredMixin, ListView):
     context_object_name = 'veiculos'
 
     def get_queryset(self):
-        return self.garagem.veiculos.all().prefetch_related('fotos')
+        self.filtro = VeiculoPainelFiltroForm(self.request.GET or None, garagem=self.garagem)
+        queryset = self.garagem.veiculos.all().prefetch_related('fotos')
+        return self.filtro.aplicar(queryset)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['filtro'] = self.filtro
+        ctx['filtro_ativo'] = any(self.request.GET.values())
+        return ctx
+
+
+class AlternarCampoVeiculoView(GaragemRequiredMixin, BloqueiaEdicaoSeInadimplenteMixin, View):
+    """Liga/desliga Destaque ou Disponível direto da lista, sem abrir o formulário de edição."""
+
+    CAMPOS_PERMITIDOS = {'destaque', 'disponivel'}
+
+    def post(self, request, pk, campo):
+        if campo not in self.CAMPOS_PERMITIDOS:
+            raise Http404("Campo não pode ser alternado por aqui.")
+        veiculo = get_object_or_404(self.garagem.veiculos, pk=pk)
+        setattr(veiculo, campo, not getattr(veiculo, campo))
+        veiculo.save(update_fields=[campo])
+        return redirect(self._url_de_volta(request))
+
+    def _url_de_volta(self, request):
+        """Mantém os filtros/ordenação da lista depois de alternar (não confia cegamente
+        no valor enviado, pra não virar redirecionamento aberto)."""
+        proximo = request.POST.get('proximo', '')
+        if proximo and url_has_allowed_host_and_scheme(proximo, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+            return proximo
+        return reverse_lazy('dashboard:veiculo_list')
 
 
 class VeiculoFormsetMixin:
