@@ -68,3 +68,16 @@ SQLite (desenvolvimento).
 
 O simulador usa a taxa que a garagem informar em "Dados da garagem"; em branco, usa essa média de mercado. Se o
 Banco Central estiver fora do ar, o comando falha com erro e a última taxa salva continua valendo.
+
+## Segurança do painel
+
+- **Limite de tentativas de login**: 5 senhas erradas seguidas para o mesmo usuário, ou 15 tentativas vindas do
+  mesmo IP (qualquer usuário), bloqueiam novos logins por 15 minutos (`dashboard/security.py`). Funciona com
+  vários processos gunicorn porque guarda as tentativas no banco, não em memória.
+- **Recuperação de senha**: em `/painel/senha/recuperar/`, o dono recebe por e-mail um link para criar uma nova
+  senha (fluxo padrão do Django). Só funciona se o **e-mail do usuário** (não o e-mail de contato da garagem)
+  estiver preenchido — confira isso ao cadastrar o dono pelo `/admin/`. Em desenvolvimento o e-mail cai no
+  console (`EMAIL_BACKEND` do modo `DEBUG`); em produção depende do SMTP configurado.
+- **Anti-spam** no formulário público de proposta/contato: um campo invisível que só um robô preenche (honeypot)
+  e uma checagem de que passaram pelo menos 3 segundos entre a página carregar e o envio (`leads/forms.py`).
+  Não precisa de reCAPTCHA nem de chave externa.

@@ -1,0 +1,9 @@
+Olá,
+
+Recebemos um pedido para redefinir a senha da sua conta em {{ site_name }} ({{ domain }}).
+
+Para criar uma nova senha, acesse o link abaixo nas próximas 24 horas:
+
+{{ protocol }}://{{ domain }}{% url 'dashboard:senha_redefinir' uidb64=uid token=token %}
+
+Se você não pediu essa alteração, ignore este e-mail — sua senha continua a mesma.

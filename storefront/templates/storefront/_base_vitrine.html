@@ -8,9 +8,13 @@
 
 {% block content %}
 {% include "storefront/_icones.html" %}
-<header class="site-header">
+<header class="site-header{% if garagem.capa %} site-header--capa{% endif %}"
+    {% if garagem.capa %}style="background-image: linear-gradient(180deg, rgba(26,26,24,.4), rgba(26,26,24,.6)), url('{{ garagem.capa.url }}');"{% endif %}>
     <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <a class="brand" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">{{ garagem.nome }}</a>
+        <a class="brand" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">
+            {% if garagem.logo %}<img src="{{ garagem.logo.url }}" alt="" class="brand-logo">{% endif %}
+            <span>{{ garagem.nome }}</span>
+        </a>
         <div class="d-flex align-items-center gap-3">
             <span class="meta d-none d-sm-inline">{{ garagem.cidade }}</span>
             <a href="{% url 'storefront:contato' garagem_slug=garagem.slug %}" class="btn btn-outline-ink btn-sm">Fale conosco</a>

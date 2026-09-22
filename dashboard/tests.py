@@ -3,6 +3,7 @@ import tempfile
 from datetime import date
 
 from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from PIL import Image
@@ -12,6 +13,9 @@ from leads.models import Proposta
 from tenants.models import Garagem
 from vehicles.models import FotoVeiculo, Veiculo
 from vehicles.tests import gerar_foto
+
+from .models import TentativaLoginFalha
+from .security import LIMITE_POR_USUARIO
 
 
 class DadosGaragemViewTests(TestCase):
@@ -199,3 +203,111 @@ class TaxaDeJurosNoPainelTests(TestCase):
         TaxaReferencia.objects.create(fonte='bcb-sgs-25471', referencia=date(2026, 7, 1), taxa_mensal='1.98')
         resp = self.client.get(self.url)
         self.assertContains(resp, '1,98% ao mês (ref. 07/2026)')
+
+
+class LogoECapaDaGaragemTests(TestCase):
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_logo', 'dono_logo@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Logo', slug='garagem-logo',
+            telefone_whatsapp='5517999999999', email_contato='dono_logo@example.com',
+        )
+        self.client.login(username='dono_logo', password='senha12345')
+        self.url = reverse('dashboard:dados_garagem')
+
+    def test_dono_envia_logo_e_capa_que_sao_reduzidas(self):
+        resp = self.client.post(self.url, {
+            'endereco': '', 'horario_funcionamento': '', 'instagram_url': '', 'facebook_url': '',
+            'cor_destaque': '#0F5C4D',
+            'logo': gerar_foto((2000, 2000), nome='logo.png', formato='PNG', modo='RGBA'),
+            'capa': gerar_foto((3000, 900), nome='capa.jpg'),
+        })
+        self.assertRedirects(resp, self.url)
+
+        self.garagem.refresh_from_db()
+        self.assertTrue(self.garagem.logo.name.endswith('.jpg'))  # sempre reencodada em JPEG
+        self.assertTrue(self.garagem.capa.name.endswith('.jpg'))
+        with Image.open(self.garagem.capa.path) as imagem:
+            self.assertEqual(max(imagem.size), 1280)
+
+    def test_vitrine_publica_mostra_logo_e_capa_quando_cadastrados(self):
+        self.garagem.logo = gerar_foto((400, 400), nome='logo.jpg')
+        self.garagem.capa = gerar_foto((1600, 500), nome='capa.jpg')
+        self.garagem.save()
+
+        resp = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
+        self.assertContains(resp, 'brand-logo')
+        self.assertContains(resp, 'site-header--capa')
+
+
+class LimiteDeTentativasDeLoginTests(TestCase):
+    def setUp(self):
+        User.objects.create_user('dono_seguro', 'dono_seguro@example.com', 'senha-correta-123')
+        self.url = reverse('dashboard:login')
+
+    def test_login_com_senha_certa_funciona(self):
+        resp = self.client.post(self.url, {'username': 'dono_seguro', 'password': 'senha-correta-123'})
+        self.assertEqual(resp.status_code, 302)
+
+    def test_bloqueia_apos_varias_senhas_erradas_para_o_mesmo_usuario(self):
+        for _ in range(LIMITE_POR_USUARIO):
+            resp = self.client.post(self.url, {'username': 'dono_seguro', 'password': 'errada'})
+            self.assertEqual(resp.status_code, 200)
+
+        # A senha certa não passa mais: o usuário está bloqueado, não só a senha errada.
+        resp = self.client.post(self.url, {'username': 'dono_seguro', 'password': 'senha-correta-123'})
+        self.assertContains(resp, 'Muitas tentativas de login')
+
+    def test_login_com_sucesso_limpa_as_falhas_anteriores(self):
+        for _ in range(LIMITE_POR_USUARIO - 1):
+            self.client.post(self.url, {'username': 'dono_seguro', 'password': 'errada'})
+
+        resp = self.client.post(self.url, {'username': 'dono_seguro', 'password': 'senha-correta-123'})
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(TentativaLoginFalha.objects.filter(usuario='dono_seguro').count(), 0)
+
+
+class RecuperarSenhaTests(TestCase):
+    def setUp(self):
+        self.dono = User.objects.create_user('dono_recupera', 'dono_recupera@example.com', 'senha-antiga-123')
+        Garagem.objects.create(
+            dono=self.dono, nome='Garagem Recupera', slug='garagem-recupera',
+            telefone_whatsapp='5517999999999', email_contato='dono_recupera@example.com',
+        )
+
+    def test_pedido_com_email_cadastrado_envia_link_por_email(self):
+        resp = self.client.post(reverse('dashboard:senha_recuperar'), {'email': 'dono_recupera@example.com'})
+        self.assertRedirects(resp, reverse('dashboard:senha_recuperar_enviado'))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('senha/redefinir/', mail.outbox[0].body)
+
+    def test_pedido_com_email_desconhecido_nao_revela_isso_e_nao_envia_email(self):
+        resp = self.client.post(reverse('dashboard:senha_recuperar'), {'email': 'ninguem@example.com'})
+        self.assertRedirects(resp, reverse('dashboard:senha_recuperar_enviado'))
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_link_do_email_permite_trocar_a_senha_e_logar_com_a_nova(self):
+        self.client.post(reverse('dashboard:senha_recuperar'), {'email': 'dono_recupera@example.com'})
+        link = [linha for linha in mail.outbox[0].body.splitlines() if 'senha/redefinir/' in linha][0].strip()
+        caminho = '/' + link.split('/', 3)[-1]  # tira o esquema e o domínio, mantém só o path
+
+        # Primeiro acesso: a view troca o token da URL por um marcador de sessão e redireciona.
+        resp = self.client.get(caminho, follow=True)
+        form_url = resp.request['PATH_INFO']
+
+        resp = self.client.post(form_url, {'new_password1': 'senha-nova-456', 'new_password2': 'senha-nova-456'})
+        self.assertRedirects(resp, reverse('dashboard:senha_redefinir_concluido'))
+
+        self.client.logout()
+        resp = self.client.post(
+            reverse('dashboard:login'), {'username': 'dono_recupera', 'password': 'senha-nova-456'}
+        )
+        self.assertEqual(resp.status_code, 302)
+
+    def test_link_invalido_nao_permite_trocar_a_senha(self):
+        resp = self.client.get(reverse('dashboard:senha_redefinir', kwargs={'uidb64': 'invalido', 'token': 'x'}))
+        self.assertContains(resp, 'inválido')

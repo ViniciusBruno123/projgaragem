@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Verifique seu e-mail{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 480px; margin-top: 5rem;">
+    <h1 class="mb-3">Verifique seu e-mail</h1>
+    <p>
+        Se o e-mail informado estiver cadastrado, você vai receber uma mensagem com o link para criar uma
+        nova senha em alguns minutos.
+    </p>
+    <p class="text-muted small">
+        Não chegou? Confira a caixa de spam ou tente novamente com o e-mail cadastrado no seu usuário de dono
+        da garagem — não é o e-mail de contato da vitrine.
+    </p>
+    <p class="mt-3"><a href="{% url 'dashboard:login' %}">Voltar para o login</a></p>
+</div>
+{% endblock %}

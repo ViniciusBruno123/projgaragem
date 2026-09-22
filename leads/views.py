@@ -1,3 +1,5 @@
+import time
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
@@ -38,7 +40,7 @@ def enviar_proposta(request, garagem_slug, veiculo_slug=None):
 
             return redirect(gerar_link_whatsapp(garagem, veiculo, proposta.nome))
     else:
-        form = PropostaForm()
+        form = PropostaForm(initial={'iniciado_em': time.time()})
 
     return render(request, 'leads/proposta_form.html', {
         'garagem': garagem,

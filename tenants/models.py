@@ -31,6 +31,14 @@ class Garagem(models.Model):
     )
     instagram_url = models.URLField(blank=True)
     facebook_url = models.URLField(blank=True)
+    logo = models.ImageField(
+        'Logo', upload_to='garagens/logos/', null=True, blank=True,
+        help_text="Aparece ao lado do nome da garagem, na vitrine e no painel.",
+    )
+    capa = models.ImageField(
+        'Faixa superior (capa)', upload_to='garagens/capas/', null=True, blank=True,
+        help_text="Imagem larga que aparece atrás do cabeçalho da sua vitrine. Opcional.",
+    )
     cor_destaque = models.CharField(
         max_length=7, default='#0F5C4D',
         help_text="Cor de destaque da sua vitrine, em hexadecimal (ex: #0F5C4D).",

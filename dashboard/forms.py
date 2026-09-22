@@ -6,6 +6,7 @@ from django.utils.formats import localize
 from financing.services import taxa_media_de_mercado
 
 from tenants.models import Garagem
+from vehicles.forms import ImagemOtimizadaMixin
 from vehicles.forms import FotoVeiculoForm as BaseFotoVeiculoForm
 from vehicles.models import FotoVeiculo, Veiculo
 
@@ -57,12 +58,12 @@ FotoVeiculoFormSet = inlineformset_factory(
 )
 
 
-class GaragemForm(forms.ModelForm):
+class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
     class Meta:
         model = Garagem
         fields = [
-            'endereco', 'horario_funcionamento', 'instagram_url', 'facebook_url', 'cor_destaque',
-            'taxa_juros_mensal_padrao',
+            'logo', 'capa', 'endereco', 'horario_funcionamento', 'instagram_url', 'facebook_url',
+            'cor_destaque', 'taxa_juros_mensal_padrao',
         ]
         labels = {
             'endereco': 'Endereço',
@@ -73,7 +74,7 @@ class GaragemForm(forms.ModelForm):
         }
         help_texts = {
             'horario_funcionamento': 'Aparece no rodapé da vitrine.',
-            'cor_destaque': 'Cor dos botões e detalhes da sua vitrine.',
+            'cor_destaque': 'Cor dos botões e detalhes da sua vitrine e do seu painel.',
         }
         widgets = {
             'horario_funcionamento': forms.TextInput(attrs={'placeholder': 'Ex: Seg a Sex, 8h às 18h'}),
@@ -85,6 +86,8 @@ class GaragemForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.setdefault('class', 'form-control')
+        self.fields['logo'].widget.attrs['accept'] = 'image/*'
+        self.fields['capa'].widget.attrs['accept'] = 'image/*'
 
         media = taxa_media_de_mercado()
         if media:
@@ -92,3 +95,9 @@ class GaragemForm(forms.ModelForm):
                 "Opcional. Em branco, o simulador usa a média de mercado do Banco Central: "
                 f"{localize(media.taxa_mensal)}% ao mês (ref. {media.referencia:%m/%Y})."
             )
+
+    def clean_logo(self):
+        return self._limpar_imagem_otimizada('logo')
+
+    def clean_capa(self):
+        return self._limpar_imagem_otimizada('capa')

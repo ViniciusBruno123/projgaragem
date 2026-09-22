@@ -105,6 +105,37 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.brand-logo {
+  height: 2.25rem;
+  width: auto;
+  max-width: 8rem;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 0.6rem;
+  background: var(--paper);
+  border-radius: 2px;
+  padding: 2px;
+}
+/* Cabeçalho com capa própria da garagem: texto sobre a foto, sempre claro. */
+.site-header--capa {
+  background-size: cover;
+  background-position: center;
+  padding: 2.75rem 0;
+  border-bottom: 3px solid var(--accent);
+}
+.site-header--capa .brand,
+.site-header--capa .meta {
+  color: var(--paper);
+}
+.site-header--capa .btn-outline-ink {
+  color: var(--paper);
+  border-color: var(--paper);
+}
+.site-header--capa .btn-outline-ink:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
 
 .site-footer {
   border-top: 1px solid var(--line);
@@ -318,11 +349,12 @@ a:hover {
   font-size: 0.85rem;
 }
 
-/* --- Painel interno (dono da garagem): mesma base, sem cor de tenant --- */
+/* --- Painel interno (dono da garagem): base escura + cor de destaque escolhida por ele --- */
 .panel-header {
   background: var(--ink);
   color: var(--paper);
   padding: 0.9rem 0;
+  border-bottom: 3px solid var(--accent);
 }
 .panel-header .brand {
   color: var(--paper);
@@ -339,8 +371,14 @@ a:hover {
 }
 .panel-header a.btn:hover,
 .panel-header form .btn:hover {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.panel-header a.btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .table > :not(caption) > * > * {
@@ -348,6 +386,55 @@ a:hover {
 }
 .table .num {
   font-family: var(--font-mono);
+}
+
+/* --- Miniaturas de foto no painel: lista de veículos e formulário de fotos --- */
+.table-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+.table-thumb-empty {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line);
+  border-radius: 2px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-align: center;
+}
+.foto-form-atual {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.foto-form-atual img {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.thumb-atual {
+  display: block;
+  margin-bottom: 0.4rem;
+  max-height: 4rem;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper-2);
+}
+.thumb-atual--capa {
+  max-height: 3.5rem;
+  max-width: 100%;
 }
 
 /* --- Textos longos (termos e política de privacidade) --- */

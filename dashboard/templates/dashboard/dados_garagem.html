@@ -6,11 +6,16 @@
 <h1>Dados da garagem</h1>
 <p class="text-muted">Essas informações aparecem na sua vitrine pública. A taxa de juros é a usada no simulador de financiamento.</p>
 
-<form method="post" style="max-width: 500px;">
+<form method="post" enctype="multipart/form-data" style="max-width: 500px;">
     {% csrf_token %}
     {% for field in form %}
         <div class="mb-3">
             <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.name == 'logo' and garagem.logo %}
+                <img src="{{ garagem.logo.url }}" alt="Logo atual" class="thumb-atual">
+            {% elif field.name == 'capa' and garagem.capa %}
+                <img src="{{ garagem.capa.url }}" alt="Capa atual" class="thumb-atual thumb-atual--capa">
+            {% endif %}
             {{ field }}
             {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
             {% if field.errors %}

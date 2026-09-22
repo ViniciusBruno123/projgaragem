@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Criar nova senha{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 400px; margin-top: 5rem;">
+    <h1 class="mb-3">Criar nova senha</h1>
+    {% if validlink %}
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                    {% if field.errors %}
+                        <div class="text-danger small">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-accent w-100">Salvar nova senha</button>
+        </form>
+    {% else %}
+        <p>Este link de recuperação é inválido ou já foi usado.</p>
+        <a href="{% url 'dashboard:senha_recuperar' %}" class="btn btn-accent">Solicitar novo link</a>
+    {% endif %}
+</div>
+{% endblock %}

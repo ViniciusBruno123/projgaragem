@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import views as auth_views
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -9,6 +10,27 @@ from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMix
 from vehicles.models import Veiculo
 
 from .forms import FotoVeiculoFormSet, GaragemForm, VeiculoForm
+from .security import bloqueado, limpar_falhas, registrar_falha
+
+
+class PainelLoginView(auth_views.LoginView):
+    """Login do painel com limite de tentativas (ver dashboard/security.py)."""
+
+    def post(self, request, *args, **kwargs):
+        usuario = request.POST.get('username', '').strip()
+        if bloqueado(request, usuario):
+            form = self.get_form()
+            form.add_error(None, "Muitas tentativas de login. Aguarde alguns minutos e tente novamente.")
+            return self.render_to_response(self.get_context_data(form=form))
+        return super().post(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        registrar_falha(self.request, self.request.POST.get('username', '').strip())
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        limpar_falhas(form.get_user().get_username())
+        return super().form_valid(form)
 
 
 class DadosGaragemView(GaragemRequiredMixin, UpdateView):
@@ -49,7 +71,7 @@ class VeiculoListView(GaragemRequiredMixin, ListView):
     context_object_name = 'veiculos'
 
     def get_queryset(self):
-        return self.garagem.veiculos.all()
+        return self.garagem.veiculos.all().prefetch_related('fotos')
 
 
 class VeiculoFormsetMixin:

@@ -22,6 +22,12 @@
     {{ formset.management_form }}
     {% for foto_form in formset %}
         <div class="border rounded p-3 mb-2">
+            {% if foto_form.instance.pk and foto_form.instance.imagem %}
+                <div class="foto-form-atual">
+                    <img src="{{ foto_form.instance.imagem.url }}" alt="Foto atual">
+                    <span class="text-muted small">Foto atual — envie outra abaixo só se quiser trocar.</span>
+                </div>
+            {% endif %}
             {% for field in foto_form.visible_fields %}
                 <div class="mb-2">
                     <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>

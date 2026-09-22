@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Recuperar senha{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 400px; margin-top: 5rem;">
+    <h1 class="mb-3">Recuperar senha</h1>
+    <p class="text-muted mb-4">
+        Informe o e-mail cadastrado como dono da garagem. Se ele estiver certo, enviaremos um link para
+        você criar uma nova senha.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-accent w-100">Enviar link</button>
+    </form>
+    <p class="text-muted small mt-3"><a href="{% url 'dashboard:login' %}">Voltar para o login</a></p>
+</div>
+{% endblock %}
