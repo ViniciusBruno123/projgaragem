@@ -1,9 +1,13 @@
+import shutil
+import tempfile
+
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from tenants.models import Garagem
-from vehicles.models import Veiculo
+from vehicles.models import FotoVeiculo, Veiculo
+from vehicles.tests import gerar_foto
 
 
 class FiltroVeiculosFrontpageTests(TestCase):
@@ -181,3 +185,57 @@ class IconesECarrosselTests(TestCase):
         self.assertContains(resp, '49.800 km')
         self.assertContains(resp, '125 cc')
         self.assertContains(resp, '#i-odometro')
+
+
+class OpenGraphTests(TestCase):
+    """O link da vitrine é colado no WhatsApp — o preview (título, texto e foto) é parte do produto."""
+
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_og', 'dono_og@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Vitrine OG', slug='garagem-vitrine-og',
+            telefone_whatsapp='5517999999999', email_contato='dono_og@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Honda CG 160 OG',
+            marca='Honda', modelo='CG 160', ano_fabricacao=2022, ano_modelo=2022,
+            quilometragem=5000, combustivel=Veiculo.Combustivel.FLEX, cilindrada=160, preco='15000.00',
+        )
+
+    def test_frontpage_sem_logo_nem_capa_nao_mostra_og_image(self):
+        resp = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
+        self.assertContains(resp, f'property="og:title" content="{self.garagem.nome}"')
+        self.assertContains(resp, 'property="og:url"')
+        self.assertNotContains(resp, 'property="og:image"')
+
+    def test_frontpage_com_capa_usa_capa_como_og_image_absoluta(self):
+        self.garagem.capa = gerar_foto((1600, 500), nome='capa.jpg')
+        self.garagem.save()
+
+        resp = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
+        self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/capa')
+
+    def test_pagina_do_veiculo_usa_titulo_e_foto_do_veiculo(self):
+        FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='moto.jpg'))
+
+        url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+        resp = self.client.get(url)
+        self.assertContains(resp, f'property="og:title" content="{self.veiculo.titulo} — {self.garagem.nome}"')
+        self.assertContains(resp, 'property="og:image" content="http://testserver/media/veiculos/')
+        self.assertContains(resp, 'R$ 15.000,00')
+
+    def test_pagina_do_veiculo_sem_foto_usa_capa_da_garagem(self):
+        self.garagem.capa = gerar_foto((1600, 500), nome='capa.jpg')
+        self.garagem.save()
+
+        url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+        resp = self.client.get(url)
+        self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/capa')

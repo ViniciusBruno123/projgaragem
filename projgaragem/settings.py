@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 
     'tenants',
     'vehicles',
@@ -252,3 +253,24 @@ LOGGING = {
         'django.security.DisallowedHost': {'handlers': ['nulo'], 'propagate': False},
     },
 }
+
+
+# Sentry: captura erro 500 (com stack trace, usuário e request) e log de nível ERROR.
+# Opcional — em branco, não faz nada (nenhuma chamada de rede, nem em produção).
+# Crie um projeto Django gratuito em sentry.io e cole a DSN dele no .env como SENTRY_DSN.
+SENTRY_DSN = env('SENTRY_DSN', default='')
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(),
+            LoggingIntegration(level=None, event_level='ERROR'),
+        ],
+        environment=env('SENTRY_ENVIRONMENT', default='development' if DEBUG else 'production'),
+        traces_sample_rate=env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.0),
+        send_default_pii=False,  # dados de veículo/proposta são de terceiros (LGPD); não envia dados pessoais
+    )

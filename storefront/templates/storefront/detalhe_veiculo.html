@@ -1,7 +1,22 @@
 {% extends "storefront/_base_vitrine.html" %}
+{% load vitrine_extras %}
 
 {% block title %}{{ veiculo.titulo }} - {{ garagem.nome }}{% endblock %}
 {% block meta_description %}{{ veiculo.titulo }} - {{ veiculo.ano_modelo }}, {{ veiculo.quilometragem|floatformat:"0g" }} km, por R$ {{ veiculo.preco|floatformat:"2g" }} na {{ garagem.nome }}.{% endblock %}
+
+{% block og_title %}{{ veiculo.titulo }} — {{ garagem.nome }}{% endblock %}
+{% block og_description %}{{ veiculo.ano_curto }} · {{ veiculo.quilometragem|floatformat:"0g" }} km · R$ {{ veiculo.preco|floatformat:"2g" }}{% if veiculo.aceita_troca %} · Aceita troca{% endif %}{% endblock %}
+{% block og_image %}
+    {% with veiculo.fotos.first as foto %}
+        {% if foto %}
+            <meta property="og:image" content="{% absolute_url foto.imagem.url %}">
+        {% elif garagem.capa %}
+            <meta property="og:image" content="{% absolute_url garagem.capa.url %}">
+        {% elif garagem.logo %}
+            <meta property="og:image" content="{% absolute_url garagem.logo.url %}">
+        {% endif %}
+    {% endwith %}
+{% endblock %}
 
 {% block vitrine_content %}
 <div class="container py-4">

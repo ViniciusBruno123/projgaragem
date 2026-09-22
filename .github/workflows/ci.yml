@@ -1,0 +1,36 @@
+name: Testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Preparar ambiente
+        # Mesmo .env de desenvolvimento do README (SQLite, sem segredo nenhum) — não precisa
+        # de banco nem SMTP de verdade, só o suficiente para o settings.py não recusar iniciar.
+        run: cp .env.example .env
+
+      - name: Checar configuração do Django
+        run: python manage.py check
+
+      - name: Rodar migrações
+        run: python manage.py migrate
+
+      - name: Rodar testes
+        run: python manage.py test

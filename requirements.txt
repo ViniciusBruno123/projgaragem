@@ -5,3 +5,4 @@ mercadopago==3.5.0
 psycopg[binary]==3.3.6
 gunicorn==26.2.0
 whitenoise==6.12.0
+sentry-sdk==2.70.0

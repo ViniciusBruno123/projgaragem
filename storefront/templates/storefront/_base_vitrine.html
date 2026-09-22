@@ -1,9 +1,25 @@
 {% extends "base.html" %}
+{% load vitrine_extras %}
 
 {% block extra_head %}
 {% if garagem.cor_destaque %}
     <style>:root { --accent: {{ garagem.cor_destaque }}; }</style>
 {% endif %}
+{# Open Graph: o link da vitrine é colado no WhatsApp, então esse preview faz parte do produto. #}
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="{{ garagem.nome }}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{% block og_title %}{{ garagem.nome }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}Veja os veículos disponíveis na {{ garagem.nome }}, em {{ garagem.cidade }}.{% endblock %}">
+{% block og_image %}
+    {% if garagem.capa %}
+        <meta property="og:image" content="{% absolute_url garagem.capa.url %}">
+    {% elif garagem.logo %}
+        <meta property="og:image" content="{% absolute_url garagem.logo.url %}">
+    {% endif %}
+{% endblock %}
+<meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 
 {% block content %}
