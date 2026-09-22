@@ -8,7 +8,7 @@ from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
 from leads.models import Proposta
-from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMixin
+from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMixin, RespeitaLimiteDoPlanoMixin
 from vehicles.models import Veiculo
 
 from .forms import FotoVeiculoFormSet, GaragemForm, VeiculoForm, VeiculoPainelFiltroForm
@@ -65,6 +65,7 @@ class HomeView(GaragemRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['garagem'] = self.garagem
         ctx['total_veiculos'] = self.garagem.veiculos.count()
+        ctx['limite_veiculos'] = self.garagem.limite_veiculos
         return ctx
 
 
@@ -81,6 +82,9 @@ class VeiculoListView(GaragemRequiredMixin, ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['filtro'] = self.filtro
         ctx['filtro_ativo'] = any(self.request.GET.values())
+        ctx['total_veiculos'] = self.garagem.veiculos.count()
+        ctx['limite_veiculos'] = self.garagem.limite_veiculos
+        ctx['no_limite'] = ctx['total_veiculos'] >= ctx['limite_veiculos']
         return ctx
 
 
@@ -132,7 +136,10 @@ class VeiculoFormsetMixin:
         return redirect(self.get_success_url())
 
 
-class VeiculoCreateView(GaragemRequiredMixin, BloqueiaEdicaoSeInadimplenteMixin, VeiculoFormsetMixin, CreateView):
+class VeiculoCreateView(
+    GaragemRequiredMixin, BloqueiaEdicaoSeInadimplenteMixin, RespeitaLimiteDoPlanoMixin,
+    VeiculoFormsetMixin, CreateView,
+):
     model = Veiculo
     form_class = VeiculoForm
     template_name = 'dashboard/veiculo_form.html'

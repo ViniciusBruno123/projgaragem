@@ -3,9 +3,19 @@
 {% block title %}Meus veículos{% endblock %}
 
 {% block painel_content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Meus veículos</h1>
-    <a href="{% url 'dashboard:veiculo_create' %}" class="btn btn-accent">Novo veículo</a>
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="mb-0">Meus veículos</h1>
+        <p class="text-muted small mb-0">{{ total_veiculos }} de {{ limite_veiculos }} veículos do seu plano.</p>
+    </div>
+    {% if no_limite %}
+        <span class="btn btn-outline-ink disabled" tabindex="-1" aria-disabled="true"
+              title="Seu plano permite até {{ limite_veiculos }} veículos. Fale com o suporte para mudar de plano.">
+            Novo veículo
+        </span>
+    {% else %}
+        <a href="{% url 'dashboard:veiculo_create' %}" class="btn btn-accent">Novo veículo</a>
+    {% endif %}
 </div>
 
 <details class="filtro-mobile mb-3" open>

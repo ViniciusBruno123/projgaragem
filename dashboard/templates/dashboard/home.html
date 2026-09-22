@@ -4,6 +4,9 @@
 
 {% block painel_content %}
 <h1>Olá, {{ garagem.nome }}</h1>
-<p>Você tem <strong>{{ total_veiculos }}</strong> veículo(s) cadastrado(s).</p>
+<p>
+    Você tem <strong>{{ total_veiculos }}</strong> de <strong>{{ limite_veiculos }}</strong> veículos do seu plano
+    ({{ garagem.get_plano_display }}) cadastrados.
+</p>
 <a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-accent">Gerenciar veículos</a>
 {% endblock %}

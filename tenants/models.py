@@ -14,6 +14,20 @@ class Garagem(models.Model):
         ATRASADO = 'atrasado', 'Atrasado'
         SUSPENSO = 'suspenso', 'Suspenso'
 
+    class Plano(models.TextChoices):
+        BASICO = 'basico', 'Básico'
+        INTERMEDIARIO = 'intermediario', 'Intermediário'
+        AVANCADO = 'avancado', 'Avançado'
+
+    # Quantos veículos cada plano permite cadastrar (ver Garagem.limite_veiculos). Mudar o
+    # plano é feito pelo administrador no /admin/, junto com o valor da mensalidade cobrada
+    # — não há hoje uma tabela de preço por plano, só o limite de estoque.
+    LIMITE_VEICULOS_POR_PLANO = {
+        Plano.BASICO: 50,
+        Plano.INTERMEDIARIO: 100,
+        Plano.AVANCADO: 300,
+    }
+
     class FonteTitulo(models.TextChoices):
         """Cada opção é o nome exato da família no Google Fonts (ver templates/base.html,
         onde todas são carregadas) — o valor salvo já é o font-family usado no CSS."""
@@ -74,6 +88,10 @@ class Garagem(models.Model):
         validators=[MinValueValidator(Decimal('0')), MaxValueValidator(Decimal('20'))],
         help_text="Opcional. Em branco, o simulador usa a taxa média de mercado do Banco Central.",
     )
+    plano = models.CharField(
+        max_length=20, choices=Plano.choices, default=Plano.BASICO,
+        help_text="Define quantos veículos a garagem pode cadastrar (ver LIMITE_VEICULOS_POR_PLANO).",
+    )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.ATIVO)
     suspensa_manualmente_em = models.DateTimeField(null=True, blank=True)
     ultimo_aviso_atraso_enviado_em = models.DateTimeField(null=True, blank=True)
@@ -86,6 +104,10 @@ class Garagem(models.Model):
 
     def __str__(self):
         return self.nome
+
+    @property
+    def limite_veiculos(self):
+        return self.LIMITE_VEICULOS_POR_PLANO[self.plano]
 
     def clean(self):
         from django.core.exceptions import ValidationError

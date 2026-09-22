@@ -487,3 +487,76 @@ class FiltroEOrdenacaoDeVeiculosTests(TestCase):
         )
         resp = self.client.get(self.url)
         self.assertEqual(list(resp.context['veiculos']), [self.carro_caro, self.moto_barata])
+
+
+class LimiteDeVeiculosNoCadastroTests(TestCase):
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_limite', 'dono_limite@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Limite', slug='garagem-limite', plano=Garagem.Plano.BASICO,
+            telefone_whatsapp='5517999999999', email_contato='dono_limite@example.com',
+        )
+        self.client.login(username='dono_limite', password='senha12345')
+
+    def _lotar_estoque(self, quantidade):
+        for i in range(quantidade):
+            Veiculo.objects.create(
+                garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo=f'Moto {i}', marca='Honda', modelo='CG',
+                ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+                combustivel=Veiculo.Combustivel.FLEX, preco='10000.00',
+            )
+
+    def _dados_veiculo_novo(self):
+        return {
+            'tipo': 'moto', 'titulo': 'Mais uma moto', 'marca': 'Honda', 'modelo': 'CG',
+            'ano_fabricacao': 2022, 'ano_modelo': 2022, 'quilometragem': 1000,
+            'combustivel': 'flex', 'preco': '10000.00', 'disponivel': 'on',
+            'fotos-TOTAL_FORMS': 1, 'fotos-INITIAL_FORMS': 0,
+            'fotos-MIN_NUM_FORMS': 0, 'fotos-MAX_NUM_FORMS': 1000,
+            'fotos-0-imagem': gerar_foto((1200, 900), nome='moto.jpg'),
+            'fotos-0-ordem': 0,
+        }
+
+    def test_cadastra_normalmente_abaixo_do_limite(self):
+        self._lotar_estoque(49)
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados_veiculo_novo())
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(self.garagem.veiculos.count(), 50)
+
+    def test_bloqueia_cadastro_no_limite_do_plano(self):
+        self._lotar_estoque(50)  # já no limite do plano Básico
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados_veiculo_novo())
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(self.garagem.veiculos.count(), 50)  # não criou o 51º
+
+        resp_lista = self.client.get(reverse('dashboard:veiculo_list'))
+        self.assertContains(resp_lista, 'Seu plano permite até 50 veículos')
+
+    def test_editar_e_excluir_continuam_liberados_mesmo_no_limite(self):
+        self._lotar_estoque(50)
+        veiculo = self.garagem.veiculos.first()
+
+        resp = self.client.post(
+            reverse('dashboard:veiculo_update', kwargs={'pk': veiculo.pk}),
+            {**self._dados_veiculo_novo(), 'titulo': 'Nome atualizado'},
+        )
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        veiculo.refresh_from_db()
+        self.assertEqual(veiculo.titulo, 'Nome atualizado')
+
+        resp = self.client.post(reverse('dashboard:veiculo_delete', kwargs={'pk': veiculo.pk}))
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(self.garagem.veiculos.count(), 49)
+
+    def test_plano_maior_permite_mais_veiculos(self):
+        self.garagem.plano = Garagem.Plano.INTERMEDIARIO
+        self.garagem.save()
+        self._lotar_estoque(50)  # já passaria do limite do Básico, mas não do Intermediário
+
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados_veiculo_novo())
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(self.garagem.veiculos.count(), 51)

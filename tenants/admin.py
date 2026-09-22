@@ -31,9 +31,14 @@ def gerar_link_assinatura(modeladmin, request, queryset):
 
 @admin.register(Garagem)
 class GaragemAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'slug', 'cidade', 'status', 'dono', 'criada_em')
-    list_filter = ('status', 'cidade')
+    list_display = ('nome', 'slug', 'cidade', 'plano', 'total_de_veiculos', 'status', 'dono', 'criada_em')
+    list_filter = ('status', 'plano', 'cidade')
+    list_editable = ('plano',)
     search_fields = ('nome', 'slug', 'dono__username', 'dono__email')
     prepopulated_fields = {'slug': ('nome',)}
     autocomplete_fields = ('dono',)
     actions = [suspender_vitrine, reativar_garagem, gerar_link_assinatura]
+
+    @admin.display(description='Veículos')
+    def total_de_veiculos(self, garagem):
+        return f'{garagem.veiculos.count()}/{garagem.limite_veiculos}'

@@ -39,3 +39,23 @@ class BloqueiaEdicaoSeInadimplenteMixin:
             messages.warning(request, "Pagamento em atraso. Regularize para editar seu estoque.")
             return redirect('dashboard:assinatura')
         return super().dispatch(request, *args, **kwargs)
+
+
+class RespeitaLimiteDoPlanoMixin:
+    """Impede cadastrar um veículo além do limite do plano da garagem.
+
+    Usar SÓ na view de criação — editar ou excluir um veículo já cadastrado nunca é
+    bloqueado por limite (mudar de tipo/preço, por exemplo, não aumenta o estoque).
+    Deve vir DEPOIS de GaragemRequiredMixin no MRO, já que depende de self.garagem.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        limite = self.garagem.limite_veiculos
+        if self.garagem.veiculos.count() >= limite:
+            messages.warning(
+                request,
+                f"Seu plano permite até {limite} veículos cadastrados. "
+                "Para cadastrar mais, fale com o suporte sobre mudar de plano.",
+            )
+            return redirect('dashboard:veiculo_list')
+        return super().dispatch(request, *args, **kwargs)

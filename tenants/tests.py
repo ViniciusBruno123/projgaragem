@@ -24,3 +24,23 @@ class TermosDeUsoTests(TestCase):
         self.client.login(username='dono_termos', password='senha12345')
         resp = self.client.get(reverse('dashboard:home'))
         self.assertContains(resp, reverse('termos_uso'))
+
+
+class LimiteDeVeiculosPorPlanoTests(TestCase):
+    def _garagem(self, **extra):
+        dono = User.objects.create_user(
+            f'dono_plano_{Garagem.objects.count()}', f'p{Garagem.objects.count()}@example.com', 'senha12345',
+        )
+        return Garagem.objects.create(
+            dono=dono, nome='Garagem Plano', slug=f'garagem-plano-{Garagem.objects.count()}',
+            telefone_whatsapp='5517999999999', email_contato=dono.email, **extra,
+        )
+
+    def test_plano_padrao_e_basico_com_limite_de_50(self):
+        garagem = self._garagem()
+        self.assertEqual(garagem.plano, Garagem.Plano.BASICO)
+        self.assertEqual(garagem.limite_veiculos, 50)
+
+    def test_limites_dos_outros_planos(self):
+        self.assertEqual(self._garagem(plano=Garagem.Plano.INTERMEDIARIO).limite_veiculos, 100)
+        self.assertEqual(self._garagem(plano=Garagem.Plano.AVANCADO).limite_veiculos, 300)
