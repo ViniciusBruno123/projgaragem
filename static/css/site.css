@@ -125,16 +125,16 @@ a:hover {
   padding: 2px;
 }
 /* Cabeçalho com capa própria da garagem: texto sobre a foto, claro por padrão — mas a cor do
-   título escolhida pelo dono (--brand-color) tem prioridade mesmo aqui, se ele a definiu. */
-/* aspect-ratio precisa bater com a proporção do corte no modal (3/1, ver
-   dashboard.forms.GaragemForm) — senão o cabeçalho fica mais largo que a foto cortada
-   em telas largas, e o "cover" recorta de novo (mais do que o dono escolheu no corte). */
+   título escolhida pelo dono (--brand-color) tem prioridade mesmo aqui, se ele a definiu.
+   A altura acompanha o conteúdo (padding), não uma proporção fixa — um cabeçalho não deve
+   virar uma faixa enorme só porque a tela é larga. A proporção do corte no modal (ver
+   dashboard.forms.GaragemForm) é escolhida pra ficar perto do formato real de exibição,
+   mas sem travar um no outro: o "cover" ainda faz um ajuste fino, sobrando um pouco de cada
+   lado ou de cima/baixo conforme a largura da tela. */
 .site-header--capa {
-  aspect-ratio: 3 / 1;
-  display: flex;
-  align-items: center;
   background-size: cover;
   background-position: center;
+  padding: 2.75rem 0;
   border-bottom: 3px solid var(--accent);
 }
 .site-header--capa .brand,

@@ -201,9 +201,12 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
         self.fields['logo'].widget.attrs['accept'] = 'image/*'
         self.fields['capa'].widget.attrs['accept'] = 'image/*'
         # Corte no upload (ver static/js/cortar_foto.js): a logo aparece inteira (object-fit:
-        # contain), então o corte é livre; a capa é sempre cortada (cover) numa faixa larga.
+        # contain), então o corte é livre. A capa é sempre cortada (cover) numa faixa larga —
+        # a altura real do cabeçalho varia com a largura da tela (não é uma proporção fixa),
+        # então 5:1 é uma aproximação: fica perto do formato de um notebook comum sem obrigar
+        # o cabeçalho a virar uma faixa enorme; o "cover" ainda ajusta um pouco em cada tela.
         self.fields['logo'].widget.attrs['data-cortar'] = 'livre'
-        self.fields['capa'].widget.attrs['data-cortar'] = '3/1'
+        self.fields['capa'].widget.attrs['data-cortar'] = '5/1'
 
         media = taxa_media_de_mercado()
         if media:
