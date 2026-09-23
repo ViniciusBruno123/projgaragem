@@ -247,10 +247,10 @@ class IconesECarrosselTests(TestCase):
         self.assertIn('tag--foto', html)
         self.assertLess(html.index('tag--foto'), html.index('class="body"'))
 
-    def test_destaques_ficam_no_carrossel_com_avanco_de_10_segundos(self):
+    def test_destaques_ficam_no_carrossel_com_avanco_de_5_segundos(self):
         resp = self.client.get(self.url)
         self.assertContains(resp, 'data-carrossel')
-        self.assertContains(resp, 'data-intervalo="10000"')
+        self.assertContains(resp, 'data-intervalo="5000"')
         self.assertContains(resp, 'js/vitrine.js')
 
     def test_sem_destaques_nao_ha_carrossel(self):

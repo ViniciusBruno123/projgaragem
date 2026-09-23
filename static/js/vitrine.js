@@ -8,7 +8,7 @@
     var trilho = carrossel.querySelector('.carrossel-trilho');
     var anterior = carrossel.querySelector('[data-carrossel-anterior]');
     var proximo = carrossel.querySelector('[data-carrossel-proximo]');
-    var intervalo = parseInt(carrossel.dataset.intervalo, 10) || 10000;
+    var intervalo = parseInt(carrossel.dataset.intervalo, 10) || 5000;
     var timer = null;
     var pausado = false;
 
