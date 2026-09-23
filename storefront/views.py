@@ -4,6 +4,7 @@ from financing.forms import SimulacaoFinanciamentoForm
 from financing.services import calcular_parcela_price, taxa_para
 from tenants.legal import contexto_plataforma
 from tenants.services import get_garagem_ativa_ou_404
+from vehicles.services import veiculos_semelhantes
 
 from .forms import FiltroVeiculosForm
 
@@ -60,7 +61,9 @@ def _contexto_simulacao(request, garagem, veiculo):
 def detalhe_veiculo(request, garagem_slug, veiculo_slug):
     garagem = get_garagem_ativa_ou_404(garagem_slug)
     veiculo = get_object_or_404(garagem.veiculos, slug=veiculo_slug, disponivel=True)
-    return render(request, 'storefront/detalhe_veiculo.html', _contexto_simulacao(request, garagem, veiculo))
+    contexto = _contexto_simulacao(request, garagem, veiculo)
+    contexto['veiculos_semelhantes'] = veiculos_semelhantes(veiculo)
+    return render(request, 'storefront/detalhe_veiculo.html', contexto)
 
 
 def simular_financiamento(request, garagem_slug, veiculo_slug):

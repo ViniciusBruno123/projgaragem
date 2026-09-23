@@ -67,23 +67,39 @@
 
             {% if veiculo.descricao %}
                 <h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Descrição</h2>
-                <p>{{ veiculo.descricao|linebreaks }}</p>
+                <div class="descricao-veiculo" id="descricao-veiculo">{{ veiculo.descricao|linebreaks }}</div>
+                <button type="button" class="btn btn-link btn-sm px-0" id="descricao-leia-mais">Leia mais</button>
             {% endif %}
         </div>
     </div>
 
     <div class="row mt-5">
-        <div class="col-md-6">
+        <div class="col-12">
             <div class="filter-bar" id="simulador-financiamento"
                  data-url-parcial="{% url 'storefront:simular_financiamento' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}">
                 {% include "storefront/_simulador_financiamento.html" %}
             </div>
         </div>
     </div>
+
+    {% if veiculos_semelhantes %}
+        <div class="section-heading mt-5">
+            <h2>Veículos semelhantes</h2>
+            <span class="count num">{{ veiculos_semelhantes|length }}</span>
+        </div>
+        <div class="row">
+            {% for veiculo in veiculos_semelhantes %}
+                <div class="col-sm-6 col-lg-4 col-xxl-3 mb-4">
+                    {% include "storefront/_card_veiculo.html" %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="{% static 'js/simulador_financiamento.js' %}"></script>
 <script src="{% static 'js/galeria_fotos.js' %}"></script>
+<script src="{% static 'js/descricao_veiculo.js' %}"></script>
 {% endblock %}

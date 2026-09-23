@@ -293,6 +293,19 @@ a:hover {
   object-fit: cover;
   display: block;
 }
+/* Descrição do veículo: limitada a poucas linhas por padrão, com "Leia mais"
+   (static/js/descricao_veiculo.js) — sem isso um texto longo empurrava o resto da
+   página pra muito longe da foto e do preço. */
+.descricao-veiculo {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.descricao-veiculo.expandida {
+  display: block;
+  overflow: visible;
+}
 .galeria-miniatura.active {
   border-color: var(--accent);
   border-width: 2px;

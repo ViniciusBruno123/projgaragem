@@ -6,14 +6,16 @@ assim só essa caixa atualiza, sem recarregar a página inteira nem perder a rol
 Espera do contexto: form, parcela, valor_financiado, taxa.
 {% endcomment %}
 <h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Simular financiamento</h2>
-<form method="get">
+<form method="get" class="row row-cols-1 row-cols-sm-3 g-2 align-items-end">
     {% for field in form %}
-        <div class="mb-3">
-            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <div class="col">
+            <label class="form-label mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
             {{ field }}
         </div>
     {% endfor %}
-    <button type="submit" class="btn btn-accent">Calcular</button>
+    <div class="col">
+        <button type="submit" class="btn btn-accent w-100">Calcular</button>
+    </div>
 </form>
 
 {% if parcela %}

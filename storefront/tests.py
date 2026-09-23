@@ -322,6 +322,37 @@ class GaleriaDeFotosEDescricaoTests(TestCase):
         self.assertNotContains(self.client.get(self.url), '>Descrição<')
 
 
+class VeiculosSemelhantesNaPaginaTests(TestCase):
+    def setUp(self):
+        dono = User.objects.create_user('dono_sem_pag', 'dono_sem_pag@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Semelhantes Página', slug='garagem-semelhantes-pagina',
+            telefone_whatsapp='5517999999999', email_contato='dono_sem_pag@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Moto Principal', marca='Honda', modelo='CG',
+            ano_fabricacao=2022, ano_modelo=2022, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, cilindrada=150, preco='10000.00',
+        )
+        self.url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+
+    def test_sem_outros_veiculos_nao_mostra_a_secao(self):
+        self.assertNotContains(self.client.get(self.url), 'Veículos semelhantes')
+
+    def test_com_outros_veiculos_mostra_ate_5_como_cards(self):
+        for i in range(7):
+            Veiculo.objects.create(
+                garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo=f'Outra Moto {i}', marca='Honda', modelo='CG',
+                ano_fabricacao=2022, ano_modelo=2022, quilometragem=1000,
+                combustivel=Veiculo.Combustivel.FLEX, cilindrada=150, preco='10000.00',
+            )
+        html = self.client.get(self.url).content.decode()
+        self.assertIn('Veículos semelhantes', html)
+        self.assertEqual(html.count('vehicle-card'), 5)
+
+
 class OpenGraphTests(TestCase):
     """O link da vitrine é colado no WhatsApp — o preview (título, texto e foto) é parte do produto."""
 

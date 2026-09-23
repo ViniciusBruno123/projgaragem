@@ -11,6 +11,7 @@ from tenants.models import Garagem
 from .forms import FotoVeiculoForm
 from .imagens import FotoInvalida, otimizar_foto
 from .models import Veiculo
+from .services import veiculos_semelhantes
 
 
 def gerar_foto(tamanho=(3000, 2000), formato='JPEG', modo='RGB', exif=None, nome=None):
@@ -173,3 +174,66 @@ class ExibicaoDoVeiculoTests(SimpleTestCase):
 
     def test_etanol_e_exibido_como_alcool(self):
         self.assertEqual(Veiculo(combustivel='etanol').get_combustivel_display(), 'Álcool')
+
+
+class VeiculosSemelhantesTests(TestCase):
+    def setUp(self):
+        dono = User.objects.create_user('dono_semelhantes', 'dono_semelhantes@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Semelhantes', slug='garagem-semelhantes',
+            telefone_whatsapp='5517999999999', email_contato='dono_semelhantes@example.com',
+        )
+        self.base = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Base', marca='Honda', modelo='CG',
+            ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, cilindrada=150, preco='10000.00',
+        )
+        # sem isso self.base.preco fica como a string passada acima, não como Decimal
+        # (Model.objects.create não recarrega do banco) — na view de verdade isso nunca
+        # acontece, porque o veículo sempre vem de uma consulta (get_object_or_404).
+        self.base.refresh_from_db()
+
+    def _moto(self, titulo, **extra):
+        base = dict(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, marca='Honda', modelo='CG',
+            ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, cilindrada=150, preco='10000.00',
+        )
+        base.update(extra)
+        return Veiculo.objects.create(titulo=titulo, **base)
+
+    def test_ordena_por_tipo_depois_preco_depois_marca_depois_ano_depois_motor(self):
+        preco_identico_marca_diferente = self._moto('Preço idêntico, marca diferente', marca='Yamaha')
+        preco_perto = self._moto(
+            'Preço perto', preco='10100.00', marca='Suzuki', ano_fabricacao=2015, ano_modelo=2015, cilindrada=125,
+        )
+        preco_longe = self._moto('Preço longe', preco='50000.00')
+        tipo_diferente = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.CARRO, titulo='Tipo diferente', marca='Honda', modelo='Civic',
+            ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, potencia_motor='1.6', preco='10000.00',
+        )
+
+        resultado = veiculos_semelhantes(self.base)
+        self.assertEqual(resultado, [preco_identico_marca_diferente, preco_perto, preco_longe, tipo_diferente])
+
+    def test_exclui_o_proprio_veiculo_e_indisponiveis_e_de_outra_garagem(self):
+        self._moto('Indisponível', disponivel=False)
+        outro_dono = User.objects.create_user('dono_semelhantes_b', 'b@example.com', 'senha12345')
+        outra_garagem = Garagem.objects.create(
+            dono=outro_dono, nome='Outra Garagem', slug='outra-garagem-semelhantes',
+            telefone_whatsapp='5517999999998', email_contato='b@example.com',
+        )
+        Veiculo.objects.create(
+            garagem=outra_garagem, tipo=Veiculo.Tipo.MOTO, titulo='De outra garagem', marca='Honda', modelo='CG',
+            ano_fabricacao=2020, ano_modelo=2020, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, cilindrada=150, preco='10000.00',
+        )
+        self.assertEqual(veiculos_semelhantes(self.base), [])
+
+    def test_no_maximo_5_mas_menos_se_a_garagem_nao_tiver(self):
+        self.assertEqual(veiculos_semelhantes(self.base), [])  # só a base existe
+
+        for i in range(7):
+            self._moto(f'Moto {i}')
+        self.assertEqual(len(veiculos_semelhantes(self.base)), 5)
