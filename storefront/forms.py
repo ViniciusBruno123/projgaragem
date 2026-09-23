@@ -8,8 +8,10 @@ from vehicles.models import Veiculo
 class FiltroVeiculosForm(forms.Form):
     tipo = forms.ChoiceField(required=False, label="Tipo")
     marca = forms.ChoiceField(required=False, label="Marca")
-    cilindrada = forms.ChoiceField(required=False, label="Cilindrada (motos)")
+    cilindrada = forms.ChoiceField(required=False, label="CC (motos)")
     potencia_motor = forms.ChoiceField(required=False, label="Motor (carros)")
+    ano_min = forms.ChoiceField(required=False, label="Ano mínimo")
+    ano_max = forms.ChoiceField(required=False, label="Ano máximo")
     preco_min = forms.DecimalField(required=False, min_value=Decimal('0'), label="Preço mínimo")
     preco_max = forms.DecimalField(required=False, min_value=Decimal('0'), label="Preço máximo")
 
@@ -34,6 +36,11 @@ class FiltroVeiculosForm(forms.Form):
         )
         self.fields['potencia_motor'].choices = [('', 'Todas')] + [(p, str(p)) for p in potencias]
 
+        anos = disponiveis.order_by('ano_modelo').values_list('ano_modelo', flat=True).distinct()
+        anos_choices = [(a, str(a)) for a in anos]
+        self.fields['ano_min'].choices = [('', 'Todos')] + anos_choices
+        self.fields['ano_max'].choices = [('', 'Todos')] + anos_choices
+
         for name, field in self.fields.items():
             if isinstance(field.widget, forms.Select):
                 field.widget.attrs.setdefault('class', 'form-select form-select-sm')
@@ -53,6 +60,10 @@ class FiltroVeiculosForm(forms.Form):
             queryset = queryset.filter(cilindrada=dados['cilindrada'])
         if dados.get('potencia_motor'):
             queryset = queryset.filter(potencia_motor=dados['potencia_motor'])
+        if dados.get('ano_min'):
+            queryset = queryset.filter(ano_modelo__gte=dados['ano_min'])
+        if dados.get('ano_max'):
+            queryset = queryset.filter(ano_modelo__lte=dados['ano_max'])
         if dados.get('preco_min') is not None:
             queryset = queryset.filter(preco__gte=dados['preco_min'])
         if dados.get('preco_max') is not None:

@@ -1,3 +1,4 @@
+import re
 import shutil
 import tempfile
 
@@ -68,6 +69,27 @@ class FiltroVeiculosFrontpageTests(TestCase):
         resp = self._get(potencia_motor='1.6')
         self.assertContains(resp, 'VW Gol')
         self.assertNotContains(resp, 'Honda CG 160')
+
+    def test_filtro_por_ano_minimo(self):
+        # As opções de ano vêm só dos anos que existem no estoque (como marca/cilindrada);
+        # por isso o teste usa 2022 (valor real), não um ano qualquer que não apareceria no <select>.
+        resp = self._get(ano_min='2022')
+        self.assertContains(resp, 'Honda CG 160')  # 2022
+        self.assertNotContains(resp, 'VW Gol')  # 2019
+
+    def test_filtro_por_ano_maximo(self):
+        resp = self._get(ano_max='2019')
+        self.assertContains(resp, 'VW Gol')  # 2019
+        self.assertNotContains(resp, 'Honda CG 160')  # 2022
+
+    def test_filtro_por_faixa_de_anos(self):
+        resp = self._get(ano_min='2019', ano_max='2019')
+        self.assertContains(resp, 'VW Gol')
+        self.assertNotContains(resp, 'Honda CG 160')
+
+    def test_rotulo_de_cilindrada_e_cc(self):
+        resp = self._get()
+        self.assertContains(resp, 'CC (motos)')
 
 
 class PoliticaPrivacidadeTests(TestCase):
@@ -204,14 +226,19 @@ class IconesECarrosselTests(TestCase):
         self.assertContains(resp, 'R$ 11.900,00')
         self.assertContains(resp, 'Gasolina')
 
+    def _spec_strip(self, resp):
+        # O filtro também mostra anos completos (2011, ex.) nas opções de "Ano mínimo/máximo" —
+        # isso é esperado, então a checagem de ano curto olha só a faixa de specs do card.
+        return re.search(r'<ul class="spec-strip">.*?</ul>', resp.content.decode(), re.S).group()
+
     def test_ano_aparece_com_dois_digitos_e_so_duplicado_quando_diferem(self):
-        resp = self.client.get(self.url)
-        self.assertContains(resp, '<span class="visually-hidden">Ano:</span>11')
-        self.assertNotContains(resp, '11/11')
-        self.assertNotContains(resp, '2011')
+        specs = self._spec_strip(self.client.get(self.url))
+        self.assertIn('<span class="visually-hidden">Ano:</span>11', specs)
+        self.assertNotIn('11/11', specs)
+        self.assertNotIn('2011', specs)
         self.moto.ano_modelo = 2012
         self.moto.save()
-        self.assertContains(self.client.get(self.url), '11/12')
+        self.assertIn('11/12', self._spec_strip(self.client.get(self.url)))
 
     def test_selo_de_troca_fica_sobre_a_foto_e_nao_no_corpo_do_card(self):
         self.moto.aceita_troca = True

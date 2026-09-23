@@ -204,6 +204,14 @@ a:hover {
   letter-spacing: 0.05em;
   color: var(--ink-soft);
 }
+/* Bootstrap só define .row-cols-* até 6; com 8 campos de filtro (+ 2 botões) cabendo
+   numa linha só no desktop, a gente estende a mesma ideia até 8. */
+@media (min-width: 992px) {
+  .filter-bar.row-cols-lg-8 > * {
+    flex: 0 0 auto;
+    width: 12.5%;
+  }
+}
 
 /* --- Card de veículo: plano, com borda fina, preço como etiqueta --- */
 .vehicle-card {
