@@ -153,9 +153,39 @@ sudo -u projgaragem $PY manage.py collectstatic --noinput
 sudo systemctl reload projgaragem
 ```
 
+Isso é tudo: sem tempo de fora do ar perceptível (`reload`, não `restart`, então o gunicorn troca de
+processo aos poucos). Se uma migração alterar uma tabela grande, pode demorar mais que o normal —
+raro, no volume desta plataforma.
+
+## Manutenção do dia a dia
+
+**Cadastro de garagem/dono, suspender/reativar, gerar link de assinatura** — tudo pelo `/admin/`
+(é o painel do administrador da plataforma, diferente do `/painel/` de cada garagem). Não precisa
+entrar no servidor por SSH para isso.
+
+**Erros da aplicação** — se `SENTRY_DSN` estiver preenchido no `.env` (opcional, veja
+`.env.production.example`), todo erro 500 aparece no painel do [sentry.io](https://sentry.io) com
+o stack trace completo, sem precisar entrar no servidor. Sem isso, o administrador recebe só um
+e-mail com o erro (`PLATFORM_ADMIN_EMAIL`).
+
+**Logs** — `journalctl -u projgaragem -f` (aplicação, ao vivo) e `journalctl -t projgaragem-cron`
+(saída das rotinas agendadas: inadimplência, taxa de juros, backup).
+
+**Backup** — automático todo dia (`deploy/backup.sh`), guarda 14 dias em
+`/var/backups/projgaragem`, **no próprio servidor**. Programe uma cópia periódica para fora dali
+(outro servidor, `rclone` para um bucket) — se o servidor for perdido, os backups vão junto.
+
+**Certificado HTTPS** — o certbot renova sozinho; não precisa fazer nada, só checar de vez em
+quando (`sudo certbot certificates`) se não há aviso de renovação falhando.
+
+**Se você (Vinícius) não quiser mexer no servidor por SSH**, pode voltar aqui e pedir para eu
+aplicar uma atualização ou investigar um problema — desde que a chave SSH do servidor esteja
+configurada nesta máquina, uso os mesmos comandos deste guia.
+
 ## O que este guia não cobre
 
-- Backup **fora** do servidor e teste de restauração (`pg_restore`).
-- Monitoramento de erros e disponibilidade (Sentry, UptimeRobot). Hoje o administrador recebe só o e-mail de erro 500.
-- Proteção contra spam nos formulários públicos e limite de tentativas de login (`fail2ban` ajuda no SSH).
-- Recuperação de senha do dono (hoje só o administrador redefine, pelo Django admin).
+- Backup **fora** do servidor e teste de restauração (`pg_restore`) — só o automático local.
+- Monitoramento de **disponibilidade** (um serviço tipo UptimeRobot avisando se o site cair) —
+  o Sentry (se configurado) cobre erros da aplicação, não "o site está fora do ar".
+- `fail2ban` ou equivalente para tentativas de acesso por SSH ao próprio servidor (diferente do
+  limite de tentativas de login do painel, que já existe — ver `dashboard/security.py`).
