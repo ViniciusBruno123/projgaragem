@@ -126,6 +126,9 @@ class FotoVeiculoForm(BaseFotoVeiculoForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['imagem'].widget.attrs.setdefault('class', 'form-control')
+        # A proporção do corte (moto/carro) é lida do <select id="id_tipo"> na hora do
+        # upload — ver static/js/cortar_foto.js.
+        self.fields['imagem'].widget.attrs['data-cortar'] = 'veiculo'
         self.fields['ordem'].widget.attrs.setdefault('class', 'form-control')
         self.fields['principal'].widget.attrs.setdefault('class', 'form-check-input')
 
@@ -176,6 +179,10 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
                 field.widget.attrs.setdefault('class', 'form-control')
         self.fields['logo'].widget.attrs['accept'] = 'image/*'
         self.fields['capa'].widget.attrs['accept'] = 'image/*'
+        # Corte no upload (ver static/js/cortar_foto.js): a logo aparece inteira (object-fit:
+        # contain), então o corte é livre; a capa é sempre cortada (cover) numa faixa larga.
+        self.fields['logo'].widget.attrs['data-cortar'] = 'livre'
+        self.fields['capa'].widget.attrs['data-cortar'] = '3/1'
 
         media = taxa_media_de_mercado()
         if media:

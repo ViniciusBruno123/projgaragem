@@ -1,6 +1,12 @@
 {% extends "dashboard/_base_painel.html" %}
+{% load static %}
 
 {% block title %}Dados da garagem{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+{% endblock %}
 
 {% block painel_content %}
 <h1>Dados da garagem</h1>
@@ -25,4 +31,11 @@
     {% endfor %}
     <button type="submit" class="btn btn-accent">Salvar</button>
 </form>
+
+{% include "dashboard/_modal_cortar_foto.html" %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="{% static 'js/cortar_foto.js' %}"></script>
 {% endblock %}

@@ -450,6 +450,25 @@ a:hover {
   max-width: 100%;
 }
 
+/* --- Corte de foto no upload (Cropper.js) --- */
+.cortar-foto-area {
+  max-height: 65vh;
+  overflow: hidden;
+  background: var(--paper-2);
+}
+.cortar-foto-area img {
+  display: block;
+  max-width: 100%;
+}
+/* Prévia do resultado já cortado, criada pelo JS logo após o campo de arquivo. */
+.pre-visualizacao-corte {
+  display: block;
+  margin-top: 0.5rem;
+  max-height: 6rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
 /* --- Textos longos (termos e política de privacidade) --- */
 .prose {
   max-width: 68ch;
