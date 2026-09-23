@@ -25,28 +25,47 @@
     {% endfor %}
 
     <h2 class="h5 mt-4">Fotos</h2>
+    <p class="text-muted small">Uma foto nova entra sempre no fim da ordem de exibição. Marque "Principal" para
+        escolher a capa do veículo.</p>
     {{ formset.management_form }}
-    {% for foto_form in formset %}
-        <div class="border rounded p-3 mb-2">
-            {% if foto_form.instance.pk and foto_form.instance.imagem %}
-                <div class="foto-form-atual">
-                    <img src="{{ foto_form.instance.imagem.url }}" alt="Foto atual">
-                    <span class="text-muted small">Foto atual — envie outra abaixo só se quiser trocar.</span>
-                </div>
-            {% endif %}
-            {% for field in foto_form.visible_fields %}
-                <div class="mb-2">
-                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-                    {% if field.errors %}
-                        <div class="text-danger small">{{ field.errors }}</div>
+    {% if formset.non_form_errors %}
+        <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+    {% endif %}
+    <div class="row row-cols-1 row-cols-md-2 g-2 mb-3">
+        {% for foto_form in formset %}
+            <div class="col">
+                <div class="foto-form border rounded p-2">
+                    {% if foto_form.instance.pk and foto_form.instance.imagem %}
+                        <div class="foto-form-atual">
+                            <img src="{{ foto_form.instance.imagem.url }}" alt="Foto atual">
+                            <span class="text-muted small">Foto atual — envie outra só se quiser trocar.</span>
+                        </div>
                     {% endif %}
+                    {{ foto_form.imagem }}
+                    {% if foto_form.imagem.errors %}<div class="text-danger small">{{ foto_form.imagem.errors }}</div>{% endif %}
+
+                    <div class="foto-form-linha">
+                        <div class="form-check mb-0">
+                            {{ foto_form.principal }}
+                            <label class="form-check-label small" for="{{ foto_form.principal.id_for_label }}">Principal</label>
+                        </div>
+                        <div class="foto-form-ordem">
+                            <label class="small text-muted mb-0" for="{{ foto_form.ordem.id_for_label }}">Ordem</label>
+                            {{ foto_form.ordem }}
+                        </div>
+                        {% if foto_form.instance.pk %}
+                            <div class="form-check mb-0 ms-auto">
+                                {{ foto_form.DELETE }}
+                                <label class="form-check-label small text-danger" for="{{ foto_form.DELETE.id_for_label }}">Excluir</label>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if foto_form.ordem.errors %}<div class="text-danger small">{{ foto_form.ordem.errors }}</div>{% endif %}
+                    {% for hidden in foto_form.hidden_fields %}{{ hidden }}{% endfor %}
                 </div>
-            {% endfor %}
-            {% for hidden in foto_form.hidden_fields %}{{ hidden }}{% endfor %}
-        </div>
-    {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
 
     <button type="submit" class="btn btn-accent">Salvar</button>
     <a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-outline-ink">Cancelar</a>

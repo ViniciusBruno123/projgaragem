@@ -2,7 +2,7 @@ import re
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.forms import inlineformset_factory
+from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.utils.formats import localize
 
 from financing.services import taxa_media_de_mercado
@@ -134,18 +134,30 @@ class VeiculoForm(forms.ModelForm):
 class FotoVeiculoForm(BaseFotoVeiculoForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # FileInput simples em vez do ClearableFileInput padrão do Django: o painel já tem
+        # sua própria prévia da foto atual (template) e um "Excluir" pra linha inteira
+        # (can_delete do formset) — o "Atualmente / Modificar / Limpar" do widget padrão
+        # só duplicava essa informação.
+        self.fields['imagem'].widget = forms.FileInput(attrs={'accept': 'image/*', 'data-cortar': 'veiculo'})
         self.fields['imagem'].widget.attrs.setdefault('class', 'form-control')
-        # A proporção do corte (moto/carro) é lida do <select id="id_tipo"> na hora do
-        # upload — ver static/js/cortar_foto.js.
-        self.fields['imagem'].widget.attrs['data-cortar'] = 'veiculo'
-        self.fields['ordem'].widget.attrs.setdefault('class', 'form-control')
+        self.fields['ordem'].widget.attrs.setdefault('class', 'form-control form-control-sm input-ordem')
         self.fields['principal'].widget.attrs.setdefault('class', 'form-check-input')
 
 
+class FotoVeiculoBaseFormSet(BaseInlineFormSet):
+    """Só estiliza o checkbox de excluir (can_delete não passa pelo __init__ do form)."""
+
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        if 'DELETE' in form.fields:
+            form.fields['DELETE'].widget.attrs['class'] = 'form-check-input'
+
+
+# extra=6: várias fotos de uma vez, sem precisar salvar e reabrir a cada uma.
 FotoVeiculoFormSet = inlineformset_factory(
     Veiculo, FotoVeiculo,
-    form=FotoVeiculoForm,
-    extra=1, can_delete=True,
+    form=FotoVeiculoForm, formset=FotoVeiculoBaseFormSet,
+    extra=6, can_delete=True,
 )
 
 

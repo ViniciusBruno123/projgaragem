@@ -244,6 +244,7 @@ a:hover {
   object-fit: cover;
   display: block;
   border-bottom: 1px solid var(--line);
+  transition: opacity 280ms ease;
 }
 .photo-empty {
   display: flex;
@@ -443,6 +444,27 @@ a:hover {
   object-fit: cover;
   border: 1px solid var(--line);
   border-radius: 2px;
+}
+/* Cada foto do veículo em coluna dupla (.row-cols-md-2 no template), condensada:
+   arquivo, principal/ordem/excluir numa linha só, em vez de um campo por linha. */
+.foto-form {
+  height: 100%;
+}
+.foto-form-linha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 0.5rem;
+}
+.foto-form-ordem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.input-ordem {
+  width: 4.5rem;
+  flex: none;
 }
 .thumb-atual {
   display: block;
@@ -702,7 +724,8 @@ html {
   html, .carrossel-trilho {
     scroll-behavior: auto;
   }
-  .carrossel-btn {
+  .carrossel-btn,
+  .vehicle-card .photo {
     transition: none;
   }
 }

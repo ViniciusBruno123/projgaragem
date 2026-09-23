@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
+from django.db.models import Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -115,9 +116,21 @@ class VeiculoFormsetMixin:
 
     def get_formset(self):
         instance = getattr(self, 'object', None)
+
+        # Fotos novas entram no fim da ordem de exibição por padrão (em vez de precisar
+        # digitar o número certo à mão): cada slot extra em branco já vem pré-preenchido
+        # com o próximo número. Precisa ser igual no GET e no POST — é o que o Django usa
+        # pra saber se um slot extra foi deixado do jeito que veio (então está vazio de
+        # verdade, sem precisar de foto) ou se o dono realmente preencheu algo nele.
+        proxima_ordem = 1
+        if instance and instance.pk:
+            maior = instance.fotos.aggregate(Max('ordem'))['ordem__max']
+            proxima_ordem = (maior or 0) + 1
+        initial_extra = [{'ordem': proxima_ordem + i} for i in range(FotoVeiculoFormSet.extra)]
+
         if self.request.method == 'POST':
-            return FotoVeiculoFormSet(self.request.POST, self.request.FILES, instance=instance)
-        return FotoVeiculoFormSet(instance=instance)
+            return FotoVeiculoFormSet(self.request.POST, self.request.FILES, instance=instance, initial=initial_extra)
+        return FotoVeiculoFormSet(instance=instance, initial=initial_extra)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

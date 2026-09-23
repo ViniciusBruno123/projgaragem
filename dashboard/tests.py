@@ -203,7 +203,9 @@ class UploadDeFotoViewTests(TestCase):
                 'fotos-TOTAL_FORMS': 2, 'fotos-INITIAL_FORMS': 1,
                 'fotos-0-id': foto.pk, 'fotos-0-veiculo': foto.veiculo.pk,
                 'fotos-0-principal': 'on', 'fotos-0-ordem': 0,
-                'fotos-1-ordem': 0,
+                # 1 é o valor que o próprio formulário pré-preenche pro slot extra (a foto
+                # existente tem ordem=0); deixando como veio, o Django trata como "vazio".
+                'fotos-1-ordem': 1,
             }),
         )
         self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
@@ -211,6 +213,45 @@ class UploadDeFotoViewTests(TestCase):
         foto.refresh_from_db()
         self.assertEqual(foto.imagem.name, nome_original)
         self.assertEqual(foto.veiculo.titulo, 'Moto Teste Revisada')
+
+    def test_formulario_de_criacao_ja_mostra_seis_slots_de_foto(self):
+        resp = self.client.get(reverse('dashboard:veiculo_create'))
+        self.assertEqual(resp.context['formset'].total_form_count(), 6)
+        ordens = [f.initial.get('ordem') for f in resp.context['formset'].forms]
+        self.assertEqual(ordens, [1, 2, 3, 4, 5, 6])
+
+    def test_varias_fotos_num_unico_envio_sem_precisar_salvar_de_novo(self):
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados_veiculo(**{
+            'fotos-TOTAL_FORMS': 3,
+            'fotos-0-imagem': gerar_foto((1200, 900), nome='foto1.jpg'), 'fotos-0-ordem': 1,
+            'fotos-1-imagem': gerar_foto((1200, 900), nome='foto2.jpg'), 'fotos-1-ordem': 2,
+            'fotos-2-imagem': gerar_foto((1200, 900), nome='foto3.jpg'), 'fotos-2-ordem': 3,
+        }))
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(FotoVeiculo.objects.count(), 3)
+        self.assertEqual(list(FotoVeiculo.objects.order_by('ordem').values_list('ordem', flat=True)), [1, 2, 3])
+
+    def test_foto_adicionada_ao_editar_entra_na_ultima_posicao(self):
+        self._criar_com_foto()  # 1 foto, ordem=0
+        veiculo = FotoVeiculo.objects.get().veiculo
+
+        resp = self.client.get(reverse('dashboard:veiculo_update', kwargs={'pk': veiculo.pk}))
+        formset = resp.context['formset']
+        # forms[0] é a foto existente; o primeiro slot extra já vem com o próximo número.
+        self.assertEqual(formset.forms[1].initial.get('ordem'), 1)
+
+        resp = self.client.post(
+            reverse('dashboard:veiculo_update', kwargs={'pk': veiculo.pk}),
+            self._dados_veiculo(**{
+                'fotos-TOTAL_FORMS': 2, 'fotos-INITIAL_FORMS': 1,
+                'fotos-0-id': FotoVeiculo.objects.get().pk, 'fotos-0-veiculo': veiculo.pk, 'fotos-0-ordem': 0,
+                'fotos-1-imagem': gerar_foto((1200, 900), nome='segunda.jpg'), 'fotos-1-ordem': 1,
+            }),
+        )
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(
+            list(veiculo.fotos.order_by('ordem').values_list('ordem', flat=True)), [0, 1],
+        )
 
 
 class TaxaDeJurosNoPainelTests(TestCase):

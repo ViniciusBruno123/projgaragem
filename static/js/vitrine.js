@@ -83,7 +83,8 @@
   // (texto, quase sem peso); a imagem em si só é baixada se alguém passar o mouse de
   // verdade — numa vitrine com dezenas de veículos, ninguém paira sobre todos ao mesmo
   // tempo, então isso não vira "carregar tudo de uma vez".
-  var INTERVALO_PREVIA_MS = 900;
+  var INTERVALO_PREVIA_MS = 2200; // tempo que cada foto fica na tela
+  var DURACAO_FADE_MS = 280; // duração do esmaecer entre uma foto e outra
   document.querySelectorAll('.photo-link[data-fotos-extra]').forEach(function (link) {
     if (reduzMovimento) return;
     var urls = link.dataset.fotosExtra.split('|').filter(Boolean);
@@ -94,9 +95,23 @@
     var indice = 0;
     var timer = null;
 
+    // Pré-carrega a próxima foto antes de esmaecer a atual, pra não trocar pra uma
+    // imagem em branco enquanto ela ainda está baixando (rede lenta).
+    function trocarComFade(novaUrl) {
+      var pronta = new Image();
+      pronta.onload = function () {
+        img.style.opacity = '0';
+        setTimeout(function () {
+          img.src = novaUrl;
+          img.style.opacity = '1';
+        }, DURACAO_FADE_MS);
+      };
+      pronta.src = novaUrl;
+    }
+
     function mostrar(i) {
       indice = i;
-      img.src = indice === 0 ? original : urls[indice - 1];
+      trocarComFade(indice === 0 ? original : urls[indice - 1]);
     }
 
     function comecar(evento) {
