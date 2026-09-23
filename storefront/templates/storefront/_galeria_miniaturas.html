@@ -1,0 +1,18 @@
+{% comment %}
+Galeria de miniaturas da foto do veículo — só aparece com 2+ fotos. A posição na página
+depende do tipo (ver detalhe_veiculo.html): moto tem foto retrato (mais alta que o texto
+ao lado), então a galeria fica na coluna de texto, embaixo da descrição, aproveitando o
+espaço que sobraria vazio ali; carro tem foto paisagem (mais baixa), então a galeria fica
+embaixo da própria foto, como antes.
+{% endcomment %}
+{% if veiculo.fotos.count > 1 %}
+    <div class="galeria-miniaturas">
+        {% for foto in veiculo.fotos.all %}
+            <button type="button" class="galeria-miniatura{% if forloop.first %} active{% endif %}"
+                    data-bs-target="#carouselFotos" data-bs-slide-to="{{ forloop.counter0 }}"
+                    aria-label="Ver foto {{ forloop.counter }} de {{ veiculo.fotos.count }}">
+                <img src="{{ foto.imagem.url }}" alt="">
+            </button>
+        {% endfor %}
+    </div>
+{% endif %}

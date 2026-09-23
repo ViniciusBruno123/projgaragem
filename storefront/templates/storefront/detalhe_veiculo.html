@@ -40,16 +40,8 @@
                         </button>
                     {% endif %}
                 </div>
-                {% if veiculo.fotos.count > 1 %}
-                    <div class="galeria-miniaturas mb-4">
-                        {% for foto in veiculo.fotos.all %}
-                            <button type="button" class="galeria-miniatura{% if forloop.first %} active{% endif %}"
-                                    data-bs-target="#carouselFotos" data-bs-slide-to="{{ forloop.counter0 }}"
-                                    aria-label="Ver foto {{ forloop.counter }} de {{ veiculo.fotos.count }}">
-                                <img src="{{ foto.imagem.url }}" alt="">
-                            </button>
-                        {% endfor %}
-                    </div>
+                {% if veiculo.tipo == 'carro' %}
+                    {% include "storefront/_galeria_miniaturas.html" %}
                 {% endif %}
             {% else %}
                 <div class="photo-empty foto-{{ veiculo.tipo }} mb-4">sem fotos</div>
@@ -68,7 +60,11 @@
             {% if veiculo.descricao %}
                 <h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Descrição</h2>
                 <div class="descricao-veiculo" id="descricao-veiculo">{{ veiculo.descricao|linebreaks }}</div>
-                <button type="button" class="btn btn-link btn-sm px-0" id="descricao-leia-mais">Leia mais</button>
+                <button type="button" class="btn btn-link btn-sm px-0 mb-3" id="descricao-leia-mais">Leia mais</button>
+            {% endif %}
+
+            {% if veiculo.tipo == 'moto' %}
+                {% include "storefront/_galeria_miniaturas.html" %}
             {% endif %}
         </div>
     </div>

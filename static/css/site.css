@@ -275,6 +275,7 @@ a:hover {
   gap: 0.5rem;
   overflow-x: auto;
   padding-bottom: 2px;
+  margin: 1rem 0;
 }
 .galeria-miniatura {
   flex: 0 0 4.5rem;

@@ -301,6 +301,30 @@ class GaleriaDeFotosEDescricaoTests(TestCase):
         self.assertIn('data-bs-slide-to="2"', html)
         self.assertIn('js/galeria_fotos.js', html)
 
+    def test_moto_mostra_a_galeria_depois_da_descricao(self):
+        # Foto de moto é retrato (mais alta que o texto ao lado): a galeria fica na coluna
+        # de texto, no espaço que sobraria vazio depois da descrição — não embaixo da foto.
+        for nome in ('foto1.jpg', 'foto2.jpg'):
+            FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome=nome))
+        html = self.client.get(self.url).content.decode()
+        self.assertLess(html.index('Moto revisada'), html.index('galeria-miniaturas'))
+
+    def test_carro_mostra_a_galeria_embaixo_da_foto(self):
+        # Foto de carro é paisagem (mais baixa): a galeria continua embaixo da própria foto.
+        veiculo_carro = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.CARRO, titulo='Carro Galeria', marca='Fiat',
+            modelo='Uno', ano_fabricacao=2020, ano_modelo=2020, quilometragem=30000,
+            combustivel=Veiculo.Combustivel.FLEX, potencia_motor='1.0', preco='40000.00',
+            descricao='Carro revisado.',
+        )
+        for nome in ('foto1.jpg', 'foto2.jpg'):
+            FotoVeiculo.objects.create(veiculo=veiculo_carro, imagem=gerar_foto((1200, 900), nome=nome))
+        url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': veiculo_carro.slug,
+        })
+        html = self.client.get(url).content.decode()
+        self.assertLess(html.index('galeria-miniaturas'), html.index('Carro revisado'))
+
     def test_com_uma_unica_foto_nao_mostra_galeria(self):
         FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='unica.jpg'))
         self.assertNotContains(self.client.get(self.url), 'galeria-miniaturas')
