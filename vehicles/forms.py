@@ -48,3 +48,12 @@ class FotoVeiculoForm(ImagemOtimizadaMixin, forms.ModelForm):
 
     def clean_imagem(self):
         return self._limpar_imagem_otimizada('imagem')
+
+    def has_changed(self):
+        """"Ordem" sozinho não conta como "o dono mexeu nesse slot" — só isso não pode
+        obrigar a enviar uma foto. Sem isso, um slot vazio do formset (extra=6 no painel)
+        que só teve o número de "ordem" alterado por engano — por exemplo, rolar a página
+        com o mouse em cima de um campo numérico focado muda o valor dele em vez de rolar
+        (ver static/js/numero_sem_scroll.js) — passava a exigir a foto, mesmo sem o dono
+        ter escolhido nada ali."""
+        return bool(set(self.changed_data) - {'ordem'})

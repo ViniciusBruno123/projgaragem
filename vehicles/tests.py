@@ -162,6 +162,20 @@ class FotoVeiculoFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('imagem', form.errors)
 
+    def test_so_ordem_diferente_do_inicial_nao_conta_como_alteracao(self):
+        # Um slot vazio do formset (extra=6 no painel) só com "ordem" diferente do
+        # pré-preenchido — por exemplo, um scroll acidental sobre o campo numérico focado
+        # (ver static/js/numero_sem_scroll.js) — não pode virar "campo obrigatório" pra foto.
+        form = FotoVeiculoForm(data={'ordem': 99}, initial={'ordem': 4}, files={})
+        self.assertFalse(form.has_changed())
+
+    def test_imagem_ou_principal_diferentes_continuam_contando_como_alteracao(self):
+        form = FotoVeiculoForm(data={'ordem': 4, 'principal': 'on'}, initial={'ordem': 4}, files={})
+        self.assertTrue(form.has_changed())
+
+        form = FotoVeiculoForm(data={'ordem': 4}, initial={'ordem': 4}, files={'imagem': gerar_foto((100, 100))})
+        self.assertTrue(form.has_changed())
+
 
 class ExibicaoDoVeiculoTests(SimpleTestCase):
     def test_ano_curto_usa_os_dois_ultimos_digitos(self):

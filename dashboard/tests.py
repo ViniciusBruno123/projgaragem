@@ -214,6 +214,25 @@ class UploadDeFotoViewTests(TestCase):
         self.assertEqual(foto.imagem.name, nome_original)
         self.assertEqual(foto.veiculo.titulo, 'Moto Teste Revisada')
 
+    def test_ordem_do_slot_vazio_alterada_por_acidente_nao_trava_a_edicao(self):
+        # Reproduz o bug relatado: rolar o mouse com um campo "Ordem" focado muda o valor
+        # dele (comportamento nativo do navegador em <input type="number">, ver
+        # static/js/numero_sem_scroll.js) — isso sozinho não pode exigir uma foto no slot.
+        self._criar_com_foto()
+        foto = FotoVeiculo.objects.get()
+
+        resp = self.client.post(
+            reverse('dashboard:veiculo_update', kwargs={'pk': foto.veiculo.pk}),
+            self._dados_veiculo(**{
+                'fotos-TOTAL_FORMS': 2, 'fotos-INITIAL_FORMS': 1,
+                'fotos-0-id': foto.pk, 'fotos-0-veiculo': foto.veiculo.pk,
+                'fotos-0-principal': 'on', 'fotos-0-ordem': 0,
+                'fotos-1-ordem': 99,  # bem diferente do 1 que o formulário pré-preencheu
+            }),
+        )
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        self.assertEqual(FotoVeiculo.objects.count(), 1)  # não criou uma segunda foto vazia
+
     def test_formulario_de_criacao_ja_mostra_seis_slots_de_foto(self):
         resp = self.client.get(reverse('dashboard:veiculo_create'))
         self.assertEqual(resp.context['formset'].total_form_count(), 6)
