@@ -89,6 +89,14 @@ class DadosGaragemViewTests(TestCase):
         self.assertContains(vitrine, '--brand-color: #FFFFFF;')
         self.assertContains(vitrine, '--brand-font: "Oswald", sans-serif;')
 
+    def test_select_de_fonte_pede_a_sincronizacao_da_caixa_fechada(self):
+        # A "Aa" de cada opção só aparece com a lista aberta (limitação do <select> nativo);
+        # data-previa-fonte é o gancho que static/js/previa_fonte.js usa pra também estilizar
+        # a caixa fechada, ver dashboard.forms.SelectComPreviaDeFonte.
+        resp = self.client.get(reverse('dashboard:dados_garagem'))
+        self.assertContains(resp, 'data-previa-fonte="true"')
+        self.assertContains(resp, 'js/previa_fonte.js')
+
 
 class AtualizarStatusPropostaViewTests(TestCase):
     def setUp(self):

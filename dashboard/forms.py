@@ -27,7 +27,16 @@ class SelectComPreviaDeFonte(forms.Select):
     para usá-lo direto como font-family do <option> — sem precisar de uma tabela à parte.
     Funciona nos navegadores baseados em Chromium e no Firefox; no Safari a "Aa" aparece sem
     estilo (degrada bem: o texto continua lá, só não fica na fonte de amostra).
+
+    O navegador só aplica esse estilo na LISTA aberta — a caixa fechada do <select> sempre usa
+    a fonte do próprio elemento, não a da opção escolhida (limitação do <select> nativo). O
+    atributo data-previa-fonte abaixo é lido por static/js/previa_fonte.js, que copia a fonte
+    da opção selecionada para o próprio <select>, também na caixa fechada.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs['data-previa-fonte'] = 'true'
 
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
