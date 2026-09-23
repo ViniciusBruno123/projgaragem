@@ -320,3 +320,49 @@ class OpenGraphTests(TestCase):
         })
         resp = self.client.get(url)
         self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/capa')
+
+
+class SimuladorParcialTests(TestCase):
+    """A view storefront:simular_financiamento devolve só o miolo do simulador
+    (sem o resto da página) — é o que static/js/simulador_financiamento.js busca
+    via fetch pra "Calcular" não recarregar a página inteira. Ver financing/tests.py
+    para os testes da conta em si (taxa, parcela) — aqui é só o fragmento e o isolamento."""
+
+    def setUp(self):
+        dono = User.objects.create_user('dono_sim', 'dono_sim@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Simulador', slug='garagem-simulador',
+            telefone_whatsapp='5517999999999', email_contato='dono_sim@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Moto Simulador', marca='Honda',
+            modelo='CG', ano_fabricacao=2022, ano_modelo=2022, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='10000.00',
+        )
+        self.url = reverse('storefront:simular_financiamento', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+
+    def test_devolve_so_o_fragmento_sem_o_resto_da_pagina(self):
+        resp = self.client.get(self.url, {'valor_entrada': '0', 'numero_parcelas': '12'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Simular financiamento')
+        self.assertContains(resp, '12x de R$')
+        self.assertNotContains(resp, '<html')
+        self.assertNotContains(resp, 'site-header')
+
+    def test_404_para_veiculo_de_outra_garagem(self):
+        outro_dono = User.objects.create_user('dono_sim_b', 'b@example.com', 'senha12345')
+        outra_garagem = Garagem.objects.create(
+            dono=outro_dono, nome='Outra Garagem', slug='outra-garagem-simulador',
+            telefone_whatsapp='5517999999998', email_contato='b@example.com',
+        )
+        url = reverse('storefront:simular_financiamento', kwargs={
+            'garagem_slug': outra_garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_404_para_veiculo_indisponivel(self):
+        self.veiculo.disponivel = False
+        self.veiculo.save()
+        self.assertEqual(self.client.get(self.url).status_code, 404)

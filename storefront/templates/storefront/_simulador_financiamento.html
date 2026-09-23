@@ -1,0 +1,34 @@
+{% comment %}
+Conteúdo do simulador de financiamento. Renderizado inteiro na página do veículo
+(detalhe_veiculo.html) e também sozinho pela view storefront:simular_financiamento,
+que static/js/simulador_financiamento.js busca via fetch ao clicar em "Calcular" —
+assim só essa caixa atualiza, sem recarregar a página inteira nem perder a rolagem.
+Espera do contexto: form, parcela, valor_financiado, taxa.
+{% endcomment %}
+<h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Simular financiamento</h2>
+<form method="get">
+    {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-accent">Calcular</button>
+</form>
+
+{% if parcela %}
+    <p class="mt-3 mb-0">
+        Aproximadamente <strong class="num">{{ form.cleaned_data.numero_parcelas }}x de R$ {{ parcela|floatformat:"2g" }}</strong>.
+    </p>
+{% elif valor_financiado is not None and valor_financiado <= 0 %}
+    <p class="mt-3 mb-0" style="color: var(--danger);">O valor de entrada não pode ser maior ou igual ao preço do veículo.</p>
+{% endif %}
+<p class="small mt-3 mb-1">
+    Taxa considerada: <span class="num">{{ taxa.valor }}% ao mês</span> —
+    {% if taxa.origem == 'garagem' %}taxa informada pela garagem.
+    {% elif taxa.origem == 'mercado' %}média de mercado do Banco Central (ref. {{ taxa.referencia|date:"m/Y" }}).
+    {% else %}taxa estimada.{% endif %}
+</p>
+<p class="text-muted small mb-0">
+    Valores estimados, sujeitos a aprovação de crédito. Não constitui proposta de financiamento.
+</p>

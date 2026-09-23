@@ -36,10 +36,9 @@ def frontpage(request, garagem_slug):
     })
 
 
-def detalhe_veiculo(request, garagem_slug, veiculo_slug):
-    garagem = get_garagem_ativa_ou_404(garagem_slug)
-    veiculo = get_object_or_404(garagem.veiculos, slug=veiculo_slug, disponivel=True)
-
+def _contexto_simulacao(request, garagem, veiculo):
+    """Compartilhado entre a página do veículo e o fragmento AJAX do simulador
+    (storefront:simular_financiamento) — mesma conta dos dois lados."""
     taxa = taxa_para(garagem)
     form = SimulacaoFinanciamentoForm(request.GET or None, initial={'numero_parcelas': 24})
     parcela = None
@@ -48,12 +47,27 @@ def detalhe_veiculo(request, garagem_slug, veiculo_slug):
         valor_financiado = veiculo.preco - form.cleaned_data['valor_entrada']
         if valor_financiado > 0:
             parcela = calcular_parcela_price(valor_financiado, taxa.valor, form.cleaned_data['numero_parcelas'])
-
-    return render(request, 'storefront/detalhe_veiculo.html', {
+    return {
         'garagem': garagem,
         'veiculo': veiculo,
         'form': form,
         'parcela': parcela,
         'taxa': taxa,
         'valor_financiado': valor_financiado,
-    })
+    }
+
+
+def detalhe_veiculo(request, garagem_slug, veiculo_slug):
+    garagem = get_garagem_ativa_ou_404(garagem_slug)
+    veiculo = get_object_or_404(garagem.veiculos, slug=veiculo_slug, disponivel=True)
+    return render(request, 'storefront/detalhe_veiculo.html', _contexto_simulacao(request, garagem, veiculo))
+
+
+def simular_financiamento(request, garagem_slug, veiculo_slug):
+    """Só o miolo do simulador (sem o resto da página) — usado pelo fetch de
+    static/js/simulador_financiamento.js, pra "Calcular" não recarregar a página
+    inteira nem jogar a rolagem pro topo. Sem JavaScript, o formulário continua
+    funcionando normalmente: ele aponta pra a própria página do veículo, não pra cá."""
+    garagem = get_garagem_ativa_ou_404(garagem_slug)
+    veiculo = get_object_or_404(garagem.veiculos, slug=veiculo_slug, disponivel=True)
+    return render(request, 'storefront/_simulador_financiamento.html', _contexto_simulacao(request, garagem, veiculo))
