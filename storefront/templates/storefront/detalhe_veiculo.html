@@ -23,7 +23,7 @@
     <div class="row">
         <div class="col-md-6">
             {% if veiculo.fotos.all %}
-                <div id="carouselFotos" class="carousel slide mb-4" style="border: 1px solid var(--line);">
+                <div id="carouselFotos" class="carousel slide mb-3" style="border: 1px solid var(--line);">
                     <div class="carousel-inner">
                         {% for foto in veiculo.fotos.all %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
@@ -40,6 +40,17 @@
                         </button>
                     {% endif %}
                 </div>
+                {% if veiculo.fotos.count > 1 %}
+                    <div class="galeria-miniaturas mb-4">
+                        {% for foto in veiculo.fotos.all %}
+                            <button type="button" class="galeria-miniatura{% if forloop.first %} active{% endif %}"
+                                    data-bs-target="#carouselFotos" data-bs-slide-to="{{ forloop.counter0 }}"
+                                    aria-label="Ver foto {{ forloop.counter }} de {{ veiculo.fotos.count }}">
+                                <img src="{{ foto.imagem.url }}" alt="">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% else %}
                 <div class="photo-empty foto-{{ veiculo.tipo }} mb-4">sem fotos</div>
             {% endif %}
@@ -50,12 +61,14 @@
             <p class="text-muted mb-2">{{ veiculo.marca }} {{ veiculo.modelo }} · {{ veiculo.get_tipo_display }}</p>
             <p class="price-tag num">R$ {{ veiculo.preco|floatformat:"2g" }}</p>
             {% include "storefront/_specs.html" with detalhado=True %}
-            {% if veiculo.descricao %}
-                <p>{{ veiculo.descricao|linebreaks }}</p>
-            {% endif %}
-            <a href="{% url 'storefront:enviar_proposta' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent btn-lg">
+            <a href="{% url 'storefront:enviar_proposta' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent btn-lg mb-4">
                 Tenho interesse
             </a>
+
+            {% if veiculo.descricao %}
+                <h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Descrição</h2>
+                <p>{{ veiculo.descricao|linebreaks }}</p>
+            {% endif %}
         </div>
     </div>
 
@@ -72,4 +85,5 @@
 
 {% block extra_scripts %}
 <script src="{% static 'js/simulador_financiamento.js' %}"></script>
+<script src="{% static 'js/galeria_fotos.js' %}"></script>
 {% endblock %}

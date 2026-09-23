@@ -268,6 +268,60 @@ class IconesECarrosselTests(TestCase):
         self.assertContains(resp, '#i-odometro')
 
 
+class GaleriaDeFotosEDescricaoTests(TestCase):
+    """Abaixo do "Tenho interesse" a página não pode ficar vazia: galeria de miniaturas
+    (quando há mais de uma foto) e a descrição do anúncio (quando o dono escreveu uma)."""
+
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_galeria', 'dono_galeria@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Galeria', slug='garagem-galeria',
+            telefone_whatsapp='5517999999999', email_contato='dono_galeria@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Moto Galeria', marca='Honda',
+            modelo='CG', ano_fabricacao=2022, ano_modelo=2022, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, preco='12000.00', descricao='Moto revisada, só rodar.',
+        )
+        self.url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+
+    def test_com_varias_fotos_mostra_a_galeria_de_miniaturas_sincronizada(self):
+        for nome in ('foto1.jpg', 'foto2.jpg', 'foto3.jpg'):
+            FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome=nome))
+
+        html = self.client.get(self.url).content.decode()
+        self.assertEqual(html.count('galeria-miniatura'), 1 + 3)  # a classe CSS + 3 botões
+        self.assertIn('data-bs-slide-to="0"', html)
+        self.assertIn('data-bs-slide-to="2"', html)
+        self.assertIn('js/galeria_fotos.js', html)
+
+    def test_com_uma_unica_foto_nao_mostra_galeria(self):
+        FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='unica.jpg'))
+        self.assertNotContains(self.client.get(self.url), 'galeria-miniaturas')
+
+    def test_sem_foto_nenhuma_nao_mostra_galeria(self):
+        resp = self.client.get(self.url)
+        self.assertNotContains(resp, 'galeria-miniaturas')
+        self.assertContains(resp, 'sem fotos')
+
+    def test_descricao_aparece_com_titulo_proprio_abaixo_do_botao(self):
+        html = self.client.get(self.url).content.decode()
+        self.assertIn('Descrição', html)
+        self.assertIn('Moto revisada, só rodar.', html)
+        self.assertLess(html.index('Tenho interesse'), html.index('Moto revisada'))
+
+    def test_sem_descricao_nao_mostra_o_titulo_descricao(self):
+        self.veiculo.descricao = ''
+        self.veiculo.save()
+        self.assertNotContains(self.client.get(self.url), '>Descrição<')
+
+
 class OpenGraphTests(TestCase):
     """O link da vitrine é colado no WhatsApp — o preview (título, texto e foto) é parte do produto."""
 
