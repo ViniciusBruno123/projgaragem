@@ -37,6 +37,7 @@
         </a>
         <div class="d-flex align-items-center gap-3">
             <span class="meta d-none d-sm-inline">{{ garagem.cidade }}</span>
+            <a href="{% url 'storefront:enviar_avaliacao' garagem_slug=garagem.slug %}" class="btn btn-outline-ink btn-sm">Avaliar veículo</a>
             <a href="{% url 'storefront:contato' garagem_slug=garagem.slug %}" class="btn btn-outline-ink btn-sm">Fale conosco</a>
         </div>
     </div>
