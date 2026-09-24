@@ -89,12 +89,27 @@ a:hover {
   border-bottom: 3px solid var(--ink);
   padding: 0.9rem 0;
 }
+/* Altura da linha do cabeçalho não pode depender de ter ou não logo, nem da proporção dela —
+   senão isso muda a altura do cabeçalho, que muda o corte da capa (background-size: cover).
+   min-height reserva sempre o espaço da logo, com ou sem ela. */
+.site-header .container {
+  min-height: 5.625rem;
+}
 .site-header .brand {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-width: 0;
   font-size: 1.5rem;
   color: var(--brand-color, var(--ink));
   font-family: var(--brand-font, var(--font-display));
   text-decoration: none;
   line-height: 1;
+}
+.site-header .brand span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .site-header .brand:hover {
   color: var(--accent);
