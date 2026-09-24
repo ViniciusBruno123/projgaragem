@@ -193,26 +193,35 @@ a:hover {
   color: var(--accent);
 }
 
-/* --- Botão flutuante de WhatsApp: menos "bolha de app", mais etiqueta --- */
-.whatsapp-float {
+/* --- Botões flutuantes de rede social (WhatsApp, Instagram): só ícone, empilhados no
+   canto — texto ao lado ("WhatsApp") tomava espaço à toa e não cabia mais um segundo
+   ícone ao lado dele. */
+.social-flutuante {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 1050;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
+}
+.social-float {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
   background: var(--ink);
   color: var(--paper);
-  padding: 0.6rem 1rem;
   border-radius: 2px;
   text-decoration: none;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.875rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
-.whatsapp-float:hover {
+.social-float .ico {
+  width: 1.3em;
+  height: 1.3em;
+}
+.social-float:hover {
   background: var(--accent);
   color: var(--accent-ink);
 }
