@@ -221,7 +221,29 @@ a:hover {
    (brigavam com a capa em telas largas/banners cheios) e ficam atrás de um botão só, que
    sinaliza "tem mais aqui" sem disputar espaço visual com a foto. --- */
 .menu-lateral-toggle {
-  padding: 0.4rem 0.55rem;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.menu-lateral-toggle:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.menu-lateral-toggle .ico {
+  width: 1.3em;
+  height: 1.3em;
 }
 .menu-lateral {
   background: var(--paper);

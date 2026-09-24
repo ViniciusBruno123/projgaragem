@@ -35,12 +35,13 @@
             {% if garagem.logo %}<img src="{{ garagem.logo.url }}" alt="" class="brand-logo">{% endif %}
             <span>{{ garagem.nome }}</span>
         </a>
-        <button type="button" class="btn btn-outline-ink btn-sm menu-lateral-toggle" data-bs-toggle="offcanvas"
-            data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">
-            <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
-        </button>
     </div>
 </header>
+
+<button type="button" class="menu-lateral-toggle" data-bs-toggle="offcanvas"
+    data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">
+    <svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg>
+</button>
 
 <div class="offcanvas offcanvas-end menu-lateral" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralLabel">
     <div class="offcanvas-header">
