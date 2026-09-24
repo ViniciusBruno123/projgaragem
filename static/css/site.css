@@ -217,6 +217,31 @@ a:hover {
   color: var(--accent-ink);
 }
 
+/* --- Menu lateral (offcanvas): cidade + avaliar + fale conosco saem do topo do cabeçalho
+   (brigavam com a capa em telas largas/banners cheios) e ficam atrás de um botão só, que
+   sinaliza "tem mais aqui" sem disputar espaço visual com a foto. --- */
+.menu-lateral-toggle {
+  padding: 0.4rem 0.55rem;
+}
+.menu-lateral {
+  background: var(--paper);
+  color: var(--ink);
+}
+.menu-lateral .offcanvas-header {
+  border-bottom: 1px solid var(--line);
+}
+.menu-lateral .offcanvas-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+.menu-lateral .meta {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
 /* --- Banner "quer vender/trocar seu veículo?": propositalmente diferente do fundo claro
    dos cards de veículo (é a ação oposta — vender pra garagem, não comprar dela) --- */
 .banner-venda {
