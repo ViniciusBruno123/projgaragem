@@ -149,6 +149,10 @@ a:hover {
 .site-header--capa .btn-outline-ink {
   color: var(--brand-color, var(--paper));
   border-color: var(--brand-color, var(--paper));
+  /* Fundo sólido semitransparente: sem isso, a leitura do botão depende da capa ser escura
+     bem atrás dele — qualquer foto clara ou muito "cheia" ali (como uma foto de produto com
+     fundo branco) derruba o contraste. Um véu escuro constante resolve para qualquer capa. */
+  background: rgba(26, 26, 24, 0.35);
 }
 .site-header--capa .btn-outline-ink:hover {
   background: var(--accent);
