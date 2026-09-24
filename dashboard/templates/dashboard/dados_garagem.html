@@ -12,23 +12,65 @@
 <h1>Dados da garagem</h1>
 <p class="text-muted">Essas informações aparecem na sua vitrine pública. A taxa de juros é a usada no simulador de financiamento.</p>
 
-<form method="post" enctype="multipart/form-data" style="max-width: 500px;">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {% for field in form %}
-        <div class="mb-3">
-            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {% if field.name == 'logo' and garagem.logo %}
-                <img src="{{ garagem.logo.url }}" alt="Logo atual" class="thumb-atual">
-            {% elif field.name == 'capa' and garagem.capa %}
-                <img src="{{ garagem.capa.url }}" alt="Capa atual" class="thumb-atual thumb-atual--capa">
-            {% endif %}
-            {{ field }}
-            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-            {% if field.errors %}
-                <div class="text-danger small">{{ field.errors }}</div>
-            {% endif %}
-        </div>
-    {% endfor %}
+    <div style="max-width: 500px;">
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% if field.name == 'logo' and garagem.logo %}
+                    <img src="{{ garagem.logo.url }}" alt="Logo atual" class="thumb-atual">
+                {% endif %}
+                {{ field }}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2 class="h5 mt-4">Faixas superiores (banners)</h2>
+    <p class="text-muted small">
+        Aparecem atrás do cabeçalho da sua vitrine, alternando a cada poucos segundos quando há mais de uma —
+        dá pra ter uma faixa fixa da sua marca e outras de campanha (ex: "aceitamos seu usado na troca"). Opcional.
+    </p>
+    {{ formset.management_form }}
+    {% if formset.non_form_errors %}
+        <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+    {% endif %}
+    <div class="row row-cols-1 row-cols-md-2 g-2 mb-3">
+        {% for banner_form in formset %}
+            <div class="col">
+                <div class="foto-form border rounded p-2">
+                    {% if banner_form.instance.pk and banner_form.instance.imagem %}
+                        <div class="foto-form-atual foto-form-atual--banner">
+                            <img src="{{ banner_form.instance.imagem.url }}" alt="Banner atual">
+                            <span class="text-muted small">Banner atual — envie outro só se quiser trocar.</span>
+                        </div>
+                    {% endif %}
+                    {{ banner_form.imagem }}
+                    {% if banner_form.imagem.errors %}<div class="text-danger small">{{ banner_form.imagem.errors }}</div>{% endif %}
+
+                    <div class="foto-form-linha">
+                        <div class="foto-form-ordem">
+                            <label class="small text-muted mb-0" for="{{ banner_form.ordem.id_for_label }}">Ordem</label>
+                            {{ banner_form.ordem }}
+                        </div>
+                        {% if banner_form.instance.pk %}
+                            <div class="form-check mb-0 ms-auto">
+                                {{ banner_form.DELETE }}
+                                <label class="form-check-label small text-danger" for="{{ banner_form.DELETE.id_for_label }}">Excluir</label>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if banner_form.ordem.errors %}<div class="text-danger small">{{ banner_form.ordem.errors }}</div>{% endif %}
+                    {% for hidden in banner_form.hidden_fields %}{{ hidden }}{% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
     <button type="submit" class="btn btn-accent">Salvar</button>
 </form>
 

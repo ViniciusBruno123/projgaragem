@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load vitrine_extras %}
+{% load static vitrine_extras %}
 
 {% block extra_head %}
 <style>
@@ -17,26 +17,40 @@
 <meta property="og:title" content="{% block og_title %}{{ garagem.nome }}{% endblock %}">
 <meta property="og:description" content="{% block og_description %}Veja os veículos disponíveis na {{ garagem.nome }}, em {{ garagem.cidade }}.{% endblock %}">
 {% block og_image %}
-    {% if garagem.capa %}
-        <meta property="og:image" content="{% absolute_url garagem.capa.url %}">
-    {% elif garagem.logo %}
-        <meta property="og:image" content="{% absolute_url garagem.logo.url %}">
-    {% endif %}
+    {% with primeiro_banner=garagem.banners.first %}
+        {% if primeiro_banner %}
+            <meta property="og:image" content="{% absolute_url primeiro_banner.imagem.url %}">
+        {% elif garagem.logo %}
+            <meta property="og:image" content="{% absolute_url garagem.logo.url %}">
+        {% endif %}
+    {% endwith %}
 {% endblock %}
 <meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 
 {% block content %}
 {% include "storefront/_icones.html" %}
-<header class="site-header{% if garagem.capa %} site-header--capa{% endif %}"
-    {% if garagem.capa %}style="background-image: linear-gradient(180deg, rgba(26,26,24,.4), rgba(26,26,24,.6)), url('{{ garagem.capa.url }}');"{% endif %}>
+{% with banners=garagem.banners.all %}
+<header class="site-header{% if banners %} site-header--capa{% endif %}">
+    {% if banners %}
+        <div class="site-header-banners" data-intervalo="3000">
+            {% for banner in banners %}
+                <div class="site-header-banner-camada{% if forloop.first %} active{% endif %}" style="background-image: url('{{ banner.imagem.url }}');"></div>
+            {% endfor %}
+        </div>
+        <div class="site-header-scrim"></div>
+    {% endif %}
     <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <a class="brand" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">
-            {% if garagem.logo %}<img src="{{ garagem.logo.url }}" alt="" class="brand-logo">{% endif %}
-            <span>{{ garagem.nome }}</span>
-        </a>
+        {% if not banners or not garagem.ocultar_identidade_capa %}
+            <a class="brand" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">
+                {% if garagem.logo %}<img src="{{ garagem.logo.url }}" alt="" class="brand-logo">{% endif %}
+                <span>{{ garagem.nome }}</span>
+            </a>
+        {% endif %}
     </div>
 </header>
+{% if banners|length > 1 %}<script src="{% static 'js/banners_capa.js' %}"></script>{% endif %}
+{% endwith %}
 
 <button type="button" class="menu-lateral-toggle" data-bs-toggle="offcanvas"
     data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">

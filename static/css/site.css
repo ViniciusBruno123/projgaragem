@@ -152,10 +152,46 @@ a:hover {
    largura. Não usar aspect-ratio/min-height aqui: essa combinação com display:flex já causou
    a caixa vazar para fora do container (ver histórico de commits). */
 .site-header--capa {
-  background-size: cover;
-  background-position: center;
+  position: relative;
+  overflow: hidden;
   padding: clamp(2.75rem, 4.5vw + 1rem, 7rem) 0;
   border-bottom: 3px solid var(--accent);
+}
+.site-header--capa .container {
+  position: relative;
+  z-index: 2;
+}
+/* Uma garagem pode ter vários banners (Banner, tenants/models.py), alternados em transição —
+   cada um é uma camada absoluta, sobrepostas, e só a .active fica visível; a troca de "qual
+   está visível" é feita em JS (static/js/banners_capa.js). Com um banner só, não tem JS pra
+   carregar (ver _base_vitrine.html) e a única camada já nasce .active, então funciona igual
+   a uma capa fixa de antes. */
+.site-header-banners {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.site-header-banner-camada {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.site-header-banner-camada.active {
+  opacity: 1;
+}
+.site-header-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(26, 26, 24, .4), rgba(26, 26, 24, .6));
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header-banner-camada {
+    transition: none;
+  }
 }
 .site-header--capa .brand,
 .site-header--capa .meta {
@@ -269,23 +305,41 @@ a:hover {
   width: 1.3em;
   height: 1.3em;
 }
+/* Fundo sólido na cor de destaque da própria garagem (--accent, customizável por ela) — deixa
+   o menu com a cara da vitrine em vez de um cinza neutro, e evita ter que decidir contraste
+   contra uma foto de capa (não tem foto nenhuma atrás dele, é sempre a cor sólida). */
 .menu-lateral {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .menu-lateral .offcanvas-header {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 .menu-lateral .offcanvas-title {
   font-family: var(--font-display);
   text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.menu-lateral .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 .menu-lateral .meta {
   font-family: var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--ink-soft);
+  color: var(--accent-ink);
+  opacity: 0.75;
   font-size: 0.8rem;
+}
+.menu-lateral .btn-outline-ink {
+  color: var(--accent-ink);
+  border-color: var(--accent-ink);
+  background: rgba(255, 255, 255, 0.08);
+}
+.menu-lateral .btn-outline-ink:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: var(--accent);
 }
 
 /* --- Banner "quer vender/trocar seu veículo?": propositalmente diferente do fundo claro
@@ -642,6 +696,11 @@ a:hover {
 .input-ordem {
   width: 4.5rem;
   flex: none;
+}
+.foto-form-atual--banner img {
+  width: 168px;
+  height: 34px;
+  object-fit: cover;
 }
 .thumb-atual {
   display: block;

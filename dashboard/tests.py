@@ -10,7 +10,7 @@ from PIL import Image
 
 from financing.models import TaxaReferencia
 from leads.models import Avaliacao, Proposta
-from tenants.models import Garagem
+from tenants.models import Banner, Garagem
 from vehicles.models import FotoVeiculo, Veiculo
 from vehicles.tests import gerar_foto
 
@@ -32,6 +32,8 @@ class DadosGaragemViewTests(TestCase):
             'telefone_whatsapp': '5517999999999', 'endereco': '', 'horario_funcionamento': '',
             'instagram_url': '', 'facebook_url': '', 'cor_destaque': '#0F5C4D',
             'cor_titulo': '#1A1A18', 'fonte_titulo': Garagem.FonteTitulo.BIG_SHOULDERS,
+            'banners-TOTAL_FORMS': 3, 'banners-INITIAL_FORMS': 0,
+            'banners-MIN_NUM_FORMS': 0, 'banners-MAX_NUM_FORMS': 1000,
             **extra,
         }
 
@@ -337,6 +339,8 @@ class TaxaDeJurosNoPainelTests(TestCase):
             'endereco': '', 'horario_funcionamento': '', 'instagram_url': '', 'facebook_url': '',
             'cor_destaque': '#0F5C4D', 'cor_titulo': '#1A1A18',
             'fonte_titulo': Garagem.FonteTitulo.BIG_SHOULDERS, 'taxa_juros_mensal_padrao': taxa,
+            'banners-TOTAL_FORMS': 3, 'banners-INITIAL_FORMS': 0,
+            'banners-MIN_NUM_FORMS': 0, 'banners-MAX_NUM_FORMS': 1000,
         })
 
     def test_dono_informa_a_propria_taxa(self):
@@ -364,7 +368,7 @@ class TaxaDeJurosNoPainelTests(TestCase):
         self.assertContains(resp, '1,98% ao mês (ref. 07/2026)')
 
 
-class LogoECapaDaGaragemTests(TestCase):
+class LogoEBannerDaGaragemTests(TestCase):
     def setUp(self):
         media = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, media, ignore_errors=True)
@@ -378,27 +382,56 @@ class LogoECapaDaGaragemTests(TestCase):
         self.client.login(username='dono_logo', password='senha12345')
         self.url = reverse('dashboard:dados_garagem')
 
-    def test_dono_envia_logo_e_capa_que_sao_reduzidas(self):
-        resp = self.client.post(self.url, {
+    def _dados_basicos(self, **extra):
+        dados = {
             'telefone_whatsapp': '5517999999999',
             'endereco': '', 'horario_funcionamento': '', 'instagram_url': '', 'facebook_url': '',
             'cor_destaque': '#0F5C4D', 'cor_titulo': '#1A1A18',
             'fonte_titulo': Garagem.FonteTitulo.BIG_SHOULDERS,
-            'logo': gerar_foto((2000, 2000), nome='logo.png', formato='PNG', modo='RGBA'),
-            'capa': gerar_foto((3000, 900), nome='capa.jpg'),
-        })
+            'banners-TOTAL_FORMS': 3, 'banners-INITIAL_FORMS': 0,
+            'banners-MIN_NUM_FORMS': 0, 'banners-MAX_NUM_FORMS': 1000,
+        }
+        dados.update(extra)
+        return dados
+
+    def test_dono_envia_logo_que_e_reduzida(self):
+        resp = self.client.post(self.url, self._dados_basicos(
+            logo=gerar_foto((2000, 2000), nome='logo.png', formato='PNG', modo='RGBA'),
+        ))
         self.assertRedirects(resp, self.url)
 
         self.garagem.refresh_from_db()
         self.assertTrue(self.garagem.logo.name.endswith('.jpg'))  # sempre reencodada em JPEG
-        self.assertTrue(self.garagem.capa.name.endswith('.jpg'))
-        with Image.open(self.garagem.capa.path) as imagem:
+
+    def test_dono_envia_banner_que_e_reduzido(self):
+        resp = self.client.post(self.url, self._dados_basicos(**{
+            'banners-0-imagem': gerar_foto((3000, 900), nome='banner.jpg'), 'banners-0-ordem': 0,
+        }))
+        self.assertRedirects(resp, self.url)
+
+        banner = Banner.objects.get(garagem=self.garagem)
+        self.assertTrue(banner.imagem.name.endswith('.jpg'))
+        with Image.open(banner.imagem.path) as imagem:
             self.assertEqual(max(imagem.size), 1280)
 
-    def test_vitrine_publica_mostra_logo_e_capa_quando_cadastrados(self):
+    def test_dono_envia_varios_banners_de_uma_vez(self):
+        resp = self.client.post(self.url, self._dados_basicos(**{
+            'banners-0-imagem': gerar_foto((3000, 900), nome='banner1.jpg'), 'banners-0-ordem': 0,
+            'banners-1-imagem': gerar_foto((3000, 900), nome='banner2.jpg'), 'banners-1-ordem': 1,
+        }))
+        self.assertRedirects(resp, self.url)
+        self.assertEqual(Banner.objects.filter(garagem=self.garagem).count(), 2)
+
+    def test_dono_marca_para_mostrar_so_o_banner_sem_identidade(self):
+        resp = self.client.post(self.url, self._dados_basicos(ocultar_identidade_capa='on'))
+        self.assertRedirects(resp, self.url)
+        self.garagem.refresh_from_db()
+        self.assertTrue(self.garagem.ocultar_identidade_capa)
+
+    def test_vitrine_publica_mostra_logo_e_banner_quando_cadastrados(self):
         self.garagem.logo = gerar_foto((400, 400), nome='logo.jpg')
-        self.garagem.capa = gerar_foto((1600, 500), nome='capa.jpg')
         self.garagem.save()
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='banner.jpg'), ordem=0)
 
         resp = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
         self.assertContains(resp, 'brand-logo')

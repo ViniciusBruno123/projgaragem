@@ -12,7 +12,7 @@ from leads.models import Avaliacao, Proposta
 from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMixin, RespeitaLimiteDoPlanoMixin
 from vehicles.models import Veiculo
 
-from .forms import FotoVeiculoFormSet, GaragemForm, VeiculoForm, VeiculoPainelFiltroForm
+from .forms import BannerFormSet, FotoVeiculoFormSet, GaragemForm, VeiculoForm, VeiculoPainelFiltroForm
 from .security import bloqueado, limpar_falhas, registrar_falha
 
 
@@ -44,9 +44,29 @@ class DadosGaragemView(GaragemRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.garagem
 
+    def get_formset(self):
+        # Mesma lógica do VeiculoFormsetMixin (abaixo): banner novo entra sempre no fim da
+        # ordem, e o initial precisa ser igual no GET e no POST pro Django saber se um slot
+        # extra em branco foi mesmo deixado vazio ou se o dono preencheu algo nele.
+        proxima_ordem = (self.garagem.banners.aggregate(Max('ordem'))['ordem__max'] or 0) + 1
+        initial_extra = [{'ordem': proxima_ordem + i} for i in range(BannerFormSet.extra)]
+        if self.request.method == 'POST':
+            return BannerFormSet(self.request.POST, self.request.FILES, instance=self.garagem, initial=initial_extra)
+        return BannerFormSet(instance=self.garagem, initial=initial_extra)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.setdefault('formset', self.get_formset())
+        return ctx
+
     def form_valid(self, form):
+        formset = self.get_formset()
+        if not formset.is_valid():
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
+        response = super().form_valid(form)
+        formset.save()
         messages.success(self.request, "Dados da garagem atualizados com sucesso.")
-        return super().form_valid(form)
+        return response
 
 
 class AssinaturaView(GaragemRequiredMixin, TemplateView):

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from tenants.models import Garagem
+from tenants.models import Banner, Garagem
 from vehicles.models import FotoVeiculo, Veiculo
 from vehicles.tests import gerar_foto
 
@@ -396,18 +396,17 @@ class OpenGraphTests(TestCase):
             quilometragem=5000, combustivel=Veiculo.Combustivel.FLEX, cilindrada=160, preco='15000.00',
         )
 
-    def test_frontpage_sem_logo_nem_capa_nao_mostra_og_image(self):
+    def test_frontpage_sem_logo_nem_banner_nao_mostra_og_image(self):
         resp = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
         self.assertContains(resp, f'property="og:title" content="{self.garagem.nome}"')
         self.assertContains(resp, 'property="og:url"')
         self.assertNotContains(resp, 'property="og:image"')
 
-    def test_frontpage_com_capa_usa_capa_como_og_image_absoluta(self):
-        self.garagem.capa = gerar_foto((1600, 500), nome='capa.jpg')
-        self.garagem.save()
+    def test_frontpage_com_banner_usa_banner_como_og_image_absoluta(self):
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='banner.jpg'), ordem=0)
 
         resp = self.client.get(reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug}))
-        self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/capa')
+        self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/banner')
 
     def test_pagina_do_veiculo_usa_titulo_e_foto_do_veiculo(self):
         FotoVeiculo.objects.create(veiculo=self.veiculo, imagem=gerar_foto((1200, 900), nome='moto.jpg'))
@@ -420,15 +419,69 @@ class OpenGraphTests(TestCase):
         self.assertContains(resp, 'property="og:image" content="http://testserver/media/veiculos/')
         self.assertContains(resp, 'R$ 15.000,00')
 
-    def test_pagina_do_veiculo_sem_foto_usa_capa_da_garagem(self):
-        self.garagem.capa = gerar_foto((1600, 500), nome='capa.jpg')
-        self.garagem.save()
+    def test_pagina_do_veiculo_sem_foto_usa_banner_da_garagem(self):
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='banner.jpg'), ordem=0)
 
         url = reverse('storefront:detalhe_veiculo', kwargs={
             'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
         })
         resp = self.client.get(url)
-        self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/capa')
+        self.assertContains(resp, 'property="og:image" content="http://testserver/media/garagens/capas/banner')
+
+
+class VariosBannersTests(TestCase):
+    """Uma garagem pode ter vários banners (Banner), alternados em transição na vitrine."""
+
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        self.enterContext(override_settings(MEDIA_ROOT=media))
+
+        dono = User.objects.create_user('dono_banners', 'dono_banners@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Banners', slug='garagem-banners',
+            telefone_whatsapp='5517999999999', email_contato='dono_banners@example.com',
+        )
+        self.url = reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug})
+
+    def test_sem_banner_nenhum_nao_mostra_capa(self):
+        resp = self.client.get(self.url)
+        self.assertNotContains(resp, 'site-header--capa')
+        self.assertNotContains(resp, 'js/banners_capa.js')
+
+    def test_um_banner_so_nao_carrega_o_script_de_transicao(self):
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='b1.jpg'), ordem=0)
+        resp = self.client.get(self.url)
+        self.assertContains(resp, 'site-header--capa')
+        self.assertContains(resp, 'site-header-banner-camada active')
+        self.assertNotContains(resp, 'js/banners_capa.js')
+
+    def test_varios_banners_carregam_o_script_e_aparecem_em_ordem(self):
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='b1.jpg'), ordem=0)
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='b2.jpg'), ordem=1)
+        resp = self.client.get(self.url).content.decode()
+        self.assertIn('js/banners_capa.js', resp)
+        self.assertEqual(resp.count('site-header-banner-camada'), 2)
+        # só a primeira nasce visível — a troca de qual fica visível é feita em JS.
+        self.assertEqual(resp.count('site-header-banner-camada active'), 1)
+
+    def test_identidade_some_quando_oculta_e_ha_banner(self):
+        self.garagem.ocultar_identidade_capa = True
+        self.garagem.save()
+        Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='b1.jpg'), ordem=0)
+
+        resp = self.client.get(self.url)
+        # o nome ainda aparece em outros lugares da página (título, rodapé, menu) —
+        # o que muda é só o link de marca sobreposto ao banner, no topo.
+        self.assertNotContains(resp, '<a class="brand"')
+
+    def test_identidade_nao_some_sem_banner_mesmo_com_a_opcao_marcada(self):
+        # Sem isso o cabeçalho ficaria vazio — a opção só faz sentido tendo banner.
+        self.garagem.ocultar_identidade_capa = True
+        self.garagem.save()
+
+        resp = self.client.get(self.url)
+        self.assertContains(resp, '<a class="brand"')
 
 
 class SimuladorParcialTests(TestCase):

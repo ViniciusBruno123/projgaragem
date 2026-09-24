@@ -63,9 +63,12 @@ class Garagem(models.Model):
         'Logo', upload_to='garagens/logos/', null=True, blank=True,
         help_text="Aparece ao lado do nome da garagem, na vitrine e no painel.",
     )
-    capa = models.ImageField(
-        'Faixa superior (capa)', upload_to='garagens/capas/', null=True, blank=True,
-        help_text="Imagem larga que aparece atrás do cabeçalho da sua vitrine. Opcional.",
+    ocultar_identidade_capa = models.BooleanField(
+        'Mostrar só a faixa superior, sem logo/nome por cima', default=False,
+        help_text=(
+            "Use se a sua faixa superior já tem sua marca desenhada nela. Só tem efeito quando "
+            "existe pelo menos uma faixa cadastrada — sem faixa, o nome sempre aparece."
+        ),
     )
     cor_destaque = models.CharField(
         max_length=7, default='#0F5C4D',
@@ -124,3 +127,21 @@ class Garagem(models.Model):
             errors['cor_titulo'] = 'Use o formato hexadecimal, ex: #1A1A18.'
         if errors:
             raise ValidationError(errors)
+
+
+class Banner(models.Model):
+    """Uma faixa superior (capa) da vitrine. Uma garagem pode ter várias, alternadas em
+    transição na página pública (ver static/js/banners_capa.js) — dá pra ter um banner base
+    e outros de campanha (ex: "aceitamos avaliação") sem escolher só um."""
+
+    garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE, related_name='banners')
+    imagem = models.ImageField('Imagem', upload_to='garagens/capas/')
+    ordem = models.PositiveSmallIntegerField('Ordem', default=0)
+
+    class Meta:
+        verbose_name = 'Banner'
+        verbose_name_plural = 'Banners'
+        ordering = ['ordem', 'id']
+
+    def __str__(self):
+        return f'Banner #{self.pk or "novo"} — {self.garagem.nome}'

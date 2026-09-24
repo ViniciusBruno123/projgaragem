@@ -7,7 +7,7 @@ from django.utils.formats import localize
 
 from financing.services import taxa_media_de_mercado
 
-from tenants.models import Garagem
+from tenants.models import Banner, Garagem
 from vehicles.forms import ImagemOtimizadaMixin
 from vehicles.forms import FotoVeiculoForm as BaseFotoVeiculoForm
 from vehicles.models import FotoVeiculo, Veiculo
@@ -165,7 +165,7 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
     class Meta:
         model = Garagem
         fields = [
-            'logo', 'capa', 'telefone_whatsapp', 'endereco', 'horario_funcionamento',
+            'logo', 'ocultar_identidade_capa', 'telefone_whatsapp', 'endereco', 'horario_funcionamento',
             'instagram_url', 'facebook_url', 'cor_destaque', 'cor_titulo', 'fonte_titulo',
             'taxa_juros_mensal_padrao',
         ]
@@ -194,19 +194,16 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            if isinstance(field.widget, forms.Select):
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.setdefault('class', 'form-check-input')
+            elif isinstance(field.widget, forms.Select):
                 field.widget.attrs.setdefault('class', 'form-select')
             else:
                 field.widget.attrs.setdefault('class', 'form-control')
         self.fields['logo'].widget.attrs['accept'] = 'image/*'
-        self.fields['capa'].widget.attrs['accept'] = 'image/*'
         # Corte no upload (ver static/js/cortar_foto.js): a logo aparece inteira (object-fit:
-        # contain), então o corte é livre. A capa é sempre cortada (cover) numa faixa larga —
-        # a altura real do cabeçalho varia com a largura da tela (não é uma proporção fixa),
-        # então 5:1 é uma aproximação: fica perto do formato de um notebook comum sem obrigar
-        # o cabeçalho a virar uma faixa enorme; o "cover" ainda ajusta um pouco em cada tela.
+        # contain), então o corte é livre.
         self.fields['logo'].widget.attrs['data-cortar'] = 'livre'
-        self.fields['capa'].widget.attrs['data-cortar'] = '5/1'
 
         media = taxa_media_de_mercado()
         if media:
@@ -226,5 +223,44 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
     def clean_logo(self):
         return self._limpar_imagem_otimizada('logo')
 
-    def clean_capa(self):
-        return self._limpar_imagem_otimizada('capa')
+
+class BannerForm(ImagemOtimizadaMixin, forms.ModelForm):
+    class Meta:
+        model = Banner
+        fields = ['imagem', 'ordem']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Sempre cortada (cover) numa faixa larga — a altura real do cabeçalho varia com a
+        # largura da tela (não é uma proporção fixa), então 5:1 é uma aproximação: fica perto
+        # do formato de um notebook comum sem obrigar o cabeçalho a virar uma faixa enorme; o
+        # "cover" ainda ajusta um pouco em cada tela (ver static/css/site.css, .site-header--capa).
+        self.fields['imagem'].widget = forms.FileInput(attrs={'accept': 'image/*', 'data-cortar': '5/1'})
+        self.fields['imagem'].widget.attrs.setdefault('class', 'form-control')
+        self.fields['ordem'].widget.attrs.setdefault('class', 'form-control form-control-sm input-ordem')
+
+    def clean_imagem(self):
+        return self._limpar_imagem_otimizada('imagem')
+
+    def has_changed(self):
+        """Mesma proteção do FotoVeiculoForm (vehicles/forms.py): "ordem" sozinho não pode
+        obrigar a enviar uma imagem num slot extra vazio do formset."""
+        return bool(set(self.changed_data) - {'ordem'})
+
+
+class BannerBaseFormSet(BaseInlineFormSet):
+    """Só estiliza o checkbox de excluir (can_delete não passa pelo __init__ do form)."""
+
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        if 'DELETE' in form.fields:
+            form.fields['DELETE'].widget.attrs['class'] = 'form-check-input'
+
+
+# extra=3: banners são de campanha, não um catálogo grande como as fotos de veículo — 3 de
+# uma vez cobre bem "um banner base + um ou dois de campanha".
+BannerFormSet = inlineformset_factory(
+    Garagem, Banner,
+    form=BannerForm, formset=BannerBaseFormSet,
+    extra=3, can_delete=True,
+)

@@ -2,7 +2,12 @@ from django.conf import settings
 from django.contrib import admin, messages
 from django.utils import timezone
 
-from .models import Garagem
+from .models import Banner, Garagem
+
+
+class BannerInline(admin.TabularInline):
+    model = Banner
+    extra = 1
 
 
 @admin.action(description="Suspender vitrine pública das garagens selecionadas")
@@ -38,6 +43,7 @@ class GaragemAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('nome',)}
     autocomplete_fields = ('dono',)
     actions = [suspender_vitrine, reativar_garagem, gerar_link_assinatura]
+    inlines = [BannerInline]
 
     @admin.display(description='Veículos')
     def total_de_veiculos(self, garagem):
