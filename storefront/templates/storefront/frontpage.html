@@ -66,6 +66,14 @@
     {% if not veiculos_destaque and not demais_veiculos %}
         <p class="text-muted my-5">Nenhum veículo encontrado com esses filtros.</p>
     {% endif %}
+
+    <div class="banner-venda">
+        <div>
+            <strong>Quer vender ou trocar seu veículo?</strong>
+            <p class="mb-0 small">Avaliação rápida com a {{ garagem.nome }}, sem compromisso.</p>
+        </div>
+        <a href="{% url 'storefront:enviar_avaliacao' garagem_slug=garagem.slug %}" class="btn btn-accent">Avaliar meu veículo</a>
+    </div>
 </div>
 {% endblock %}
 

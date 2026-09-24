@@ -1,0 +1,58 @@
+{% extends "storefront/_base_vitrine.html" %}
+
+{% block title %}Avalie seu veículo - {{ garagem.nome }}{% endblock %}
+
+{% block vitrine_content %}
+<div class="container py-4" style="max-width: 560px;">
+    <h1 class="h3">Quer vender ou trocar seu veículo?</h1>
+    {% if veiculo_interesse %}
+        <p class="text-muted">
+            Conte pra gente sobre o seu veículo e, se topar a troca pelo <strong>{{ veiculo_interesse.titulo }}</strong>,
+            a {{ garagem.nome }} avalia e fala com você pelo WhatsApp.
+        </p>
+    {% else %}
+        <p class="text-muted">Conte pra gente sobre o seu veículo — a {{ garagem.nome }} avalia e fala com você pelo WhatsApp, sem compromisso.</p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="row row-cols-1 row-cols-sm-2 g-3 mb-3">
+            {% for field in form.visible_fields %}
+                {% if field.name != 'aceito_privacidade' %}
+                    <div class="col">
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="id_fotos">Fotos do seu veículo (opcional, até {{ max_fotos }})</label>
+            <input type="file" name="fotos" id="id_fotos" class="form-control" accept="image/*" multiple>
+            <div class="form-text">Ajuda a garagem a ter uma ideia do estado antes mesmo de conversar.</div>
+        </div>
+
+        <div class="form-check mb-3">
+            {{ form.aceito_privacidade }}
+            <label class="form-check-label small" for="{{ form.aceito_privacidade.id_for_label }}">
+                Li e concordo com a <a href="{% url 'storefront:privacidade' garagem_slug=garagem.slug %}" target="_blank" rel="noopener">política de privacidade</a>
+                e autorizo a {{ garagem.nome }} a usar meus dados para avaliar meu veículo.
+            </label>
+            {% if form.aceito_privacidade.errors %}
+                <div class="text-danger small">{{ form.aceito_privacidade.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-accent w-100">Enviar para avaliação e ir para o WhatsApp</button>
+    </form>
+</div>
+{% endblock %}

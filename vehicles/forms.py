@@ -2,10 +2,8 @@ from django import forms
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 
-from .imagens import FotoInvalida, otimizar_foto
+from .imagens import MB, FotoInvalida, otimizar_foto_com_limite
 from .models import FotoVeiculo
-
-MB = 1024 * 1024
 
 
 class ImagemOtimizadaMixin:
@@ -13,7 +11,7 @@ class ImagemOtimizadaMixin:
 
     Reutilizado por qualquer form com campo de imagem — fotos de veículo, logo e
     capa da garagem — para não duplicar a checagem de limite nem a chamada a
-    vehicles.imagens.otimizar_foto.
+    vehicles.imagens.otimizar_foto_com_limite.
     """
 
     def _limpar_imagem_otimizada(self, nome_campo):
@@ -21,14 +19,8 @@ class ImagemOtimizadaMixin:
         if not isinstance(arquivo, UploadedFile):
             return arquivo  # arquivo já salvo, sem novo envio
 
-        if arquivo.size > settings.FOTO_UPLOAD_MAX_BYTES:
-            tamanho = f'{arquivo.size / MB:.1f}'.replace('.', ',')
-            raise forms.ValidationError(
-                f'O arquivo tem {tamanho} MB e o limite é {settings.FOTO_UPLOAD_MAX_BYTES // MB} MB. '
-                'Envie uma imagem menor.'
-            )
         try:
-            return otimizar_foto(arquivo)
+            return otimizar_foto_com_limite(arquivo)
         except FotoInvalida as exc:
             raise forms.ValidationError(str(exc)) from exc
 

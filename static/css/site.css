@@ -195,6 +195,41 @@ a:hover {
   color: var(--accent-ink);
 }
 
+/* --- Banner "quer vender/trocar seu veículo?": propositalmente diferente do fundo claro
+   dos cards de veículo (é a ação oposta — vender pra garagem, não comprar dela) --- */
+.banner-venda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.25rem 1.5rem;
+  border-radius: 2px;
+  margin: 2rem 0;
+}
+.banner-venda strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.banner-venda p {
+  color: var(--line);
+}
+.banner-venda .btn {
+  flex-shrink: 0;
+}
+@media (min-width: 576px) {
+  /* Reserva espaço pro botão flutuante de WhatsApp (fixo no canto inferior direito em
+     toda a vitrine, ver .whatsapp-float) — sem isso, os dois brigam pelo mesmo canto
+     quando o banner é o último conteúdo antes do rodapé. */
+  .banner-venda {
+    padding-right: 9rem;
+  }
+}
+
 /* --- Barra de filtros: toolbar funcional, não card flutuante --- */
 .filter-bar {
   background: var(--paper-2);

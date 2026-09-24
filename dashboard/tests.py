@@ -9,7 +9,7 @@ from django.urls import reverse
 from PIL import Image
 
 from financing.models import TaxaReferencia
-from leads.models import Proposta
+from leads.models import Avaliacao, Proposta
 from tenants.models import Garagem
 from vehicles.models import FotoVeiculo, Veiculo
 from vehicles.tests import gerar_foto
@@ -142,6 +142,54 @@ class AtualizarStatusPropostaViewTests(TestCase):
 
         self.proposta_a.refresh_from_db()
         self.assertEqual(self.proposta_a.status, Proposta.Status.NOVA)
+
+
+class AtualizarStatusAvaliacaoViewTests(TestCase):
+    def setUp(self):
+        self.dono_a = User.objects.create_user('dono_a_aval', 'a_aval@example.com', 'senha12345')
+        self.garagem_a = Garagem.objects.create(
+            dono=self.dono_a, nome='Garagem A Aval', slug='garagem-a-aval',
+            telefone_whatsapp='5517999999999', email_contato='a_aval@example.com',
+        )
+        self.avaliacao_a = Avaliacao.objects.create(
+            garagem=self.garagem_a, nome='Vendedor A', telefone='17988887777',
+            marca='Fiat', modelo='Uno', ano=2015, quilometragem=80000,
+        )
+
+        dono_b = User.objects.create_user('dono_b_aval', 'b_aval@example.com', 'senha12345')
+        self.garagem_b = Garagem.objects.create(
+            dono=dono_b, nome='Garagem B Aval', slug='garagem-b-aval',
+            telefone_whatsapp='5517999999998', email_contato='b_aval@example.com',
+        )
+        self.avaliacao_b = Avaliacao.objects.create(
+            garagem=self.garagem_b, nome='Vendedor B', telefone='17988886666',
+            marca='VW', modelo='Gol', ano=2018, quilometragem=50000,
+        )
+
+        self.client.login(username='dono_a_aval', password='senha12345')
+
+    def test_dono_atualiza_status_da_propria_avaliacao(self):
+        url = reverse('dashboard:avaliacao_status', kwargs={'pk': self.avaliacao_a.pk})
+        resp = self.client.post(url, {'status': Avaliacao.Status.AVALIADA})
+        self.assertRedirects(resp, reverse('dashboard:avaliacao_list'))
+
+        self.avaliacao_a.refresh_from_db()
+        self.assertEqual(self.avaliacao_a.status, Avaliacao.Status.AVALIADA)
+
+    def test_dono_nao_atualiza_avaliacao_de_outra_garagem(self):
+        url = reverse('dashboard:avaliacao_status', kwargs={'pk': self.avaliacao_b.pk})
+        resp = self.client.post(url, {'status': Avaliacao.Status.AVALIADA})
+        self.assertEqual(resp.status_code, 404)
+
+        self.avaliacao_b.refresh_from_db()
+        self.assertEqual(self.avaliacao_b.status, Avaliacao.Status.NOVA)
+
+    def test_status_invalido_e_ignorado(self):
+        url = reverse('dashboard:avaliacao_status', kwargs={'pk': self.avaliacao_a.pk})
+        self.client.post(url, {'status': 'nao-existe'})
+
+        self.avaliacao_a.refresh_from_db()
+        self.assertEqual(self.avaliacao_a.status, Avaliacao.Status.NOVA)
 
 
 class UploadDeFotoViewTests(TestCase):

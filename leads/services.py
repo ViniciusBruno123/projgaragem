@@ -13,3 +13,13 @@ def gerar_link_whatsapp(garagem, veiculo=None, nome=""):
     if nome:
         texto = f"Meu nome é {nome}. {texto}"
     return f"https://wa.me/{numero}?text={urllib.parse.quote(texto)}"
+
+
+def gerar_link_whatsapp_avaliacao(garagem, avaliacao):
+    texto = (
+        f"Olá! Meu nome é {avaliacao.nome} e quero vender ou trocar meu veículo: "
+        f"{avaliacao.marca} {avaliacao.modelo} {avaliacao.ano}, {avaliacao.quilometragem} km."
+    )
+    if avaliacao.veiculo_interesse:
+        texto += f" Tenho interesse em trocar pelo {avaliacao.veiculo_interesse.titulo} anunciado no site."
+    return f"https://wa.me/{garagem.telefone_whatsapp}?text={urllib.parse.quote(texto)}"

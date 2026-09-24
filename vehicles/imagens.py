@@ -6,8 +6,26 @@ from django.core.files.base import ContentFile
 from PIL import Image, ImageOps
 
 
+MB = 1024 * 1024
+
+
 class FotoInvalida(Exception):
     pass
+
+
+def otimizar_foto_com_limite(arquivo):
+    """otimizar_foto, mas barra antes arquivos maiores que o limite configurado, com a
+    mesma mensagem amigável usada em toda a plataforma — fotos de veículo, logo/capa da
+    garagem e fotos do formulário público de avaliação de usados (leads.views.enviar_avaliacao)
+    compartilham essa checagem em vez de cada um duplicá-la.
+    """
+    if arquivo.size > settings.FOTO_UPLOAD_MAX_BYTES:
+        tamanho = f'{arquivo.size / MB:.1f}'.replace('.', ',')
+        raise FotoInvalida(
+            f'O arquivo tem {tamanho} MB e o limite é {settings.FOTO_UPLOAD_MAX_BYTES // MB} MB. '
+            'Envie uma imagem menor.'
+        )
+    return otimizar_foto(arquivo)
 
 
 def otimizar_foto(arquivo):

@@ -53,9 +53,16 @@
             <p class="text-muted mb-2">{{ veiculo.marca }} {{ veiculo.modelo }} · {{ veiculo.get_tipo_display }}</p>
             <p class="price-tag num">R$ {{ veiculo.preco|floatformat:"2g" }}</p>
             {% include "storefront/_specs.html" with detalhado=True %}
-            <a href="{% url 'storefront:enviar_proposta' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent btn-lg mb-4">
+            <a href="{% url 'storefront:enviar_proposta' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-accent btn-lg mb-2">
                 Tenho interesse
             </a>
+            {% if veiculo.aceita_troca %}
+                <a href="{% url 'storefront:enviar_avaliacao_veiculo' garagem_slug=garagem.slug veiculo_slug=veiculo.slug %}" class="btn btn-outline-ink btn-sm d-block mb-4">
+                    Tem um veículo pra dar de entrada? Avalie o seu aqui
+                </a>
+            {% else %}
+                <div class="mb-4"></div>
+            {% endif %}
 
             {% if veiculo.descricao %}
                 <h2 class="h5" style="text-transform: none; font-family: var(--font-body); font-weight: 700;">Descrição</h2>

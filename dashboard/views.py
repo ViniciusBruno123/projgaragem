@@ -8,7 +8,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, TemplateView, UpdateView
 
-from leads.models import Proposta
+from leads.models import Avaliacao, Proposta
 from tenants.mixins import BloqueiaEdicaoSeInadimplenteMixin, GaragemRequiredMixin, RespeitaLimiteDoPlanoMixin
 from vehicles.models import Veiculo
 
@@ -188,6 +188,25 @@ class AtualizarStatusPropostaView(GaragemRequiredMixin, View):
             proposta.save(update_fields=['status'])
             messages.success(request, "Status da proposta atualizado.")
         return redirect('dashboard:proposta_list')
+
+
+class AvaliacaoListView(GaragemRequiredMixin, ListView):
+    template_name = 'dashboard/avaliacao_list.html'
+    context_object_name = 'avaliacoes'
+
+    def get_queryset(self):
+        return self.garagem.avaliacoes.select_related('veiculo_interesse').prefetch_related('fotos').all()
+
+
+class AtualizarStatusAvaliacaoView(GaragemRequiredMixin, View):
+    def post(self, request, pk):
+        avaliacao = get_object_or_404(self.garagem.avaliacoes, pk=pk)
+        novo_status = request.POST.get('status')
+        if novo_status in Avaliacao.Status.values:
+            avaliacao.status = novo_status
+            avaliacao.save(update_fields=['status'])
+            messages.success(request, "Status da avaliação atualizado.")
+        return redirect('dashboard:avaliacao_list')
 
 
 class VeiculoDeleteView(GaragemRequiredMixin, BloqueiaEdicaoSeInadimplenteMixin, DeleteView):

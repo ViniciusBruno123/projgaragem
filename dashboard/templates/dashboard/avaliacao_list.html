@@ -1,0 +1,62 @@
+{% extends "dashboard/_base_painel.html" %}
+
+{% block title %}Avaliações de usados{% endblock %}
+
+{% block painel_content %}
+<h1>Avaliações de usados</h1>
+<p class="text-muted small">
+    Pedidos de quem quer vender ou trocar o próprio veículo com você. Os dados são pessoais (LGPD):
+    use só para avaliar e responder, e apague o que não for mais necessário. <a href="{% url 'termos_uso' %}">Ver termos</a>.
+</p>
+
+<table class="table table-stack align-middle">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Veículo</th>
+            <th>Fotos</th>
+            <th>Observações</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for avaliacao in avaliacoes %}
+            <tr>
+                <td data-label="Data">{{ avaliacao.criado_em|date:"d/m/Y H:i" }}</td>
+                <td data-label="Nome">{{ avaliacao.nome }}</td>
+                <td data-label="Telefone">{{ avaliacao.telefone }}</td>
+                <td data-label="Veículo">
+                    {{ avaliacao.marca }} {{ avaliacao.modelo }} {{ avaliacao.ano }} · {{ avaliacao.get_tipo_display }} · {{ avaliacao.quilometragem }} km
+                    {% if avaliacao.veiculo_interesse %}
+                        <br><span class="text-muted small">Quer trocar pelo: {{ avaliacao.veiculo_interesse.titulo }}</span>
+                    {% endif %}
+                </td>
+                <td data-label="Fotos">
+                    {% for foto in avaliacao.fotos.all %}
+                        <a href="{{ foto.imagem.url }}" target="_blank" rel="noopener">
+                            <img src="{{ foto.imagem.url }}" alt="" style="width: 3rem; height: 3rem; object-fit: cover; border: 1px solid var(--line); margin: 0 2px 2px 0;">
+                        </a>
+                    {% empty %}
+                        <span class="text-muted">—</span>
+                    {% endfor %}
+                </td>
+                <td data-label="Observações">{{ avaliacao.observacoes|default:"—" }}</td>
+                <td data-label="Status">
+                    <form method="post" action="{% url 'dashboard:avaliacao_status' pk=avaliacao.pk %}">
+                        {% csrf_token %}
+                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                            {% for valor, rotulo in avaliacao.Status.choices %}
+                                <option value="{{ valor }}" {% if avaliacao.status == valor %}selected{% endif %}>{{ rotulo }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="7" class="text-muted">Nenhum pedido de avaliação recebido ainda.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

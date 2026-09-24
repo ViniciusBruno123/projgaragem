@@ -475,3 +475,43 @@ class SimuladorParcialTests(TestCase):
         self.veiculo.disponivel = False
         self.veiculo.save()
         self.assertEqual(self.client.get(self.url).status_code, 404)
+
+
+class AvaliarVeiculoCtaTests(TestCase):
+    """Onde o CTA de "quero vender/trocar meu veículo" deve (e não deve) aparecer."""
+
+    def setUp(self):
+        dono = User.objects.create_user('dono_cta_venda', 'dono_cta_venda@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem CTA Venda', slug='garagem-cta-venda',
+            telefone_whatsapp='5517999999999', email_contato='dono_cta_venda@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, titulo='Fiat Uno', slug='fiat-uno', marca='Fiat', modelo='Uno',
+            ano_fabricacao=2015, ano_modelo=2015, quilometragem=80000, combustivel='flex', preco='35000.00',
+        )
+
+    def test_banner_de_venda_aparece_na_frontpage(self):
+        url = reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug})
+        resp = self.client.get(url)
+        self.assertContains(resp, 'banner-venda')
+        self.assertContains(resp, reverse('storefront:enviar_avaliacao', kwargs={'garagem_slug': self.garagem.slug}))
+
+    def test_veiculo_sem_aceita_troca_nao_mostra_cta_de_avaliar(self):
+        url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+        resp = self.client.get(url)
+        self.assertNotContains(resp, 'Avalie o seu aqui')
+
+    def test_veiculo_com_aceita_troca_mostra_cta_de_avaliar_linkado_a_ele(self):
+        self.veiculo.aceita_troca = True
+        self.veiculo.save()
+        url = reverse('storefront:detalhe_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        })
+        resp = self.client.get(url)
+        self.assertContains(resp, 'Avalie o seu aqui')
+        self.assertContains(resp, reverse('storefront:enviar_avaliacao_veiculo', kwargs={
+            'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
+        }))
