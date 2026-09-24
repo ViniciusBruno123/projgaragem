@@ -127,14 +127,19 @@ a:hover {
 /* Cabeçalho com capa própria da garagem: texto sobre a foto, claro por padrão — mas a cor do
    título escolhida pelo dono (--brand-color) tem prioridade mesmo aqui, se ele a definiu.
    A altura acompanha o conteúdo (padding), não uma proporção fixa — um cabeçalho não deve
-   virar uma faixa enorme só porque a tela é larga. A proporção do corte no modal (ver
-   dashboard.forms.GaragemForm) é escolhida pra ficar perto do formato real de exibição,
-   mas sem travar um no outro: o "cover" ainda faz um ajuste fino, sobrando um pouco de cada
-   lado ou de cima/baixo conforme a largura da tela. */
+   virar uma faixa enorme só porque a tela é larga.
+   O padding cresce com a largura da tela (clamp com vw) de propósito: com um padding fixo,
+   a proporção largura/altura do cabeçalho varia de ~1,6:1 no celular a mais de 11:1 num
+   monitor grande (mesma altura de conteúdo, largura bem maior) — nenhum corte fixo no modal
+   (ver dashboard.forms.GaragemForm, hoje 5:1) fica bom nessa faixa toda; em telas largas o
+   "cover" acaba esticando a imagem e cortando o topo/base. Crescer o padding com a tela
+   estreita essa faixa pra perto de 4:1–7:1, onde o corte de 5:1 já fica razoável em qualquer
+   largura. Não usar aspect-ratio/min-height aqui: essa combinação com display:flex já causou
+   a caixa vazar para fora do container (ver histórico de commits). */
 .site-header--capa {
   background-size: cover;
   background-position: center;
-  padding: 2.75rem 0;
+  padding: clamp(2.75rem, 4.5vw + 1rem, 7rem) 0;
   border-bottom: 3px solid var(--accent);
 }
 .site-header--capa .brand,
