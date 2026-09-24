@@ -114,9 +114,9 @@ a:hover {
   border-color: var(--brand-color, var(--line));
 }
 .brand-logo {
-  height: 4.5rem;
+  height: 5.625rem;
   width: auto;
-  max-width: 16rem;
+  max-width: 20rem;
   object-fit: contain;
   vertical-align: middle;
   margin-right: 0.6rem;
