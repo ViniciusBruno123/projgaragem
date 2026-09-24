@@ -146,6 +146,19 @@ a:hover {
 .site-header--capa .meta {
   color: var(--brand-color, var(--paper));
 }
+.site-header--capa .brand span {
+  /* Desfoque + véu escuro só atrás do NOME (a logo já tem seu próprio fundo claro) — sem
+     isso, uma capa clara ou muito cheia bem atrás do texto derruba a legibilidade mesmo com
+     o gradiente geral do cabeçalho. box-decoration-break: se o nome quebrar linha num celular
+     estreito, cada linha ganha o próprio fundo em vez de uma caixa só esticada entre as duas. */
+  background: rgba(26, 26, 24, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  padding: 0.15em 0.45em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
 .site-header--capa .btn-outline-ink {
   color: var(--brand-color, var(--paper));
   border-color: var(--brand-color, var(--paper));
