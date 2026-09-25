@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ plataforma_nome }} — Vitrine de veículos para garagens de Catanduva{% endblock %}
+{% block meta_description %}Vitrine própria para a sua garagem: o cliente vê os veículos, simula a parcela e manda a proposta direto para o seu WhatsApp. Feito para garagens de Catanduva e região.{% endblock %}
+
+{% block extra_head %}
+<meta property="og:title" content="{{ plataforma_nome }} — Vitrine de veículos para garagens">
+<meta property="og:description" content="O cliente vê os veículos, simula a parcela e manda a proposta direto para o WhatsApp da sua garagem.">
+<meta property="og:type" content="website">
+<link href="{% static 'css/landing.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute;" aria-hidden="true" focusable="false">
+    <symbol id="lp-whatsapp" viewBox="0 0 24 24">
+        <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9"/>
+        <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1"/>
+    </symbol>
+</svg>
+
+<div class="lp">
+    <section class="lp-hero" aria-labelledby="lp-titulo">
+        <div class="container">
+            <div class="lp-topo">
+                <span class="lp-marca">{{ plataforma_nome }}</span>
+                <a class="lp-btn lp-btn--pequeno" href="{% if link_whatsapp %}{{ link_whatsapp }}{% else %}#contato{% endif %}"{% if link_whatsapp %} target="_blank" rel="noopener"{% endif %}>
+                    {% if link_whatsapp %}<svg class="lp-ico" aria-hidden="true"><use href="#lp-whatsapp"/></svg>{% endif %}
+                    Falar com a gente
+                </a>
+            </div>
+
+            <div class="row align-items-center gy-5 gx-lg-5 lp-hero-corpo">
+                <div class="col-lg-7">
+                    <h1 id="lp-titulo">Sua garagem no ar, com a sua cara.</h1>
+                    <p class="lp-lead">
+                        Vitrine própria para os seus carros e motos. O cliente vê o estoque, simula a parcela
+                        e faz a proposta, que chega direto no seu WhatsApp.
+                    </p>
+                    <div class="lp-acoes">
+                        <a class="lp-btn" href="{% if link_whatsapp %}{{ link_whatsapp }}{% else %}#contato{% endif %}"{% if link_whatsapp %} target="_blank" rel="noopener"{% endif %}>
+                            {% if link_whatsapp %}<svg class="lp-ico" aria-hidden="true"><use href="#lp-whatsapp"/></svg>{% endif %}
+                            {% if link_whatsapp %}Chamar no WhatsApp{% else %}Quero saber mais{% endif %}
+                        </a>
+                        {% if demo_url %}
+                            <a class="lp-link" href="{{ demo_url }}" target="_blank" rel="noopener">Abrir a vitrine de exemplo</a>
+                        {% endif %}
+                    </div>
+
+                    <div class="lp-lados">
+                        <div class="lp-lado" id="lado-cliente" role="tabpanel" aria-labelledby="aba-cliente">
+                            <h2>O que o comprador faz</h2>
+                            <ul>
+                                <li>Vê fotos, preço e dados de cada veículo, direto no celular.</li>
+                                <li>Pede a avaliação do usado que quer dar na troca.</li>
+                                <li>Chega até a garagem com um toque no mapa.</li>
+                            </ul>
+                        </div>
+                        {% if simulacao_url %}
+                        <div class="lp-lado" id="lado-simula" role="tabpanel" aria-labelledby="aba-simula" hidden>
+                            <h2>Da curiosidade à proposta</h2>
+                            <ul>
+                                <li>Simula a parcela do financiamento, com a taxa média do Banco Central.</li>
+                                <li>Manda a proposta e cai numa conversa no WhatsApp da garagem.</li>
+                                <li>Tudo isso sem sair da página do veículo.</li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                        <div class="lp-lado" id="lado-dono" role="tabpanel" aria-labelledby="aba-dono" hidden>
+                            <h2>O que a garagem faz</h2>
+                            <ul>
+                                <li>Recebe cada proposta no painel e por e-mail.</li>
+                                <li>Acompanha o andamento: nova, em contato, vendido.</li>
+                                <li>Marcou como vendido, o veículo sai da vitrine sozinho.</li>
+                                <li>Cadastra veículos com fotos e escolhe os destaques.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="lp-palco" data-lado-ativo="cliente">
+                        <div class="lp-celular">
+                            <div class="lp-tela lp-tela--vitrine">
+                                {% if demo_url %}
+                                    <iframe id="lp-iframe" src="{{ demo_url }}" data-src-cliente="{{ demo_url }}" data-src-simula="{{ simulacao_url }}" title="Vitrine de demonstração: {{ demo.nome }}"></iframe>
+                                {% else %}
+                                    <p class="lp-tela-vazia">A vitrine de exemplo não está disponível agora.</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="lp-tela lp-tela--painel" aria-hidden="true">
+                                <div class="lp-painel">
+                                    <div class="lp-painel-barra">
+                                        <span>Painel</span>
+                                        <span class="lp-painel-demo">Demonstração</span>
+                                    </div>
+                                    <div class="lp-painel-abas">
+                                        <span>Veículos</span>
+                                        <span class="is-ativa">Propostas</span>
+                                        <span>Avaliações</span>
+                                    </div>
+                                    <ul class="lp-painel-lista">
+                                        {% for p in propostas_demo %}
+                                        <li class="lp-proposta{% if forloop.first %} lp-proposta--chegando{% endif %}{% if p.status == 'vendido' %} lp-proposta--vendido{% endif %}">
+                                            <div>
+                                                <strong>{{ p.cliente }}</strong>
+                                                <span>{{ p.veiculo }}</span>
+                                                <em>{{ p.quando }}</em>
+                                            </div>
+                                            <b class="lp-selo lp-selo--{{ p.status }}">{{ p.selo }}</b>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <p class="lp-painel-rodape">Cada proposta também chega por e-mail e no WhatsApp.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lp-seletor" role="tablist" aria-label="Ver o sistema pelo lado de quem">
+                            <button type="button" role="tab" id="aba-cliente" aria-selected="true" aria-controls="lado-cliente" data-lado="cliente" data-legenda="Vitrine de demonstração">O cliente vê</button>
+                            {% if simulacao_url %}<button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" data-legenda="Vitrine de demonstração" tabindex="-1">Ele simula</button>{% endif %}
+                            <button type="button" role="tab" id="aba-dono" aria-selected="false" aria-controls="lado-dono" data-lado="dono" data-legenda="Painel com dados de demonstração" tabindex="-1">Você recebe</button>
+                        </div>
+                        <p class="lp-legenda" id="lp-legenda" aria-live="polite">Vitrine de demonstração</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="lp-secao" aria-labelledby="lp-vem-titulo">
+        <div class="container">
+            <div class="row gy-5 gx-lg-5 align-items-center">
+                <div class="{% if demo2_url %}col-lg-6{% else %}col-12{% endif %}">
+                    <h2 id="lp-vem-titulo" class="lp-secao-titulo">Cada garagem com a sua cara</h2>
+                    <dl class="lp-lista lp-lista--uma">
+                        <div>
+                            <dt>Um link só seu</dt>
+                            <dd>Cada garagem tem o próprio endereço, no formato <span class="lp-mono">/g/nome-da-garagem</span>. Cole no Instagram, no status e nas conversas de WhatsApp.</dd>
+                        </div>
+                        <div>
+                            <dt>A sua marca</dt>
+                            <dd>Logo, cores, fonte do nome e banners de campanha. A vitrine parece a sua garagem, não a nossa.</dd>
+                        </div>
+                        <div>
+                            <dt>Estoque sem complicação</dt>
+                            <dd>Cadastre com fotos, destaque os melhores e tire de vista o que já vendeu. Tudo funciona bem no celular.</dd>
+                        </div>
+                        <div>
+                            <dt>Fácil de achar</dt>
+                            <dd>Botões flutuantes de WhatsApp, Instagram e mapa para o cliente chegar até a sua loja.</dd>
+                        </div>
+                    </dl>
+                </div>
+                {% if demo2_url %}
+                <div class="col-lg-6">
+                    <div class="lp-minis">
+                        <figure>
+                            <div class="lp-mini"><iframe src="{{ demo_url }}" title="Vitrine de demonstração: {{ demo.nome }}" tabindex="-1" loading="lazy"></iframe></div>
+                            <figcaption>{{ demo.nome }} <span>vitrine de demonstração</span></figcaption>
+                        </figure>
+                        <figure>
+                            <div class="lp-mini"><iframe src="{{ demo2_url }}" title="Vitrine de demonstração: {{ demo2.nome }}" tabindex="-1" loading="lazy"></iframe></div>
+                            <figcaption>{{ demo2.nome }} <span>vitrine de demonstração</span></figcaption>
+                        </figure>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="lp-secao lp-secao--papel2" aria-labelledby="lp-comeco-titulo">
+        <div class="container">
+            <h2 id="lp-comeco-titulo" class="lp-secao-titulo">Como começar</h2>
+            <ol class="lp-passos">
+                <li>
+                    <span class="lp-passo-num" aria-hidden="true">1</span>
+                    <h3>Conversamos</h3>
+                    <p>Você nos chama no WhatsApp ou deixa o seu contato aqui embaixo.</p>
+                </li>
+                <li>
+                    <span class="lp-passo-num" aria-hidden="true">2</span>
+                    <h3>Cadastramos a garagem</h3>
+                    <p>Criamos a sua vitrine e o seu acesso ao painel.</p>
+                </li>
+                <li>
+                    <span class="lp-passo-num" aria-hidden="true">3</span>
+                    <h3>Você coloca o estoque</h3>
+                    <p>Cadastra os veículos com fotos e divulga o link.</p>
+                </li>
+            </ol>
+            <a class="lp-btn lp-btn--tinta" href="#contato">Quero começar</a>
+        </div>
+    </section>
+
+    <section class="lp-contato" id="contato" aria-labelledby="lp-contato-titulo">
+        <div class="container">
+            <div class="row gy-5 gx-lg-5">
+                <div class="col-lg-5">
+                    <h2 id="lp-contato-titulo">Vamos colocar a sua garagem no ar?</h2>
+                    <p class="lp-lead">Deixe seu contato que a gente chama você no WhatsApp para mostrar tudo funcionando.</p>
+                    {% if link_whatsapp %}
+                        <a class="lp-btn" href="{{ link_whatsapp }}" target="_blank" rel="noopener">
+                            <svg class="lp-ico" aria-hidden="true"><use href="#lp-whatsapp"/></svg>
+                            Prefiro chamar agora
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="col-lg-7">
+                    {% if enviado %}
+                        <div class="lp-enviado" role="status">
+                            <h3>Recebemos o seu contato.</h3>
+                            <p>Em breve a gente chama você no WhatsApp. Obrigado pelo interesse!</p>
+                        </div>
+                    {% else %}
+                        <form method="post" class="lp-form" action="{% url 'landing:home' %}#contato" novalidate {% if form.errors %}data-form-erros{% endif %}>
+                            {% csrf_token %}
+                            {{ form.site }}{{ form.iniciado_em }}
+                            {% if form.non_field_errors %}
+                                <div class="lp-erro" role="alert">{{ form.non_field_errors }}</div>
+                            {% endif %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="{{ form.nome.id_for_label }}">Seu nome</label>
+                                    {{ form.nome }}
+                                    {% for erro in form.nome.errors %}<div class="lp-erro">{{ erro }}</div>{% endfor %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="{{ form.nome_garagem.id_for_label }}">Nome da garagem</label>
+                                    {{ form.nome_garagem }}
+                                    {% for erro in form.nome_garagem.errors %}<div class="lp-erro">{{ erro }}</div>{% endfor %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="{{ form.telefone.id_for_label }}">{{ form.telefone.label }}</label>
+                                    {{ form.telefone }}
+                                    {% for erro in form.telefone.errors %}<div class="lp-erro">{{ erro }}</div>{% endfor %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="{{ form.mensagem.id_for_label }}">{{ form.mensagem.label }}</label>
+                                    {{ form.mensagem }}
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        {{ form.aceito_contato }}
+                                        <label class="form-check-label" for="{{ form.aceito_contato.id_for_label }}">
+                                            Concordo em ser contatado pelo WhatsApp ou telefone e com os
+                                            <a href="{% url 'termos_uso' %}" target="_blank" rel="noopener">termos de uso</a>.
+                                        </label>
+                                    </div>
+                                    {% for erro in form.aceito_contato.errors %}<div class="lp-erro">{{ erro }}</div>{% endfor %}
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="lp-btn">Enviar meu contato</button>
+                                </div>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="lp-rodape">
+        <div class="container">
+            <span class="lp-marca">{{ plataforma_nome }}</span>
+            <span>Vitrines de veículos para garagens de Catanduva e região.</span>
+            <a href="{% url 'termos_uso' %}">Termos de uso</a>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/landing.js' %}"></script>
+{% endblock %}

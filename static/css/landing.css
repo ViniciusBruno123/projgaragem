@@ -1,0 +1,592 @@
+/* Landing page da plataforma (raiz do site). Herda as variáveis do site.css (papel, tinta, verde,
+   Big Shoulders / Public Sans / IBM Plex Mono); tudo aqui tem o prefixo lp-. */
+
+.lp {
+  --lp-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--ink);
+  background: var(--paper);
+}
+.lp ::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.lp-hero ::selection,
+.lp-contato ::selection {
+  background: var(--paper);
+  color: var(--ink);
+}
+.lp :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.lp-hero :focus-visible,
+.lp-contato :focus-visible {
+  outline-color: var(--paper);
+}
+.lp a {
+  text-underline-offset: 0.2em;
+}
+
+/* --- Botão e links --- */
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.4rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 10px 24px -10px rgba(0, 0, 0, 0.5);
+  transition: transform 160ms var(--lp-ease), box-shadow 160ms var(--lp-ease);
+  cursor: pointer;
+}
+.lp-btn:hover {
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35), 0 14px 28px -10px rgba(0, 0, 0, 0.55);
+}
+.lp-btn:active {
+  transform: translateY(0);
+}
+.lp-btn--pequeno {
+  padding: 0.55rem 1rem;
+  font-size: 0.95rem;
+}
+.lp-ico {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lp-link {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.lp-link:hover {
+  color: var(--accent-ink);
+  text-decoration-thickness: 2px;
+}
+
+/* --- Herói: verde inteiro, texto em papel --- */
+.lp-hero {
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding-bottom: 4rem;
+}
+.lp-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 0 0.5rem;
+}
+.lp-marca {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.lp-hero-corpo {
+  padding-top: 2.5rem;
+}
+.lp-hero h1 {
+  font-weight: 800;
+  font-size: clamp(3rem, 7.4vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  margin: 0 0 1.5rem;
+  max-width: 11ch;
+}
+.lp-lead {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  max-width: 34rem;
+  margin: 0 0 2rem;
+}
+.lp-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 1.75rem;
+  margin-bottom: 3rem;
+}
+
+/* Lista do lado ativo (troca junto com o celular) */
+.lp-lados {
+  border-top: 1px solid rgba(242, 243, 241, 0.4);
+  padding-top: 1.25rem;
+  max-width: 34rem;
+}
+.lp-lado h2 {
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.75rem;
+}
+.lp-lado ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lp-lado li {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(242, 243, 241, 0.2);
+  line-height: 1.4;
+}
+.lp-lado.is-troca:not([hidden]) {
+  animation: lp-lado-entra 500ms var(--lp-ease);
+}
+@keyframes lp-lado-entra {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Celular: vitrine ao vivo com o painel deslizando por cima --- */
+.lp-palco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.lp-celular {
+  position: relative;
+  width: min(360px, 100%);
+  height: clamp(520px, 72vh, 660px);
+  background: var(--ink);
+  border: 10px solid var(--ink);
+  border-radius: 40px;
+  box-shadow: 0 40px 60px -30px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(242, 243, 241, 0.18);
+}
+.lp-tela {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+}
+.lp-tela iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.lp-tela-vazia {
+  padding: 2rem 1.5rem;
+  color: var(--ink-soft);
+}
+.lp-tela--painel {
+  z-index: 2;
+  visibility: hidden;
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 650ms var(--lp-ease), visibility 0s linear 650ms;
+}
+.lp-palco[data-lado-ativo="dono"] .lp-tela--painel {
+  visibility: visible;
+  clip-path: inset(0);
+  transition: clip-path 650ms var(--lp-ease), visibility 0s;
+}
+.lp-palco[data-lado-ativo="dono"] .lp-tela--vitrine iframe {
+  pointer-events: none;
+}
+
+/* Painel de demonstração: mesmo vocabulário do painel real (barra de tinta, abas, lista) */
+.lp-painel {
+  height: 100%;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+.lp-painel-barra {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.1rem 1rem 0.9rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--accent);
+}
+.lp-painel-barra > span:first-child {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.lp-painel-demo {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #c9cbc4;
+}
+.lp-painel-abas {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.75rem 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.lp-painel-abas span {
+  padding: 0.45rem 0.7rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  border: 1px solid transparent;
+  border-bottom: 0;
+}
+.lp-painel-abas .is-ativa {
+  color: var(--ink);
+  background: #fff;
+  border-color: var(--line);
+  margin-bottom: -1px;
+}
+.lp-painel-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  flex: 1;
+  background: #fff;
+}
+.lp-proposta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.lp-proposta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.lp-proposta strong {
+  font-size: 0.95rem;
+}
+.lp-proposta span {
+  color: var(--ink-soft);
+}
+.lp-proposta em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.lp-proposta--vendido strong,
+.lp-proposta--vendido span {
+  text-decoration: line-through;
+  text-decoration-color: rgba(26, 26, 24, 0.35);
+}
+.lp-selo {
+  flex: none;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  border: 1px solid var(--ink);
+}
+.lp-selo--nova {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.lp-painel-rodape {
+  margin: 0;
+  padding: 0.9rem 1rem 1.1rem;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+.lp-selo--contato {
+  background: transparent;
+  border-color: var(--warn);
+  color: #7a5614;
+}
+.lp-selo--vendido {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* O momento da página: ao mostrar o lado do dono, a proposta nova chega na lista */
+.lp-palco[data-lado-ativo="dono"] .lp-proposta--chegando {
+  animation: lp-chega 900ms var(--lp-ease) 500ms both;
+}
+@keyframes lp-chega {
+  0% { opacity: 0; transform: translateY(-14px); background: rgba(15, 92, 77, 0.22); }
+  60% { opacity: 1; transform: none; background: rgba(15, 92, 77, 0.22); }
+  100% { opacity: 1; transform: none; background: transparent; }
+}
+
+/* Seletor Cliente | Dono */
+.lp-seletor {
+  display: inline-flex;
+  border: 1px solid rgba(242, 243, 241, 0.7);
+  border-radius: 2px;
+  padding: 3px;
+  gap: 3px;
+}
+.lp-seletor button {
+  min-width: 8.5rem;
+  padding: 0.65rem 1.1rem;
+  background: transparent;
+  color: var(--accent-ink);
+  border: 0;
+  border-radius: 1px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: background 200ms var(--lp-ease), color 200ms var(--lp-ease);
+}
+.lp-seletor button:hover {
+  background: rgba(242, 243, 241, 0.16);
+}
+.lp-seletor button[aria-selected="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.lp-legenda {
+  margin: -0.5rem 0 0;
+  font-size: 0.9rem;
+  color: rgba(242, 243, 241, 0.85);
+}
+
+/* --- Seções de papel --- */
+.lp-secao {
+  padding: 5rem 0;
+}
+.lp-secao--papel2 {
+  background: var(--paper-2);
+}
+.lp-secao-titulo {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 1;
+  margin: 0 0 2.5rem;
+}
+.lp-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 4rem;
+  margin: 0;
+}
+.lp-lista--uma {
+  grid-template-columns: 1fr;
+}
+.lp-lista > div {
+  padding: 1.4rem 0;
+  border-top: 1px solid var(--ink);
+}
+.lp-lista dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.4rem;
+}
+.lp-lista dd {
+  margin: 0;
+  max-width: 34rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.lp-minis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.lp-minis figure {
+  margin: 0;
+}
+.lp-mini {
+  position: relative;
+  aspect-ratio: 360 / 740;
+  overflow: hidden;
+  background: var(--ink);
+  border: 6px solid var(--ink);
+  border-radius: 24px;
+  box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+.lp-mini iframe {
+  width: 360px;
+  height: 740px;
+  border: 0;
+  background: var(--paper);
+  transform-origin: 0 0;
+}
+.lp-minis figcaption {
+  margin-top: 0.6rem;
+  font-weight: 700;
+}
+.lp-minis figcaption span {
+  display: block;
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.lp-mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--ink);
+}
+
+.lp-btn--tinta {
+  margin-top: 2.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+.lp-btn--tinta:hover {
+  color: var(--paper);
+}
+.lp-passos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 3rem;
+}
+.lp-passos li {
+  border-top: 3px solid var(--ink);
+  padding-top: 1rem;
+}
+.lp-passo-num {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--accent);
+}
+.lp-passos h3 {
+  font-size: 1.6rem;
+  margin: 0.5rem 0;
+}
+.lp-passos p {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 24rem;
+}
+
+/* --- Contato: tinta inteira --- */
+.lp-contato {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 5rem 0;
+}
+.lp-contato h2 {
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 0.98;
+  margin: 0 0 1.25rem;
+}
+.lp-contato .lp-lead {
+  color: #d6d8d1;
+}
+.lp-contato a:not(.lp-btn) {
+  color: var(--paper);
+}
+.lp-form .form-label {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.lp-form .form-control {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--paper);
+  padding: 0.7rem 0.85rem;
+}
+.lp-form .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(242, 243, 241, 0.45);
+}
+.lp-form .form-check-input {
+  border-color: var(--paper);
+}
+.lp-form .form-check-input:checked {
+  background-color: var(--accent);
+  border-color: var(--paper);
+}
+.lp-erro {
+  color: #ffb4a8;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+.lp-erro ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lp-enviado {
+  border-top: 3px solid var(--paper);
+  padding-top: 1.25rem;
+}
+.lp-enviado h3 {
+  font-size: 2rem;
+}
+
+.lp-rodape {
+  background: var(--ink);
+  color: #c9cbc4;
+  border-top: 1px solid rgba(242, 243, 241, 0.2);
+  padding: 1.5rem 0;
+  font-size: 0.95rem;
+}
+.lp-rodape .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+}
+.lp-rodape .lp-marca {
+  font-size: 1.25rem;
+  color: var(--paper);
+}
+.lp-rodape a {
+  margin-left: auto;
+  color: var(--paper);
+}
+
+/* --- Telas menores --- */
+@media (max-width: 991.98px) {
+  .lp-hero { padding-bottom: 3rem; }
+  .lp-hero h1 { max-width: none; }
+  .lp-lados { display: none; }
+  .lp-acoes { margin-bottom: 0; }
+  .lp-celular { height: min(640px, 80vh); }
+}
+@media (max-width: 767.98px) {
+  .lp-secao, .lp-contato { padding: 3.5rem 0; }
+  .lp-lista { grid-template-columns: 1fr; }
+  .lp-btn--tinta { width: 100%; }
+  .lp-passos { grid-template-columns: 1fr; gap: 2rem; }
+  .lp-passos p { max-width: none; }
+  .lp-seletor { width: 100%; }
+  .lp-seletor button { flex: 1; min-width: 0; padding-inline: 0.5rem; }
+  .lp-btn { justify-content: center; }
+  .lp-acoes .lp-btn { width: 100%; }
+  .lp-rodape a { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-tela--painel,
+  .lp-palco[data-lado-ativo="dono"] .lp-tela--painel { transition: none; }
+  .lp-lado.is-troca:not([hidden]),
+  .lp-palco[data-lado-ativo="dono"] .lp-proposta--chegando { animation: none; }
+  .lp-btn { transition: none; }
+}

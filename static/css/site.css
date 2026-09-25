@@ -993,3 +993,9 @@ html {
     transition: none;
   }
 }
+
+/* Quando a página abre já no simulador (link com #simulador-financiamento, como na landing da
+   plataforma), o título não fica escondido atrás dos botões fixos de início e menu. */
+#simulador-financiamento {
+  scroll-margin-top: 5rem;
+}

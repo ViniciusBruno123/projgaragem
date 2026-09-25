@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T00:00:00Z",
+  "title": "Design System: projgaragem",
+  "extensions": {
+    "colorMeta": {
+      "accent": {"role": "primary", "displayName": "Verde Garagem", "canonical": "#0f5c4d", "tonalRamp": ["#04211b", "#083a30", "#0f5c4d", "#2f7a6a", "#5a9a8b", "#8bb9ae", "#bcd8d1", "#e3f0ed"]},
+      "ink": {"role": "neutral", "displayName": "Tinta", "canonical": "#1a1a18", "tonalRamp": ["#0d0d0c", "#1a1a18", "#2e2e2b", "#45463f", "#5b5d56", "#8a8c85", "#b8bab3", "#e0e1dc"]},
+      "paper": {"role": "neutral", "displayName": "Papel", "canonical": "#f2f3f1", "tonalRamp": ["#5b5d56", "#8a8c85", "#b8bab3", "#d3d5ce", "#e7e8e3", "#eff0ed", "#f2f3f1", "#fafaf9"]}
+    },
+    "typographyMeta": {
+      "display": {"displayName": "Display", "purpose": "H1 do heroi da landing."},
+      "headline": {"displayName": "Headline", "purpose": "Titulos de secao."},
+      "title": {"displayName": "Title", "purpose": "Termos de lista e passos."},
+      "body": {"displayName": "Body", "purpose": "Texto corrido em Public Sans."},
+      "label": {"displayName": "Label", "purpose": "Selos e metadados em Plex Mono."}
+    },
+    "shadows": [
+      {"name": "device", "value": "0 40px 60px -30px rgba(0,0,0,0.6)", "purpose": "Celular da landing."},
+      {"name": "float", "value": "0 1px 3px rgba(0,0,0,0.2)", "purpose": "Botoes flutuantes da vitrine."}
+    ],
+    "motion": [
+      {"name": "ease-landing", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Todas as transicoes da landing."},
+      {"name": "wipe", "value": "clip-path 650ms", "purpose": "Painel do dono cobrindo a vitrine."},
+      {"name": "arrive", "value": "900ms, delay 500ms", "purpose": "Proposta nova chegando na lista."}
+    ],
+    "breakpoints": [
+      {"name": "md", "value": "768px"},
+      {"name": "lg", "value": "992px"}
+    ]
+  },
+  "components": [
+    {
+      "name": "Botao de acao",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Acao primaria da vitrine.",
+      "html": "<button class=\"ds-btn-accent\">Fazer proposta</button>",
+      "css": ".ds-btn-accent{background:var(--accent,#0f5c4d);color:var(--accent-ink,#f2f3f1);border:1px solid var(--accent,#0f5c4d);border-radius:2px;padding:0.5rem 1rem;font:600 1rem 'Public Sans',sans-serif;cursor:pointer;transition:opacity 120ms ease}.ds-btn-accent:hover,.ds-btn-accent:focus-visible{opacity:.85;outline:3px solid var(--accent,#0f5c4d);outline-offset:3px}"
+    },
+    {
+      "name": "Botao de contorno",
+      "kind": "button",
+      "refersTo": "button-outline-ink",
+      "description": "Acao secundaria.",
+      "html": "<button class=\"ds-btn-outline\">Fale conosco</button>",
+      "css": ".ds-btn-outline{background:transparent;color:#1a1a18;border:1px solid #d3d5ce;border-radius:2px;padding:0.5rem 1rem;font:400 1rem 'Public Sans',sans-serif;cursor:pointer}.ds-btn-outline:hover{border-color:#1a1a18}.ds-btn-outline:focus-visible{outline:3px solid #0f5c4d;outline-offset:3px}"
+    },
+    {
+      "name": "Selo",
+      "kind": "chip",
+      "refersTo": "stamp",
+      "description": "Estado de proposta em Plex Mono.",
+      "html": "<span class=\"ds-selo\">NOVA</span>",
+      "css": ".ds-selo{display:inline-block;font:600 0.68rem 'IBM Plex Mono',monospace;letter-spacing:.04em;text-transform:uppercase;padding:.25rem .5rem;border-radius:2px;background:var(--accent,#0f5c4d);border:1px solid var(--accent,#0f5c4d);color:var(--accent-ink,#f2f3f1)}"
+    },
+    {
+      "name": "Lista com regua",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Substitui cartoes de recurso.",
+      "html": "<dl class=\"ds-lista\"><div><dt>Vitrine propria</dt><dd>Sua garagem com a sua cara.</dd></div></dl>",
+      "css": ".ds-lista{margin:0}.ds-lista>div{padding:1.4rem 0;border-top:1px solid #1a1a18}.ds-lista dt{font:700 1.5rem 'Big Shoulders',sans-serif;text-transform:uppercase;letter-spacing:.01em;margin-bottom:.4rem}.ds-lista dd{margin:0;max-width:34rem;line-height:1.55;color:#5b5d56}"
+    },
+    {
+      "name": "Seletor Cliente | Dono",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Alterna o lado mostrado no celular, sobre o verde.",
+      "html": "<div class=\"ds-seletor\"><button aria-selected=\"true\">Cliente</button><button aria-selected=\"false\">Dono</button></div>",
+      "css": ".ds-seletor{display:inline-flex;gap:3px;padding:3px;border:1px solid rgba(242,243,241,.7);border-radius:2px;background:#0f5c4d}.ds-seletor button{min-width:8.5rem;padding:.65rem 1.1rem;background:transparent;color:#f2f3f1;border:0;border-radius:1px;font:700 .98rem 'Public Sans',sans-serif;cursor:pointer}.ds-seletor button:hover{background:rgba(242,243,241,.16)}.ds-seletor button[aria-selected=true]{background:#f2f3f1;color:#1a1a18}.ds-seletor button:focus-visible{outline:3px solid #f2f3f1;outline-offset:3px}"
+    },
+    {
+      "name": "Moldura de celular",
+      "kind": "card",
+      "refersTo": "phone-frame",
+      "description": "Aparelho de tinta que contem a vitrine.",
+      "html": "<div class=\"ds-celular\"><div class=\"ds-tela\">vitrine</div></div>",
+      "css": ".ds-celular{position:relative;width:240px;height:400px;background:#1a1a18;border:10px solid #1a1a18;border-radius:40px;box-shadow:0 40px 60px -30px rgba(0,0,0,.6)}.ds-tela{position:absolute;inset:0;border-radius:30px;overflow:hidden;background:#f2f3f1;color:#1a1a18;padding:1rem}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Placa da Garagem",
+    "overview": "Sinalizacao de garagem de bairro: letra condensada em caixa alta, tinta sobre papel frio, um verde profundo por garagem. Estrutura por reguas e faixas, cantos de 2px, sem cartoes flutuantes. A landing usa o mesmo mundo com mais volume: heroi verde, celular de tinta, listas com regua, faixa de contato em tinta.",
+    "keyCharacteristics": ["Verde e tinta em faixas inteiras ou pontos pequenos", "Big Shoulders caixa alta, Public Sans, IBM Plex Mono para dados", "Cantos de 2px exceto o celular", "Reguas no lugar de cartoes", "Mostra o produto real"],
+    "rules": [
+      {"name": "The Whole-Band Rule", "body": "Verde e tinta aparecem como faixa de largura total ou ponto pequeno, nunca como cartao colorido em secao de papel.", "section": "colors"},
+      {"name": "The Borrowed Accent Rule", "body": "Componentes usam var(--accent) e var(--accent-ink), nunca o hex.", "section": "colors"},
+      {"name": "The Sign-Painter Rule", "body": "Big Shoulders so em titulos e marca, sempre em caixa alta.", "section": "typography"},
+      {"name": "The Mono-For-Data Rule", "body": "Plex Mono reservado a numeros, selos de estado e metadados.", "section": "typography"},
+      {"name": "The Flat-Surface Rule", "body": "Secoes, listas e campos nao levam sombra; so objetos que imitam aparelho ou flutuam.", "section": "elevation"}
+    ],
+    "dos": ["Do usar var(--accent)/var(--accent-ink) para tudo que e marca.", "Do separar conteudo por reguas e por troca de faixa de fundo.", "Do manter 2px de raio; so aparelhos fogem disso.", "Do mostrar a vitrine real e rotular o que e sintetico.", "Do usar foco visivel de 3px e respeitar prefers-reduced-motion."],
+    "donts": ["Don't montar grade de cartoes com icone e titulo para listar recursos.", "Don't usar gradientes decorativos ou verde diluido.", "Don't aplicar Big Shoulders em texto corrido nem Plex Mono em titulos.", "Don't afirmar prova social, numeros ou preco na landing.", "Don't aplicar arredondamento largo do Bootstrap."]
+  }
+}

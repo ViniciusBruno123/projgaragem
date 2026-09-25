@@ -5,6 +5,7 @@ Toda a configuração vem de variáveis de ambiente (arquivo .env na raiz do pro
 Em desenvolvimento, DEBUG=True. Em produção veja deploy/README.md e .env.production.example.
 """
 
+import re
 from decimal import Decimal
 from pathlib import Path
 
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'leads',
     'financing',
     'billing',
+    'landing',
 ]
 
 MIDDLEWARE = [
@@ -191,6 +193,15 @@ TAXA_JUROS_ESTIMADA = Decimal('2.00')
 # Identificação da plataforma nos textos legais (termos de uso e privacidade)
 PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='projgaragem')
 PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')
+
+# Landing page (raiz do site): WhatsApp dos sócios (só dígitos com DDI, ex: 5517999999999; em
+# branco, o botão da landing leva ao formulário) e a garagem cuja vitrine aparece no celular.
+PLATAFORMA_WHATSAPP = re.sub(r'\D', '', env('PLATAFORMA_WHATSAPP', default=''))
+LANDING_DEMO_SLUG = env('LANDING_DEMO_SLUG', default='motos-do-joao')
+LANDING_DEMO_SLUG_2 = env('LANDING_DEMO_SLUG_2', default='central-motors-demo')
+
+# A vitrine de demonstração aparece dentro de um iframe da própria landing (mesma origem).
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 
 # E-mail

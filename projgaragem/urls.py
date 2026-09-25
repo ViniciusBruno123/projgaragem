@@ -25,6 +25,7 @@ urlpatterns = [
     path('painel/', include('dashboard.urls')),
     path('billing/', include('billing.urls')),
     path('g/<slug:garagem_slug>/', include('storefront.urls')),
+    path('', include('landing.urls')),
 ]
 
 if settings.DEBUG:
