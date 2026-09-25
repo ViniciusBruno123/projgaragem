@@ -145,6 +145,45 @@ class AtualizarStatusPropostaViewTests(TestCase):
         self.proposta_a.refresh_from_db()
         self.assertEqual(self.proposta_a.status, Proposta.Status.NOVA)
 
+    def test_marcar_como_vendido_torna_veiculo_indisponivel(self):
+        veiculo = Veiculo.objects.create(
+            garagem=self.garagem_a, tipo=Veiculo.Tipo.CARRO, titulo='Fiat Uno', marca='Fiat',
+            modelo='Uno', ano_fabricacao=2015, ano_modelo=2015, quilometragem=80000,
+            combustivel=Veiculo.Combustivel.FLEX, preco=30000,
+        )
+        self.proposta_a.veiculo = veiculo
+        self.proposta_a.save(update_fields=['veiculo'])
+
+        url = reverse('dashboard:proposta_status', kwargs={'pk': self.proposta_a.pk})
+        self.client.post(url, {'status': Proposta.Status.CONVERTIDA})
+
+        veiculo.refresh_from_db()
+        self.assertFalse(veiculo.disponivel)
+
+    def test_desfazer_vendido_torna_veiculo_disponivel_de_novo(self):
+        veiculo = Veiculo.objects.create(
+            garagem=self.garagem_a, tipo=Veiculo.Tipo.CARRO, titulo='Fiat Uno', marca='Fiat',
+            modelo='Uno', ano_fabricacao=2015, ano_modelo=2015, quilometragem=80000,
+            combustivel=Veiculo.Combustivel.FLEX, preco=30000,
+        )
+        self.proposta_a.veiculo = veiculo
+        self.proposta_a.status = Proposta.Status.CONVERTIDA
+        self.proposta_a.save(update_fields=['veiculo', 'status'])
+        veiculo.disponivel = False
+        veiculo.save(update_fields=['disponivel'])
+
+        url = reverse('dashboard:proposta_status', kwargs={'pk': self.proposta_a.pk})
+        self.client.post(url, {'status': Proposta.Status.EM_CONTATO})
+
+        veiculo.refresh_from_db()
+        self.assertTrue(veiculo.disponivel)
+
+    def test_marcar_como_vendido_sem_veiculo_vinculado_nao_quebra(self):
+        # self.proposta_a não tem veiculo (contato geral) — só não pode dar erro.
+        url = reverse('dashboard:proposta_status', kwargs={'pk': self.proposta_a.pk})
+        resp = self.client.post(url, {'status': Proposta.Status.CONVERTIDA})
+        self.assertRedirects(resp, reverse('dashboard:proposta_list'))
+
 
 class AtualizarStatusAvaliacaoViewTests(TestCase):
     def setUp(self):

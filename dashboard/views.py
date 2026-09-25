@@ -204,9 +204,25 @@ class AtualizarStatusPropostaView(GaragemRequiredMixin, View):
         proposta = get_object_or_404(self.garagem.propostas, pk=pk)
         novo_status = request.POST.get('status')
         if novo_status in Proposta.Status.values:
+            status_anterior = proposta.status
             proposta.status = novo_status
             proposta.save(update_fields=['status'])
-            messages.success(request, "Status da proposta atualizado.")
+
+            # O veículo acompanha o status "Vendido para esse cliente": marca indisponível ao
+            # entrar nesse status, disponível de novo se o dono corrigir/desfazer — sem isso, o
+            # veículo continua na vitrine à venda mesmo já vendido.
+            aviso_veiculo = ''
+            if proposta.veiculo and novo_status != status_anterior:
+                if novo_status == Proposta.Status.CONVERTIDA:
+                    proposta.veiculo.disponivel = False
+                    proposta.veiculo.save(update_fields=['disponivel'])
+                    aviso_veiculo = ' O veículo foi marcado como indisponível.'
+                elif status_anterior == Proposta.Status.CONVERTIDA:
+                    proposta.veiculo.disponivel = True
+                    proposta.veiculo.save(update_fields=['disponivel'])
+                    aviso_veiculo = ' O veículo voltou a ficar disponível.'
+
+            messages.success(request, f"Status da proposta atualizado.{aviso_veiculo}")
         return redirect('dashboard:proposta_list')
 
 
