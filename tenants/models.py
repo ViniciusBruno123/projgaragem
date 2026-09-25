@@ -54,6 +54,18 @@ class Garagem(models.Model):
     email_contato = models.EmailField()
     cidade = models.CharField(max_length=100, default='Catanduva')
     endereco = models.CharField(max_length=200, blank=True)
+    latitude = models.DecimalField(
+        max_digits=10, decimal_places=7, null=True, blank=True,
+        help_text="Preenchida automaticamente ao escolher o endereço pela busca do Google Maps.",
+    )
+    longitude = models.DecimalField(
+        max_digits=10, decimal_places=7, null=True, blank=True,
+        help_text="Preenchida automaticamente ao escolher o endereço pela busca do Google Maps.",
+    )
+    google_place_id = models.CharField(
+        'ID do lugar no Google Maps', max_length=255, blank=True,
+        help_text="Preenchido automaticamente ao escolher o endereço pela busca do Google Maps.",
+    )
     horario_funcionamento = models.CharField(
         max_length=150, blank=True, help_text="Ex: Seg a Sex, 8h às 18h"
     )
@@ -63,11 +75,15 @@ class Garagem(models.Model):
         'Logo', upload_to='garagens/logos/', null=True, blank=True,
         help_text="Aparece ao lado do nome da garagem, na vitrine e no painel.",
     )
-    ocultar_identidade_capa = models.BooleanField(
-        'Mostrar só a faixa superior, sem logo/nome por cima', default=False,
+    ocultar_logo_capa = models.BooleanField(
+        'Ocultar a logo no topo da vitrine', default=False,
+        help_text="Esconde a logo sobreposta ao cabeçalho, mesmo com uma cadastrada.",
+    )
+    ocultar_nome_capa = models.BooleanField(
+        'Ocultar o nome no topo da vitrine', default=False,
         help_text=(
-            "Use se a sua faixa superior já tem sua marca desenhada nela. Só tem efeito quando "
-            "existe pelo menos uma faixa cadastrada — sem faixa, o nome sempre aparece."
+            "Esconde o nome da garagem sobreposto ao cabeçalho — útil se a sua faixa já tem a "
+            "marca desenhada nela. Sem logo nem nome ali, aparece um ícone de início no lugar."
         ),
     )
     cor_destaque = models.CharField(
@@ -111,6 +127,30 @@ class Garagem(models.Model):
     @property
     def limite_veiculos(self):
         return self.LIMITE_VEICULOS_POR_PLANO[self.plano]
+
+    @property
+    def logo_visivel_na_capa(self):
+        return bool(self.logo) and not self.ocultar_logo_capa
+
+    @property
+    def nome_visivel_na_capa(self):
+        return not self.ocultar_nome_capa
+
+    @property
+    def link_google_maps(self):
+        """Link "Como chegar" para o botão flutuante da vitrine — o mais preciso disponível:
+        place_id (escolhido pela busca do Google Maps) > coordenadas > texto do endereço."""
+        from urllib.parse import quote
+
+        if self.google_place_id:
+            consulta = quote(self.endereco or self.nome)
+            return f"https://www.google.com/maps/search/?api=1&query={consulta}&query_place_id={self.google_place_id}"
+        if self.latitude is not None and self.longitude is not None:
+            return f"https://www.google.com/maps/search/?api=1&query={self.latitude},{self.longitude}"
+        if self.endereco:
+            consulta = quote(f"{self.endereco}, {self.cidade}")
+            return f"https://www.google.com/maps/search/?api=1&query={consulta}"
+        return ''
 
     def clean(self):
         from django.core.exceptions import ValidationError

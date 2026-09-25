@@ -1,0 +1,28 @@
+{% comment %}
+Modal do endereço da garagem — busca por texto (Places) OU clique/arraste no mapa embutido pra
+ajustar o pino manualmente. Só é incluído quando settings.GOOGLE_MAPS_API_KEY existe (ver
+dados_garagem.html); sem chave, o campo "Endereço" volta a ser texto livre e esse modal nem entra
+na página.
+{% endcomment %}
+<div class="modal fade" id="modal-endereco-mapa" tabindex="-1" aria-labelledby="modal-endereco-mapa-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 mb-0" id="modal-endereco-mapa-titulo">Endereço da garagem</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label" for="mapa-busca-endereco">Buscar endereço</label>
+                <gmp-place-autocomplete id="mapa-busca-endereco" style="width: 100%;" requested-language="pt-BR" requested-region="br"></gmp-place-autocomplete>
+                <p class="text-muted small mt-2 mb-2">
+                    Ou clique direto no mapa, ou arraste o marcador, para ajustar o local exato.
+                </p>
+                <div id="mapa-endereco-canvas" style="height: 350px; border: 1px solid var(--line);"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-ink" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-accent" id="mapa-endereco-confirmar" data-bs-dismiss="modal">Usar esse local</button>
+            </div>
+        </div>
+    </div>
+</div>

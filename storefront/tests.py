@@ -465,23 +465,38 @@ class VariosBannersTests(TestCase):
         # só a primeira nasce visível — a troca de qual fica visível é feita em JS.
         self.assertEqual(resp.count('site-header-banner-camada active'), 1)
 
-    def test_identidade_some_quando_oculta_e_ha_banner(self):
-        self.garagem.ocultar_identidade_capa = True
+    def test_ocultar_so_a_logo_mantem_o_nome(self):
+        self.garagem.logo = gerar_foto((400, 400), nome='logo.jpg')
+        self.garagem.ocultar_logo_capa = True
+        self.garagem.save()
+
+        resp = self.client.get(self.url)
+        self.assertNotContains(resp, 'brand-logo')
+        self.assertContains(resp, self.garagem.nome)
+        self.assertNotContains(resp, 'pagina-inicial-flutuante')
+
+    def test_ocultar_so_o_nome_mantem_a_logo(self):
+        self.garagem.logo = gerar_foto((400, 400), nome='logo.jpg')
+        self.garagem.ocultar_nome_capa = True
+        self.garagem.save()
+
+        resp = self.client.get(self.url)
+        self.assertContains(resp, 'brand-logo')
+        self.assertNotContains(resp, 'pagina-inicial-flutuante')
+
+    def test_icone_de_inicio_aparece_quando_logo_e_nome_estao_ocultos(self):
+        self.garagem.logo = gerar_foto((400, 400), nome='logo.jpg')
+        self.garagem.ocultar_logo_capa = True
+        self.garagem.ocultar_nome_capa = True
         self.garagem.save()
         Banner.objects.create(garagem=self.garagem, imagem=gerar_foto((1600, 500), nome='b1.jpg'), ordem=0)
 
         resp = self.client.get(self.url)
         # o nome ainda aparece em outros lugares da página (título, rodapé, menu) —
-        # o que muda é só o link de marca sobreposto ao banner, no topo.
-        self.assertNotContains(resp, '<a class="brand"')
-
-    def test_identidade_nao_some_sem_banner_mesmo_com_a_opcao_marcada(self):
-        # Sem isso o cabeçalho ficaria vazio — a opção só faz sentido tendo banner.
-        self.garagem.ocultar_identidade_capa = True
-        self.garagem.save()
-
-        resp = self.client.get(self.url)
-        self.assertContains(resp, '<a class="brand"')
+        # o que some é só o link de marca sobreposto ao banner, no topo.
+        self.assertNotContains(resp, 'brand-logo')
+        self.assertContains(resp, 'pagina-inicial-flutuante')
+        self.assertContains(resp, '#i-home')
 
 
 class SimuladorParcialTests(TestCase):

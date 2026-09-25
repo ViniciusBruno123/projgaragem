@@ -41,16 +41,27 @@
         <div class="site-header-scrim"></div>
     {% endif %}
     <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
-        {% if not banners or not garagem.ocultar_identidade_capa %}
+        {% if garagem.logo_visivel_na_capa or garagem.nome_visivel_na_capa %}
             <a class="brand" href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}">
-                {% if garagem.logo %}<img src="{{ garagem.logo.url }}" alt="" class="brand-logo">{% endif %}
-                <span>{{ garagem.nome }}</span>
+                {% if garagem.logo_visivel_na_capa %}<img src="{{ garagem.logo.url }}" alt="" class="brand-logo">{% endif %}
+                {% if garagem.nome_visivel_na_capa %}<span>{{ garagem.nome }}</span>{% endif %}
             </a>
         {% endif %}
     </div>
 </header>
 {% if banners|length > 1 %}<script src="{% static 'js/banners_capa.js' %}"></script>{% endif %}
 {% endwith %}
+
+{% if not garagem.logo_visivel_na_capa and not garagem.nome_visivel_na_capa %}
+    {% comment %}
+        Nem logo nem nome à mostra (ex: faixa já tem a marca desenhada nela) — sem isso o topo
+        da vitrine ficaria sem nenhum link de volta pra página inicial. Fixo no canto oposto ao
+        botão do menu, mesmo tratamento visual (fundo sólido, acompanha a rolagem).
+    {% endcomment %}
+    <a href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}" class="pagina-inicial-flutuante" aria-label="Página inicial">
+        <svg class="ico" aria-hidden="true"><use href="#i-home"/></svg>
+    </a>
+{% endif %}
 
 <button type="button" class="menu-lateral-toggle" data-bs-toggle="offcanvas"
     data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir menu">

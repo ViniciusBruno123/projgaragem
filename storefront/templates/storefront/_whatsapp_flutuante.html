@@ -1,8 +1,13 @@
-{% if garagem.telefone_whatsapp or garagem.instagram_url %}
+{% if garagem.telefone_whatsapp or garagem.instagram_url or garagem.link_google_maps %}
 <div class="social-flutuante">
     {% if garagem.instagram_url %}
         <a href="{{ garagem.instagram_url }}" target="_blank" rel="noopener" class="social-float" aria-label="Instagram">
             <svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg>
+        </a>
+    {% endif %}
+    {% if garagem.link_google_maps %}
+        <a href="{{ garagem.link_google_maps }}" target="_blank" rel="noopener" class="social-float" aria-label="Como chegar (Google Maps)">
+            <svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg>
         </a>
     {% endif %}
     {% if garagem.telefone_whatsapp %}

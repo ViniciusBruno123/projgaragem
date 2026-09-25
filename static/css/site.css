@@ -305,6 +305,34 @@ a:hover {
   width: 1.3em;
   height: 1.3em;
 }
+/* Ícone de início: some no canto oposto ao do menu, mesmo tratamento (fundo sólido, fixo,
+   acompanha a rolagem) — só aparece quando logo e nome estão os dois ocultos no banner (ver
+   _base_vitrine.html), como link de volta pra página inicial. Um pouco maior que o do menu:
+   é o único jeito de voltar quando a marca não está sobreposta ao banner. */
+.pagina-inicial-flutuante {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 2px;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.pagina-inicial-flutuante:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.pagina-inicial-flutuante .ico {
+  width: 1.6em;
+  height: 1.6em;
+}
 /* Fundo sólido na cor de destaque da própria garagem (--accent, customizável por ela) — deixa
    o menu com a cara da vitrine em vez de um cinza neutro, e evita ter que decidir contraste
    contra uma foto de capa (não tem foto nenhuma atrás dele, é sempre a cor sólida). */

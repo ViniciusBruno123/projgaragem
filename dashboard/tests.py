@@ -461,11 +461,19 @@ class LogoEBannerDaGaragemTests(TestCase):
         self.assertRedirects(resp, self.url)
         self.assertEqual(Banner.objects.filter(garagem=self.garagem).count(), 2)
 
-    def test_dono_marca_para_mostrar_so_o_banner_sem_identidade(self):
-        resp = self.client.post(self.url, self._dados_basicos(ocultar_identidade_capa='on'))
+    def test_dono_oculta_so_a_logo(self):
+        resp = self.client.post(self.url, self._dados_basicos(ocultar_logo_capa='on'))
         self.assertRedirects(resp, self.url)
         self.garagem.refresh_from_db()
-        self.assertTrue(self.garagem.ocultar_identidade_capa)
+        self.assertTrue(self.garagem.ocultar_logo_capa)
+        self.assertFalse(self.garagem.ocultar_nome_capa)
+
+    def test_dono_oculta_so_o_nome(self):
+        resp = self.client.post(self.url, self._dados_basicos(ocultar_nome_capa='on'))
+        self.assertRedirects(resp, self.url)
+        self.garagem.refresh_from_db()
+        self.assertTrue(self.garagem.ocultar_nome_capa)
+        self.assertFalse(self.garagem.ocultar_logo_capa)
 
     def test_vitrine_publica_mostra_logo_e_banner_quando_cadastrados(self):
         self.garagem.logo = gerar_foto((400, 400), nome='logo.jpg')

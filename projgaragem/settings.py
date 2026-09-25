@@ -188,6 +188,12 @@ PLANO_MENSALIDADE_PADRAO = env('PLANO_MENSALIDADE_PADRAO', default='99.90')
 # Usada no simulador só se a garagem não informar taxa e o Banco Central nunca tiver sido consultado
 TAXA_JUROS_ESTIMADA = Decimal('2.00')
 
+# Google Maps: usada só no painel (dados_garagem), pra buscar o endereço da garagem pelo Places
+# Autocomplete em vez de digitação livre. Chave client-side (restringir por domínio/referrer no
+# Google Cloud Console, não é segredo como um token de API server-side). Em branco, o campo
+# "Endereço" volta a ser texto livre — nada quebra sem a chave configurada.
+GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY', default='')
+
 # Identificação da plataforma nos textos legais (termos de uso e privacidade)
 PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='projgaragem')
 PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')

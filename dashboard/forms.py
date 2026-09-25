@@ -1,6 +1,7 @@
 import re
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.utils.formats import localize
@@ -165,7 +166,8 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
     class Meta:
         model = Garagem
         fields = [
-            'logo', 'ocultar_identidade_capa', 'telefone_whatsapp', 'endereco', 'horario_funcionamento',
+            'logo', 'ocultar_logo_capa', 'ocultar_nome_capa', 'telefone_whatsapp',
+            'endereco', 'latitude', 'longitude', 'google_place_id', 'horario_funcionamento',
             'instagram_url', 'facebook_url', 'cor_destaque', 'cor_titulo', 'fonte_titulo',
             'taxa_juros_mensal_padrao',
         ]
@@ -189,6 +191,9 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
             'cor_titulo': forms.TextInput(attrs={'type': 'color', 'style': 'height: 2.5rem; padding: 0.25rem;'}),
             'fonte_titulo': SelectComPreviaDeFonte,
             'taxa_juros_mensal_padrao': forms.NumberInput(attrs={'step': '0.01', 'min': '0', 'placeholder': 'Ex: 1,99'}),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
+            'google_place_id': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -198,12 +203,18 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
                 field.widget.attrs.setdefault('class', 'form-check-input')
             elif isinstance(field.widget, forms.Select):
                 field.widget.attrs.setdefault('class', 'form-select')
-            else:
+            elif not isinstance(field.widget, forms.HiddenInput):
                 field.widget.attrs.setdefault('class', 'form-control')
         self.fields['logo'].widget.attrs['accept'] = 'image/*'
         # Corte no upload (ver static/js/cortar_foto.js): a logo aparece inteira (object-fit:
         # contain), então o corte é livre.
         self.fields['logo'].widget.attrs['data-cortar'] = 'livre'
+
+        # Com a chave do Maps configurada, "endereco" some da lista e vira campo oculto —
+        # quem digita ele é o widget de busca do Google Maps (ver dados_garagem.html/
+        # endereco_autocomplete.js), não mais texto livre.
+        if settings.GOOGLE_MAPS_API_KEY:
+            self.fields['endereco'].widget = forms.HiddenInput()
 
         media = taxa_media_de_mercado()
         if media:
