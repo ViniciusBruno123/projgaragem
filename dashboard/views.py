@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.db.models import Max
@@ -58,7 +57,6 @@ class DadosGaragemView(GaragemRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx.setdefault('formset', self.get_formset())
-        ctx['maps_api_key'] = settings.GOOGLE_MAPS_API_KEY
         return ctx
 
     def form_valid(self, form):

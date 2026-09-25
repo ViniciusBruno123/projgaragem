@@ -6,6 +6,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 {% endblock %}
 
 {% block painel_content %}
@@ -15,18 +16,18 @@
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div style="max-width: 500px;">
-        {% if maps_api_key %}
-            <div class="mb-3">
-                <label class="form-label" for="mapa-endereco-trigger">Endereço</label>
-                {# Botão com cara de campo de texto — clicar abre o mapa embutido (modal), em vez
-                   de digitar. O texto mostrado é atualizado em JS ao confirmar um local. #}
-                <button type="button" class="form-control text-start" id="mapa-endereco-trigger"
-                    data-bs-toggle="modal" data-bs-target="#modal-endereco-mapa">
-                    {% if garagem.endereco %}{{ garagem.endereco }}{% else %}<span class="text-muted">Clique para definir no mapa</span>{% endif %}
-                </button>
-                {% if form.endereco.errors %}<div class="text-danger small">{{ form.endereco.errors }}</div>{% endif %}
-            </div>
-        {% endif %}
+        <div class="mb-3">
+            <label class="form-label" for="mapa-endereco-trigger">Endereço</label>
+            {% comment %}
+                Botão com cara de campo de texto — clicar abre o mapa embutido (modal), em vez
+                de digitar. O texto mostrado é atualizado em JS ao confirmar um local.
+            {% endcomment %}
+            <button type="button" class="form-control text-start" id="mapa-endereco-trigger"
+                data-bs-toggle="modal" data-bs-target="#modal-endereco-mapa">
+                {% if garagem.endereco %}{{ garagem.endereco }}{% else %}<span class="text-muted">Clique para definir no mapa</span>{% endif %}
+            </button>
+            {% if form.endereco.errors %}<div class="text-danger small">{{ form.endereco.errors }}</div>{% endif %}
+        </div>
         {% for field in form %}
             {% if field.is_hidden %}
                 {{ field }}
@@ -91,25 +92,20 @@
 </form>
 
 {% include "dashboard/_modal_cortar_foto.html" %}
-{% if maps_api_key %}{% include "dashboard/_modal_endereco_mapa.html" %}{% endif %}
+{% include "dashboard/_modal_endereco_mapa.html" %}
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script src="{% static 'js/cortar_foto.js' %}"></script>
 <script src="{% static 'js/previa_fonte.js' %}"></script>
-{% if maps_api_key %}
-    <script>
-        window.GARAGEM_MAPS_CAMPOS = {
-            endereco: '{{ form.endereco.id_for_label }}',
-            lat: '{{ form.latitude.id_for_label }}',
-            lng: '{{ form.longitude.id_for_label }}',
-            placeId: '{{ form.google_place_id.id_for_label }}',
-        };
-    </script>
-    <script src="{% static 'js/endereco_autocomplete.js' %}"></script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}&libraries=places,geocoding&v=weekly&loading=async&callback=iniciarAutocompleteEndereco">
-    </script>
-{% endif %}
+<script>
+    window.GARAGEM_MAPS_CAMPOS = {
+        endereco: '{{ form.endereco.id_for_label }}',
+        lat: '{{ form.latitude.id_for_label }}',
+        lng: '{{ form.longitude.id_for_label }}',
+    };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="{% static 'js/endereco_mapa.js' %}"></script>
 {% endblock %}

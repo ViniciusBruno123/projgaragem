@@ -1,8 +1,8 @@
 {% comment %}
-Modal do endereço da garagem — busca por texto (Places) OU clique/arraste no mapa embutido pra
-ajustar o pino manualmente. Só é incluído quando settings.GOOGLE_MAPS_API_KEY existe (ver
-dados_garagem.html); sem chave, o campo "Endereço" volta a ser texto livre e esse modal nem entra
-na página.
+Modal do endereço da garagem — busca por texto (Nominatim/OpenStreetMap) OU clique/arraste no
+mapa embutido (Leaflet) pra ajustar o pino manualmente. Sem chave nem cadastro nenhum: tanto os
+tiles quanto a busca/geocodificação são do projeto OpenStreetMap, gratuitos (ver
+static/js/endereco_mapa.js sobre o limite de uso da Nominatim).
 {% endcomment %}
 <div class="modal fade" id="modal-endereco-mapa" tabindex="-1" aria-labelledby="modal-endereco-mapa-titulo" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -13,8 +13,12 @@ na página.
             </div>
             <div class="modal-body">
                 <label class="form-label" for="mapa-busca-endereco">Buscar endereço</label>
-                <gmp-place-autocomplete id="mapa-busca-endereco" style="width: 100%;" requested-language="pt-BR" requested-region="br"></gmp-place-autocomplete>
-                <p class="text-muted small mt-2 mb-2">
+                <div class="position-relative mb-2">
+                    <input type="text" id="mapa-busca-endereco" class="form-control" autocomplete="off"
+                        placeholder="Digite uma rua, bairro ou cidade...">
+                    <div id="mapa-busca-resultados" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1060; display: none;"></div>
+                </div>
+                <p class="text-muted small mb-2">
                     Ou clique direto no mapa, ou arraste o marcador, para ajustar o local exato.
                 </p>
                 <div id="mapa-endereco-canvas" style="height: 350px; border: 1px solid var(--line);"></div>

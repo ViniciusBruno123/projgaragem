@@ -56,15 +56,18 @@ class Garagem(models.Model):
     endereco = models.CharField(max_length=200, blank=True)
     latitude = models.DecimalField(
         max_digits=10, decimal_places=7, null=True, blank=True,
-        help_text="Preenchida automaticamente ao escolher o endereço pela busca do Google Maps.",
+        help_text="Preenchida automaticamente ao definir o endereço no mapa (painel da garagem).",
     )
     longitude = models.DecimalField(
         max_digits=10, decimal_places=7, null=True, blank=True,
-        help_text="Preenchida automaticamente ao escolher o endereço pela busca do Google Maps.",
+        help_text="Preenchida automaticamente ao definir o endereço no mapa (painel da garagem).",
     )
     google_place_id = models.CharField(
         'ID do lugar no Google Maps', max_length=255, blank=True,
-        help_text="Preenchido automaticamente ao escolher o endereço pela busca do Google Maps.",
+        help_text=(
+            "Deixado por uma versão anterior do seletor de endereço (baseado no Google Maps); "
+            "quando presente, deixa o link \"Como chegar\" da vitrine mais preciso."
+        ),
     )
     horario_funcionamento = models.CharField(
         max_length=150, blank=True, help_text="Ex: Seg a Sex, 8h às 18h"

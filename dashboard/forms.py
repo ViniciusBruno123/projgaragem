@@ -1,7 +1,6 @@
 import re
 
 from django import forms
-from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import BaseInlineFormSet, inlineformset_factory
 from django.utils.formats import localize
@@ -191,6 +190,7 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
             'cor_titulo': forms.TextInput(attrs={'type': 'color', 'style': 'height: 2.5rem; padding: 0.25rem;'}),
             'fonte_titulo': SelectComPreviaDeFonte,
             'taxa_juros_mensal_padrao': forms.NumberInput(attrs={'step': '0.01', 'min': '0', 'placeholder': 'Ex: 1,99'}),
+            'endereco': forms.HiddenInput(),
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
             'google_place_id': forms.HiddenInput(),
@@ -209,12 +209,6 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
         # Corte no upload (ver static/js/cortar_foto.js): a logo aparece inteira (object-fit:
         # contain), então o corte é livre.
         self.fields['logo'].widget.attrs['data-cortar'] = 'livre'
-
-        # Com a chave do Maps configurada, "endereco" some da lista e vira campo oculto —
-        # quem digita ele é o widget de busca do Google Maps (ver dados_garagem.html/
-        # endereco_autocomplete.js), não mais texto livre.
-        if settings.GOOGLE_MAPS_API_KEY:
-            self.fields['endereco'].widget = forms.HiddenInput()
 
         media = taxa_media_de_mercado()
         if media:
