@@ -197,6 +197,8 @@ PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')
 # Landing page (raiz do site): WhatsApp dos sócios (só dígitos com DDI, ex: 5517999999999; em
 # branco, o botão da landing leva ao formulário) e a garagem cuja vitrine aparece no celular.
 PLATAFORMA_WHATSAPP = re.sub(r'\D', '', env('PLATAFORMA_WHATSAPP', default=''))
+PLATAFORMA_WHATSAPP_2 = re.sub(r'\D', '', env('PLATAFORMA_WHATSAPP_2', default=''))
+PLATAFORMA_INSTAGRAM = env('PLATAFORMA_INSTAGRAM', default='')
 LANDING_DEMO_SLUG = env('LANDING_DEMO_SLUG', default='motos-do-joao')
 LANDING_DEMO_SLUG_2 = env('LANDING_DEMO_SLUG_2', default='central-motors-demo')
 

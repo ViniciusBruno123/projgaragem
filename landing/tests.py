@@ -31,7 +31,16 @@ class LandingPageTests(TestCase):
         resposta = self.client.get('/')
         self.assertContains(resposta, 'https://wa.me/5517999998888?text=')
 
-    @override_settings(PLATAFORMA_WHATSAPP='')
+    @override_settings(PLATAFORMA_WHATSAPP='5517992078701', PLATAFORMA_WHATSAPP_2='5517996314361',
+                       PLATAFORMA_INSTAGRAM='https://www.instagram.com/spi.tech/')
+    def test_canais_de_contato_mostram_os_dois_numeros_e_o_instagram(self):
+        resposta = self.client.get('/')
+        self.assertContains(resposta, '(17) 99207-8701')
+        self.assertContains(resposta, 'https://wa.me/5517996314361')
+        self.assertContains(resposta, '(17) 99631-4361')
+        self.assertContains(resposta, '@spi.tech')
+
+    @override_settings(PLATAFORMA_WHATSAPP='', PLATAFORMA_WHATSAPP_2='', PLATAFORMA_INSTAGRAM='')
     def test_sem_numero_o_botao_leva_ao_formulario(self):
         resposta = self.client.get('/')
         self.assertNotContains(resposta, 'wa.me')

@@ -1,66 +1,154 @@
-/* Landing page da plataforma (raiz do site). Herda as variáveis do site.css (papel, tinta, verde,
-   Big Shoulders / Public Sans / IBM Plex Mono); tudo aqui tem o prefixo lp-. */
+/* Landing page (raiz do site) na identidade da SPI Tech: Asfalto 60%, Azul Profundo 25%, Âmbar
+   em detalhes pontuais (até 5%), Névoa como fundo claro, Grafite no texto secundário.
+   Space Grotesk nos títulos, IBM Plex Sans no texto. Tudo aqui tem o prefixo lp-.
+   O painel de demonstração dentro do celular (.lp-painel) NÃO usa estas cores: ele imita o painel
+   real do produto e por isso segue os tokens do site.css (var(--ink), var(--accent)...). */
 
 .lp {
+  --spi-asfalto: #0a0d11;
+  --spi-asfalto-2: #11151c;
+  --spi-azul: #1a45b8;
+  --spi-ambar: #d8920e;
+  --spi-nevoa: #e3e7ec;
+  --spi-grafite: #3b4450;
+  --spi-linha: #252c38;
+  --spi-nevoa-suave: rgba(227, 231, 236, 0.78);
   --lp-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  color: var(--ink);
-  background: var(--paper);
+  --lp-titulo: "Space Grotesk", "Public Sans", sans-serif;
+  --lp-texto: "IBM Plex Sans", "Public Sans", sans-serif;
+
+  font-family: var(--lp-texto);
+  color: var(--spi-nevoa);
+  background: var(--spi-asfalto);
+}
+/* Elementos do navegador que também carregam a marca: rolagem, seleção, cursor de texto, foco. */
+html:has(.lp) {
+  scrollbar-color: #2a3240 #0a0d11;
+  background: #0a0d11;
 }
 .lp ::selection {
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-.lp-hero ::selection,
-.lp-contato ::selection {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--spi-ambar);
+  color: var(--spi-asfalto);
 }
 .lp :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--spi-ambar);
   outline-offset: 3px;
-}
-.lp-hero :focus-visible,
-.lp-contato :focus-visible {
-  outline-color: var(--paper);
 }
 .lp a {
   text-underline-offset: 0.2em;
 }
+.lp h1, .lp h2, .lp h3 {
+  font-family: var(--lp-titulo);
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
 
-/* --- Botão e links --- */
+/* --- Logotipo horizontal: monograma em quadrado + SPI | TECH --- */
+.lp-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--spi-nevoa);
+  text-decoration: none;
+}
+.lp-logo:hover {
+  color: #fff;
+}
+.lp-logo-tile {
+  display: grid;
+  place-items: center;
+  width: 3.1rem;
+  height: 3.1rem;
+  background: var(--spi-asfalto-2);
+  border: 1px solid var(--spi-linha);
+  border-radius: 8px;
+}
+.lp-logo-tile img {
+  width: 58%;
+  height: auto;
+  display: block;
+}
+.lp-logo-nome {
+  font-family: var(--lp-titulo);
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: 0.01em;
+  color: #fff;
+}
+.lp-logo-div {
+  width: 1px;
+  height: 1.6rem;
+  background: #4a5464;
+  margin-left: -0.15rem;
+}
+.lp-logo-tech {
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  color: #aab2bf;
+}
+.lp-logo--pequeno {
+  gap: 0.55rem;
+}
+.lp-logo--pequeno .lp-logo-tile {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 6px;
+}
+.lp-logo--pequeno .lp-logo-nome {
+  font-size: 1.15rem;
+}
+.lp-logo--pequeno .lp-logo-div {
+  height: 1.1rem;
+}
+.lp-logo--pequeno .lp-logo-tech {
+  font-size: 0.65rem;
+}
+
+/* --- Botões: primário em Azul Profundo; "claro" para fundos azuis --- */
 .lp-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
-  padding: 0.85rem 1.4rem;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-weight: 700;
+  padding: 0.9rem 1.5rem;
+  background: var(--spi-azul);
+  color: #fff;
+  font-family: var(--lp-texto);
+  font-weight: 600;
   font-size: 1.05rem;
   line-height: 1.2;
   text-decoration: none;
-  border: 0;
-  border-radius: 2px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 10px 24px -10px rgba(0, 0, 0, 0.5);
-  transition: transform 160ms var(--lp-ease), box-shadow 160ms var(--lp-ease);
+  border: 1px solid #3a63d0;
+  border-radius: 4px;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7);
+  transition: transform 160ms var(--lp-ease), background-color 160ms var(--lp-ease);
   cursor: pointer;
 }
 .lp-btn:hover {
-  color: var(--ink);
+  color: #fff;
+  background: #2452cc;
   transform: translateY(-2px);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35), 0 14px 28px -10px rgba(0, 0, 0, 0.55);
 }
 .lp-btn:active {
   transform: translateY(0);
 }
 .lp-btn--pequeno {
-  padding: 0.55rem 1rem;
+  padding: 0.6rem 1.05rem;
   font-size: 0.95rem;
 }
+.lp-btn--claro {
+  margin-top: 2.5rem;
+  background: var(--spi-nevoa);
+  color: var(--spi-asfalto);
+  border-color: var(--spi-nevoa);
+}
+.lp-btn--claro:hover {
+  color: var(--spi-asfalto);
+  background: #fff;
+}
 .lp-ico {
-  width: 1.4em;
-  height: 1.4em;
+  width: 1.35em;
+  height: 1.35em;
   flex: none;
   fill: none;
   stroke: currentColor;
@@ -69,49 +157,55 @@
   stroke-linejoin: round;
 }
 .lp-link {
-  color: var(--accent-ink);
-  font-weight: 600;
+  color: var(--spi-nevoa);
+  font-weight: 500;
 }
 .lp-link:hover {
-  color: var(--accent-ink);
+  color: #fff;
   text-decoration-thickness: 2px;
 }
 
-/* --- Herói: verde inteiro, texto em papel --- */
+/* --- Herói: Asfalto, com a barra âmbar da marca acima do título --- */
 .lp-hero {
-  background: var(--accent);
-  color: var(--accent-ink);
-  padding-bottom: 4rem;
+  background: linear-gradient(180deg, var(--spi-asfalto) 0%, var(--spi-asfalto-2) 100%);
+  padding-bottom: 4.5rem;
 }
 .lp-topo {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 0 0.5rem;
-}
-.lp-marca {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.6rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  padding: 1.5rem 0 0.5rem;
 }
 .lp-hero-corpo {
   padding-top: 2.5rem;
 }
+.lp-barra {
+  display: block;
+  width: 4rem;
+  height: 6px;
+  background: var(--spi-ambar);
+  margin-bottom: 1.5rem;
+}
 .lp-hero h1 {
-  font-weight: 800;
-  font-size: clamp(3rem, 7.4vw, 6rem);
-  line-height: 0.95;
-  letter-spacing: 0;
+  /* 700 (não os 600 do manual): o slogan em caixa alta fica igual ao dos posts do Instagram. */
+  font-weight: 700;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #fff;
   margin: 0 0 1.5rem;
-  max-width: 11ch;
+}
+.lp-hero h1 em {
+  font-style: normal;
+  color: var(--spi-ambar);
 }
 .lp-lead {
   font-size: 1.2rem;
-  line-height: 1.5;
+  line-height: 1.55;
   max-width: 34rem;
   margin: 0 0 2rem;
+  color: var(--spi-nevoa-suave);
 }
 .lp-acoes {
   display: flex;
@@ -123,13 +217,14 @@
 
 /* Lista do lado ativo (troca junto com o celular) */
 .lp-lados {
-  border-top: 1px solid rgba(242, 243, 241, 0.4);
+  border-top: 1px solid var(--spi-linha);
   padding-top: 1.25rem;
   max-width: 34rem;
 }
 .lp-lado h2 {
-  font-size: 1.15rem;
-  letter-spacing: 0.06em;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
   margin: 0 0 0.75rem;
 }
 .lp-lado ul {
@@ -138,9 +233,10 @@
   margin: 0;
 }
 .lp-lado li {
-  padding: 0.55rem 0;
-  border-bottom: 1px solid rgba(242, 243, 241, 0.2);
-  line-height: 1.4;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--spi-linha);
+  line-height: 1.45;
+  color: var(--spi-nevoa-suave);
 }
 .lp-lado.is-troca:not([hidden]) {
   animation: lp-lado-entra 500ms var(--lp-ease);
@@ -161,10 +257,10 @@
   position: relative;
   width: min(360px, 100%);
   height: clamp(520px, 72vh, 660px);
-  background: var(--ink);
-  border: 10px solid var(--ink);
+  background: #05070a;
+  border: 10px solid #05070a;
   border-radius: 40px;
-  box-shadow: 0 40px 60px -30px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(242, 243, 241, 0.18);
+  box-shadow: 0 40px 60px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px #2a3240;
 }
 .lp-tela {
   position: absolute;
@@ -173,6 +269,7 @@
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
+  font-family: var(--font-body);
 }
 .lp-tela iframe {
   width: 100%;
@@ -199,7 +296,8 @@
   pointer-events: none;
 }
 
-/* Painel de demonstração: mesmo vocabulário do painel real (barra de tinta, abas, lista) */
+/* Painel de demonstração: imita o painel real do produto (barra de tinta, abas, lista), por isso
+   usa os tokens do site.css e a fonte de exibição do produto, não a paleta da SPI Tech. */
 .lp-painel {
   height: 100%;
   font-size: 0.85rem;
@@ -302,14 +400,6 @@
   border-color: var(--accent);
   color: var(--accent-ink);
 }
-.lp-painel-rodape {
-  margin: 0;
-  padding: 0.9rem 1rem 1.1rem;
-  background: var(--paper);
-  border-top: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: 0.8rem;
-}
 .lp-selo--contato {
   background: transparent;
   border-color: var(--warn);
@@ -318,6 +408,14 @@
 .lp-selo--vendido {
   background: var(--ink);
   color: var(--paper);
+}
+.lp-painel-rodape {
+  margin: 0;
+  padding: 0.9rem 1rem 1.1rem;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
 }
 
 /* O momento da página: ao mostrar o lado do dono, a proposta nova chega na lista */
@@ -330,79 +428,93 @@
   100% { opacity: 1; transform: none; background: transparent; }
 }
 
-/* Seletor Cliente | Dono */
+/* Seletor: O cliente vê | Ele simula | Você recebe */
 .lp-seletor {
   display: inline-flex;
-  border: 1px solid rgba(242, 243, 241, 0.7);
-  border-radius: 2px;
+  border: 1px solid #3a4352;
+  border-radius: 4px;
   padding: 3px;
   gap: 3px;
 }
 .lp-seletor button {
-  min-width: 8.5rem;
-  padding: 0.65rem 1.1rem;
+  min-width: 7.5rem;
+  padding: 0.65rem 1rem;
   background: transparent;
-  color: var(--accent-ink);
+  color: var(--spi-nevoa);
   border: 0;
-  border-radius: 1px;
-  font-family: var(--font-body);
-  font-weight: 700;
+  border-radius: 2px;
+  font-family: var(--lp-texto);
+  font-weight: 600;
   font-size: 0.98rem;
   cursor: pointer;
   transition: background 200ms var(--lp-ease), color 200ms var(--lp-ease);
 }
 .lp-seletor button:hover {
-  background: rgba(242, 243, 241, 0.16);
+  background: #1b222d;
 }
 .lp-seletor button[aria-selected="true"] {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--spi-azul);
+  color: #fff;
 }
-
 .lp-legenda {
   margin: -0.5rem 0 0;
   font-size: 0.9rem;
-  color: rgba(242, 243, 241, 0.85);
+  color: var(--spi-nevoa-suave);
 }
 
-/* --- Seções de papel --- */
+/* --- Seção clara (Névoa): cada garagem com a sua cara --- */
 .lp-secao {
-  padding: 5rem 0;
+  padding: 5.5rem 0;
 }
-.lp-secao--papel2 {
-  background: var(--paper-2);
+.lp-secao--nevoa {
+  background: var(--spi-nevoa);
+  color: var(--spi-asfalto);
+}
+.lp-secao--azul {
+  background: var(--spi-azul);
+  color: #fff;
+}
+.lp-secao--nevoa :focus-visible {
+  outline-color: var(--spi-azul);
+}
+.lp-secao--nevoa ::selection {
+  background: var(--spi-azul);
+  color: #fff;
 }
 .lp-secao-titulo {
-  font-size: clamp(2rem, 4.5vw, 3.25rem);
-  line-height: 1;
-  margin: 0 0 2.5rem;
+  font-weight: 600;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.05;
+  margin: 0 0 2.25rem;
+}
+.lp-secao--nevoa .lp-secao-titulo {
+  color: var(--spi-asfalto);
 }
 .lp-lista {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 4rem;
+  grid-template-columns: 1fr;
   margin: 0;
 }
-.lp-lista--uma {
-  grid-template-columns: 1fr;
-}
 .lp-lista > div {
-  padding: 1.4rem 0;
-  border-top: 1px solid var(--ink);
+  padding: 1.3rem 0;
+  border-top: 1px solid #b9c0ca;
 }
 .lp-lista dt {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  margin-bottom: 0.4rem;
+  font-family: var(--lp-titulo);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.35rem;
 }
 .lp-lista dd {
   margin: 0;
   max-width: 34rem;
-  line-height: 1.55;
-  color: var(--ink-soft);
+  line-height: 1.6;
+  color: var(--spi-grafite);
+}
+.lp-mono {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88em;
+  color: var(--spi-asfalto);
 }
 .lp-minis {
   display: grid;
@@ -416,10 +528,10 @@
   position: relative;
   aspect-ratio: 360 / 740;
   overflow: hidden;
-  background: var(--ink);
-  border: 6px solid var(--ink);
+  background: #05070a;
+  border: 6px solid #05070a;
   border-radius: 24px;
-  box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 40px -24px rgba(10, 13, 17, 0.7);
   pointer-events: none;
 }
 .lp-mini iframe {
@@ -430,29 +542,19 @@
   transform-origin: 0 0;
 }
 .lp-minis figcaption {
-  margin-top: 0.6rem;
-  font-weight: 700;
+  margin-top: 0.7rem;
+  font-weight: 600;
 }
 .lp-minis figcaption span {
   display: block;
   font-weight: 400;
   font-size: 0.85rem;
-  color: var(--ink-soft);
-}
-.lp-mono {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  color: var(--ink);
+  color: var(--spi-grafite);
 }
 
-.lp-btn--tinta {
-  margin-top: 2.5rem;
-  background: var(--ink);
-  color: var(--paper);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
-}
-.lp-btn--tinta:hover {
-  color: var(--paper);
+/* --- Como começar: faixa em Azul Profundo, numerais em âmbar --- */
+.lp-secao--azul .lp-secao-titulo {
+  color: #fff;
 }
 .lp-passos {
   list-style: none;
@@ -463,67 +565,106 @@
   gap: 0 3rem;
 }
 .lp-passos li {
-  border-top: 3px solid var(--ink);
+  border-top: 2px solid rgba(255, 255, 255, 0.55);
   padding-top: 1rem;
 }
 .lp-passo-num {
   display: block;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 4rem;
+  font-family: var(--lp-titulo);
+  font-weight: 700;
+  font-size: 3.75rem;
   line-height: 1;
-  color: var(--accent);
+  color: var(--spi-ambar);
 }
 .lp-passos h3 {
-  font-size: 1.6rem;
-  margin: 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0.6rem 0 0.4rem;
+  color: #fff;
 }
 .lp-passos p {
   margin: 0;
   line-height: 1.55;
-  color: var(--ink-soft);
+  color: #e6ecfb;
   max-width: 24rem;
 }
 
-/* --- Contato: tinta inteira --- */
+/* --- Contato: Asfalto --- */
 .lp-contato {
-  background: var(--ink);
-  color: var(--paper);
-  padding: 5rem 0;
+  background: var(--spi-asfalto);
+  padding: 5.5rem 0;
 }
 .lp-contato h2 {
-  font-size: clamp(2.25rem, 5vw, 3.75rem);
-  line-height: 0.98;
+  font-weight: 700;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  line-height: 1.04;
+  color: #fff;
   margin: 0 0 1.25rem;
 }
-.lp-contato .lp-lead {
-  color: #d6d8d1;
-}
 .lp-contato a:not(.lp-btn) {
-  color: var(--paper);
+  color: var(--spi-nevoa);
+}
+.lp-canais {
+  list-style: none;
+  padding: 0;
+  margin: 1.75rem 0 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.lp-canais a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0;
+  font-weight: 500;
+  font-size: 1.1rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--spi-linha);
+  width: 100%;
+  max-width: 20rem;
+}
+.lp-canais a:hover {
+  color: #fff;
+  border-color: var(--spi-ambar);
 }
 .lp-form .form-label {
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 0.35rem;
+  color: var(--spi-nevoa);
 }
 .lp-form .form-control {
-  background: var(--paper);
-  color: var(--ink);
-  border: 1px solid var(--paper);
-  padding: 0.7rem 0.85rem;
+  background: var(--spi-asfalto-2);
+  color: #fff;
+  border: 1px solid #6b7686;
+  border-radius: 4px;
+  padding: 0.75rem 0.9rem;
+  caret-color: var(--spi-ambar);
+}
+.lp-form .form-control::placeholder {
+  color: #8a94a3;
 }
 .lp-form .form-control:focus {
-  box-shadow: 0 0 0 3px rgba(242, 243, 241, 0.45);
+  background: var(--spi-asfalto-2);
+  border-color: var(--spi-ambar);
+  box-shadow: 0 0 0 3px rgba(216, 146, 14, 0.35);
 }
 .lp-form .form-check-input {
-  border-color: var(--paper);
+  background-color: var(--spi-asfalto-2);
+  border-color: #6b7686;
 }
 .lp-form .form-check-input:checked {
-  background-color: var(--accent);
-  border-color: var(--paper);
+  background-color: var(--spi-azul);
+  border-color: #6b8fe6;
+}
+.lp-form .form-check-input:focus {
+  border-color: var(--spi-ambar);
+  box-shadow: 0 0 0 3px rgba(216, 146, 14, 0.35);
+}
+.lp-form .form-check-label {
+  color: var(--spi-nevoa-suave);
 }
 .lp-erro {
-  color: #ffb4a8;
+  color: #ff9d8f;
   font-size: 0.9rem;
   margin-top: 0.3rem;
 }
@@ -533,17 +674,22 @@
   margin: 0;
 }
 .lp-enviado {
-  border-top: 3px solid var(--paper);
+  border-top: 4px solid var(--spi-ambar);
   padding-top: 1.25rem;
 }
 .lp-enviado h3 {
   font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+.lp-enviado p {
+  color: var(--spi-nevoa-suave);
 }
 
 .lp-rodape {
-  background: var(--ink);
-  color: #c9cbc4;
-  border-top: 1px solid rgba(242, 243, 241, 0.2);
+  background: var(--spi-asfalto);
+  color: var(--spi-nevoa-suave);
+  border-top: 1px solid var(--spi-linha);
   padding: 1.5rem 0;
   font-size: 0.95rem;
 }
@@ -551,36 +697,37 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 1.5rem;
+  gap: 0.75rem 1.75rem;
 }
-.lp-rodape .lp-marca {
-  font-size: 1.25rem;
-  color: var(--paper);
-}
-.lp-rodape a {
+.lp-rodape-links {
   margin-left: auto;
-  color: var(--paper);
+  display: flex;
+  gap: 1.5rem;
+}
+.lp-rodape a:not(.lp-logo) {
+  color: var(--spi-nevoa);
 }
 
 /* --- Telas menores --- */
+.lp-btn-curto { display: none; }
 @media (max-width: 991.98px) {
-  .lp-hero { padding-bottom: 3rem; }
-  .lp-hero h1 { max-width: none; }
+  .lp-hero { padding-bottom: 3.5rem; }
   .lp-lados { display: none; }
   .lp-acoes { margin-bottom: 0; }
   .lp-celular { height: min(640px, 80vh); }
 }
 @media (max-width: 767.98px) {
-  .lp-secao, .lp-contato { padding: 3.5rem 0; }
-  .lp-lista { grid-template-columns: 1fr; }
-  .lp-btn--tinta { width: 100%; }
+  .lp-secao, .lp-contato { padding: 3.75rem 0; }
   .lp-passos { grid-template-columns: 1fr; gap: 2rem; }
   .lp-passos p { max-width: none; }
   .lp-seletor { width: 100%; }
   .lp-seletor button { flex: 1; min-width: 0; padding-inline: 0.5rem; }
-  .lp-btn { justify-content: center; }
-  .lp-acoes .lp-btn { width: 100%; }
-  .lp-rodape a { margin-left: 0; }
+  .lp-acoes .lp-btn, .lp-btn--claro { width: 100%; }
+  .lp-btn-longo { display: none; }
+  .lp-btn-curto { display: inline; }
+  .lp-logo-tile { width: 2.6rem; height: 2.6rem; }
+  .lp-logo-nome { font-size: 1.35rem; }
+  .lp-rodape-links { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

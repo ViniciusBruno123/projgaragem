@@ -4,93 +4,141 @@
   "title": "Design System: projgaragem",
   "extensions": {
     "colorMeta": {
-      "accent": {"role": "primary", "displayName": "Verde Garagem", "canonical": "#0f5c4d", "tonalRamp": ["#04211b", "#083a30", "#0f5c4d", "#2f7a6a", "#5a9a8b", "#8bb9ae", "#bcd8d1", "#e3f0ed"]},
+      "spi-asfalto": {"role": "neutral", "displayName": "Asfalto", "canonical": "#0a0d11", "tonalRamp": ["#05070a", "#0a0d11", "#11151c", "#252c38", "#3b4450", "#6b7686", "#aab2bf", "#e3e7ec"]},
+      "spi-azul": {"role": "primary", "displayName": "Azul Profundo", "canonical": "#1a45b8", "tonalRamp": ["#0a1a48", "#102a78", "#1a45b8", "#2452cc", "#3a63d0", "#6b8fe6", "#a9c0f2", "#e6ecfb"]},
+      "spi-ambar": {"role": "secondary", "displayName": "Ambar", "canonical": "#d8920e", "tonalRamp": ["#4a3004", "#7a5008", "#a86f0b", "#d8920e", "#e8ac3a", "#f0c46e", "#f7dca4", "#fcf0d8"]},
+      "spi-nevoa": {"role": "neutral", "displayName": "Nevoa", "canonical": "#e3e7ec", "tonalRamp": ["#3b4450", "#6b7686", "#8a94a3", "#aab2bf", "#b9c0ca", "#cbd1d9", "#e3e7ec", "#f4f6f8"]},
+      "accent": {"role": "primary", "displayName": "Verde Garagem (produto)", "canonical": "#0f5c4d", "tonalRamp": ["#04211b", "#083a30", "#0f5c4d", "#2f7a6a", "#5a9a8b", "#8bb9ae", "#bcd8d1", "#e3f0ed"]},
       "ink": {"role": "neutral", "displayName": "Tinta", "canonical": "#1a1a18", "tonalRamp": ["#0d0d0c", "#1a1a18", "#2e2e2b", "#45463f", "#5b5d56", "#8a8c85", "#b8bab3", "#e0e1dc"]},
       "paper": {"role": "neutral", "displayName": "Papel", "canonical": "#f2f3f1", "tonalRamp": ["#5b5d56", "#8a8c85", "#b8bab3", "#d3d5ce", "#e7e8e3", "#eff0ed", "#f2f3f1", "#fafaf9"]}
     },
     "typographyMeta": {
-      "display": {"displayName": "Display", "purpose": "H1 do heroi da landing."},
-      "headline": {"displayName": "Headline", "purpose": "Titulos de secao."},
-      "title": {"displayName": "Title", "purpose": "Termos de lista e passos."},
-      "body": {"displayName": "Body", "purpose": "Texto corrido em Public Sans."},
-      "label": {"displayName": "Label", "purpose": "Selos e metadados em Plex Mono."}
+      "lp-display": {"displayName": "Display da landing", "purpose": "H1 do heroi, caixa alta. 700 por desvio conhecido do manual (600), para igualar os posts do Instagram."},
+      "lp-headline": {"displayName": "Headline da landing", "purpose": "Titulos de secao, caixa mista."},
+      "lp-title": {"displayName": "Title da landing", "purpose": "Termos da lista com regua e h3 dos passos."},
+      "lp-body": {"displayName": "Texto da landing", "purpose": "IBM Plex Sans; texto pequeno sobre escuro em Nevoa a 78%."},
+      "produto-display": {"displayName": "Display do produto", "purpose": "Big Shoulders caixa alta, so no produto e no painel de demonstracao."},
+      "produto-label": {"displayName": "Label do produto", "purpose": "Selos, metadados e numeros em Plex Mono."}
     },
     "shadows": [
-      {"name": "device", "value": "0 40px 60px -30px rgba(0,0,0,0.6)", "purpose": "Celular da landing."},
-      {"name": "float", "value": "0 1px 3px rgba(0,0,0,0.2)", "purpose": "Botoes flutuantes da vitrine."}
+      {"name": "botao-lp", "value": "0 8px 20px -10px rgba(0,0,0,0.7)", "purpose": "Sombra difusa do botao primario da landing."},
+      {"name": "celular", "value": "0 40px 60px -30px rgba(0,0,0,0.9), 0 0 0 1px #2a3240", "purpose": "Celular do heroi; objeto que imita aparelho."},
+      {"name": "celular-mini", "value": "0 24px 40px -24px rgba(10,13,17,0.7)", "purpose": "Mini-celulares da secao Nevoa."},
+      {"name": "flutuante-produto", "value": "0 1px 3px rgba(0,0,0,0.2)", "purpose": "Botoes flutuantes da vitrine."}
     ],
     "motion": [
-      {"name": "ease-landing", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Todas as transicoes da landing."},
-      {"name": "wipe", "value": "clip-path 650ms", "purpose": "Painel do dono cobrindo a vitrine."},
-      {"name": "arrive", "value": "900ms, delay 500ms", "purpose": "Proposta nova chegando na lista."}
+      {"name": "lp-ease", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Easing de toda transicao da landing."},
+      {"name": "botao", "value": "160ms", "purpose": "Hover do botao: sobe 2px."},
+      {"name": "cortina-painel", "value": "650ms", "purpose": "clip-path do painel do dono sobre a vitrine."},
+      {"name": "proposta-chega", "value": "900ms, atraso 500ms", "purpose": "Proposta nova entra na lista com destaque verde que se dissolve."}
     ],
     "breakpoints": [
-      {"name": "md", "value": "768px"},
-      {"name": "lg", "value": "992px"}
+      {"name": "lg", "value": "992px"},
+      {"name": "md", "value": "768px"}
     ]
   },
   "components": [
     {
-      "name": "Botao de acao",
+      "name": "Botao primario SPI",
       "kind": "button",
-      "refersTo": "button-accent",
-      "description": "Acao primaria da vitrine.",
-      "html": "<button class=\"ds-btn-accent\">Fazer proposta</button>",
-      "css": ".ds-btn-accent{background:var(--accent,#0f5c4d);color:var(--accent-ink,#f2f3f1);border:1px solid var(--accent,#0f5c4d);border-radius:2px;padding:0.5rem 1rem;font:600 1rem 'Public Sans',sans-serif;cursor:pointer;transition:opacity 120ms ease}.ds-btn-accent:hover,.ds-btn-accent:focus-visible{opacity:.85;outline:3px solid var(--accent,#0f5c4d);outline-offset:3px}"
+      "refersTo": "lp-button",
+      "description": "Acao principal da landing: azul como preenchimento, texto branco.",
+      "html": "<a class=\"ds-lp-btn\" href=\"#\">Chamar no WhatsApp</a>",
+      "css": ".ds-lp-btn { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.9rem 1.5rem; background: #1a45b8; color: #fff; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 1.05rem; line-height: 1.2; text-decoration: none; border: 1px solid #3a63d0; border-radius: 4px; box-shadow: 0 8px 20px -10px rgba(0,0,0,0.7); transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-lp-btn:hover { background: #2452cc; color: #fff; transform: translateY(-2px); } .ds-lp-btn:focus-visible { outline: 3px solid #d8920e; outline-offset: 3px; } .ds-lp-btn:active { transform: translateY(0); }"
     },
     {
-      "name": "Botao de contorno",
+      "name": "Botao claro",
       "kind": "button",
-      "refersTo": "button-outline-ink",
-      "description": "Acao secundaria.",
-      "html": "<button class=\"ds-btn-outline\">Fale conosco</button>",
-      "css": ".ds-btn-outline{background:transparent;color:#1a1a18;border:1px solid #d3d5ce;border-radius:2px;padding:0.5rem 1rem;font:400 1rem 'Public Sans',sans-serif;cursor:pointer}.ds-btn-outline:hover{border-color:#1a1a18}.ds-btn-outline:focus-visible{outline:3px solid #0f5c4d;outline-offset:3px}"
+      "refersTo": "lp-button-claro",
+      "description": "Acao sobre a faixa azul.",
+      "html": "<a class=\"ds-lp-btn-claro\" href=\"#\">Quero começar</a>",
+      "css": ".ds-lp-btn-claro { display: inline-flex; padding: 0.9rem 1.5rem; background: #e3e7ec; color: #0a0d11; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 1.05rem; text-decoration: none; border: 1px solid #e3e7ec; border-radius: 4px; transition: background-color 160ms cubic-bezier(0.16,1,0.3,1), transform 160ms cubic-bezier(0.16,1,0.3,1); } .ds-lp-btn-claro:hover { background: #fff; color: #0a0d11; transform: translateY(-2px); } .ds-lp-btn-claro:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }"
     },
     {
-      "name": "Selo",
-      "kind": "chip",
-      "refersTo": "stamp",
-      "description": "Estado de proposta em Plex Mono.",
-      "html": "<span class=\"ds-selo\">NOVA</span>",
-      "css": ".ds-selo{display:inline-block;font:600 0.68rem 'IBM Plex Mono',monospace;letter-spacing:.04em;text-transform:uppercase;padding:.25rem .5rem;border-radius:2px;background:var(--accent,#0f5c4d);border:1px solid var(--accent,#0f5c4d);color:var(--accent-ink,#f2f3f1)}"
+      "name": "Seletor de lados",
+      "kind": "nav",
+      "refersTo": "lp-seletor-ativo",
+      "description": "Tablist Cliente | Simula | Dono; a aba ativa e preenchida em azul.",
+      "html": "<div class=\"ds-seletor\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">O cliente vê</button><button role=\"tab\" aria-selected=\"false\">Ele simula</button><button role=\"tab\" aria-selected=\"false\">Você recebe</button></div>",
+      "css": ".ds-seletor { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid #3a4352; border-radius: 4px; background: #0a0d11; } .ds-seletor button { min-width: 7.5rem; padding: 0.65rem 1rem; background: transparent; color: #e3e7ec; border: 0; border-radius: 2px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 0.98rem; cursor: pointer; transition: background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-seletor button:hover { background: #1b222d; } .ds-seletor button[aria-selected='true'] { background: #1a45b8; color: #fff; } .ds-seletor button:focus-visible { outline: 3px solid #d8920e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Logotipo horizontal",
+      "kind": "custom",
+      "refersTo": "lp-logo-tile",
+      "description": "Monograma S em tile Asfalto 2, SPI, divisor e TECH espacado.",
+      "html": "<a class=\"ds-logo\" href=\"#\"><span class=\"ds-logo-tile\"><svg viewBox=\"312 288 660 624\" width=\"30\" height=\"28\"><g fill=\"#1A45B8\"><rect x=\"324\" y=\"288\" width=\"564\" height=\"120\"/><rect x=\"324\" y=\"408\" width=\"120\" height=\"132\"/><rect x=\"324\" y=\"540\" width=\"552\" height=\"120\"/><rect x=\"756\" y=\"660\" width=\"120\" height=\"132\"/><rect x=\"312\" y=\"792\" width=\"564\" height=\"120\"/></g><rect x=\"900\" y=\"288\" width=\"72\" height=\"120\" fill=\"#D8920E\"/></svg></span><span class=\"ds-logo-nome\">SPI</span><span class=\"ds-logo-div\"></span><span class=\"ds-logo-tech\">TECH</span></a>",
+      "css": ".ds-logo { display: inline-flex; align-items: center; gap: 0.75rem; text-decoration: none; } .ds-logo-tile { display: grid; place-items: center; width: 3.1rem; height: 3.1rem; background: #11151c; border: 1px solid #252c38; border-radius: 8px; } .ds-logo-nome { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.6rem; letter-spacing: 0.01em; color: #fff; } .ds-logo-div { width: 1px; height: 1.6rem; background: #4a5464; margin-left: -0.15rem; } .ds-logo-tech { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.8rem; letter-spacing: 0.22em; color: #aab2bf; }"
+    },
+    {
+      "name": "Titulo com barra ambar",
+      "kind": "custom",
+      "refersTo": "lp-display",
+      "description": "Barra ambar curta e h1 em caixa alta, ultima linha em ambar.",
+      "html": "<div class=\"ds-hero\"><span class=\"ds-barra\"></span><h1 class=\"ds-h1\">Mais visto.<br>Mais procurado.<br><em>Mais vendido.</em></h1></div>",
+      "css": ".ds-hero { background: #0a0d11; padding: 1.5rem; } .ds-barra { display: block; width: 4rem; height: 6px; background: #d8920e; margin-bottom: 1.5rem; } .ds-h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(2.6rem, 6vw, 5rem); line-height: 1.02; letter-spacing: -0.02em; text-transform: uppercase; color: #fff; } .ds-h1 em { font-style: normal; color: #d8920e; }"
     },
     {
       "name": "Lista com regua",
-      "kind": "custom",
-      "refersTo": "",
-      "description": "Substitui cartoes de recurso.",
-      "html": "<dl class=\"ds-lista\"><div><dt>Vitrine propria</dt><dd>Sua garagem com a sua cara.</dd></div></dl>",
-      "css": ".ds-lista{margin:0}.ds-lista>div{padding:1.4rem 0;border-top:1px solid #1a1a18}.ds-lista dt{font:700 1.5rem 'Big Shoulders',sans-serif;text-transform:uppercase;letter-spacing:.01em;margin-bottom:.4rem}.ds-lista dd{margin:0;max-width:34rem;line-height:1.55;color:#5b5d56}"
-    },
-    {
-      "name": "Seletor Cliente | Dono",
-      "kind": "nav",
-      "refersTo": "",
-      "description": "Alterna o lado mostrado no celular, sobre o verde.",
-      "html": "<div class=\"ds-seletor\"><button aria-selected=\"true\">Cliente</button><button aria-selected=\"false\">Dono</button></div>",
-      "css": ".ds-seletor{display:inline-flex;gap:3px;padding:3px;border:1px solid rgba(242,243,241,.7);border-radius:2px;background:#0f5c4d}.ds-seletor button{min-width:8.5rem;padding:.65rem 1.1rem;background:transparent;color:#f2f3f1;border:0;border-radius:1px;font:700 .98rem 'Public Sans',sans-serif;cursor:pointer}.ds-seletor button:hover{background:rgba(242,243,241,.16)}.ds-seletor button[aria-selected=true]{background:#f2f3f1;color:#1a1a18}.ds-seletor button:focus-visible{outline:3px solid #f2f3f1;outline-offset:3px}"
-    },
-    {
-      "name": "Moldura de celular",
       "kind": "card",
-      "refersTo": "phone-frame",
-      "description": "Aparelho de tinta que contem a vitrine.",
-      "html": "<div class=\"ds-celular\"><div class=\"ds-tela\">vitrine</div></div>",
-      "css": ".ds-celular{position:relative;width:240px;height:400px;background:#1a1a18;border:10px solid #1a1a18;border-radius:40px;box-shadow:0 40px 60px -30px rgba(0,0,0,.6)}.ds-tela{position:absolute;inset:0;border-radius:30px;overflow:hidden;background:#f2f3f1;color:#1a1a18;padding:1rem}"
+      "refersTo": "lp-secao-nevoa",
+      "description": "Substitui cartoes na secao Nevoa: regua de 1px, termo em Space Grotesk.",
+      "html": "<div class=\"ds-nevoa\"><dl class=\"ds-lista\"><div><dt>Um link só seu</dt><dd>Cada garagem tem o próprio endereço.</dd></div><div><dt>A sua marca</dt><dd>Logo, cores e banners de campanha.</dd></div></dl></div>",
+      "css": ".ds-nevoa { background: #e3e7ec; color: #0a0d11; padding: 1.5rem; } .ds-lista { margin: 0; } .ds-lista > div { padding: 1.3rem 0; border-top: 1px solid #b9c0ca; } .ds-lista dt { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.3rem; margin-bottom: 0.35rem; } .ds-lista dd { margin: 0; max-width: 34rem; line-height: 1.6; color: #3b4450; font-family: 'IBM Plex Sans', sans-serif; }"
+    },
+    {
+      "name": "Campo de contato",
+      "kind": "input",
+      "refersTo": "lp-campo",
+      "description": "Campo sobre Asfalto: borda clara para contraste, foco ambar.",
+      "html": "<label class=\"ds-label\" for=\"ds-nome\">Seu nome</label><input class=\"ds-campo\" id=\"ds-nome\" type=\"text\" placeholder=\"Nome\">",
+      "css": ".ds-label { display: block; margin-bottom: 0.35rem; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; color: #e3e7ec; } .ds-campo { width: 100%; padding: 0.75rem 0.9rem; background: #11151c; color: #fff; border: 1px solid #6b7686; border-radius: 4px; caret-color: #d8920e; font-family: 'IBM Plex Sans', sans-serif; } .ds-campo::placeholder { color: #8a94a3; } .ds-campo:focus { outline: 0; border-color: #d8920e; box-shadow: 0 0 0 3px rgba(216,146,14,0.35); }"
+    },
+    {
+      "name": "Selo de status (produto)",
+      "kind": "chip",
+      "refersTo": "selo",
+      "description": "Rotulo de estado em Plex Mono no painel de demonstracao e no produto.",
+      "html": "<b class=\"ds-selo\">Nova</b>",
+      "css": ".ds-selo { display: inline-block; padding: 0.25rem 0.5rem; background: #0f5c4d; color: #f2f3f1; border: 1px solid #0f5c4d; border-radius: 2px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; }"
     }
   ],
   "narrative": {
-    "northStar": "A Placa da Garagem",
-    "overview": "Sinalizacao de garagem de bairro: letra condensada em caixa alta, tinta sobre papel frio, um verde profundo por garagem. Estrutura por reguas e faixas, cantos de 2px, sem cartoes flutuantes. A landing usa o mesmo mundo com mais volume: heroi verde, celular de tinta, listas com regua, faixa de contato em tinta.",
-    "keyCharacteristics": ["Verde e tinta em faixas inteiras ou pontos pequenos", "Big Shoulders caixa alta, Public Sans, IBM Plex Mono para dados", "Cantos de 2px exceto o celular", "Reguas no lugar de cartoes", "Mostra o produto real"],
-    "rules": [
-      {"name": "The Whole-Band Rule", "body": "Verde e tinta aparecem como faixa de largura total ou ponto pequeno, nunca como cartao colorido em secao de papel.", "section": "colors"},
-      {"name": "The Borrowed Accent Rule", "body": "Componentes usam var(--accent) e var(--accent-ink), nunca o hex.", "section": "colors"},
-      {"name": "The Sign-Painter Rule", "body": "Big Shoulders so em titulos e marca, sempre em caixa alta.", "section": "typography"},
-      {"name": "The Mono-For-Data Rule", "body": "Plex Mono reservado a numeros, selos de estado e metadados.", "section": "typography"},
-      {"name": "The Flat-Surface Rule", "body": "Secoes, listas e campos nao levam sombra; so objetos que imitam aparelho ou flutuam.", "section": "elevation"}
+    "northStar": "O Asfalto e a Vitrine",
+    "overview": "Ha dois sistemas no repositorio e eles nao se misturam. O produto (vitrines das garagens e painel do dono, static/css/site.css) segue a identidade propria: papel frio, tinta quase preta, um verde por garagem, Big Shoulders em caixa alta, cantos de 2px, estrutura por regua. A landing da plataforma (rota /, static/css/landing.css, tudo prefixado lp-) veste a identidade obrigatoria da SPI Tech, vendedora do produto: Asfalto como campo, Azul Profundo em botoes e em uma faixa inteira, Ambar so em pontos, Nevoa para a unica secao clara.\n\nA landing e uma pagina escura com um objeto claro dentro: o celular preto mostra a vitrine real do produto (iframe) e, ao trocar para \"Voce recebe\", o painel do dono desliza por cima. Essa tela interna e o unico lugar onde os dois sistemas se encontram, e la vale o sistema do produto, nao o da SPI. Estrutura por linhas finas, faixas de cor inteira e cantos de 4px; nada de grade de cartoes com icone.",
+    "keyCharacteristics": [
+      "Landing: Asfalto domina (heroi, contato, rodape), uma faixa Nevoa, uma faixa Azul, Ambar em barra, uma frase, numerais, foco e cursor.",
+      "Space Grotesk nos titulos (700 no h1, 600 nos demais), IBM Plex Sans no texto; Plex Mono so em trechos tecnicos (endereco /g/...).",
+      "Azul e sempre preenchimento, nunca cor de texto.",
+      "Produto: Big Shoulders / Public Sans / Plex Mono, verde sobrescrevivel por garagem, 2px de raio.",
+      "Celular como moldura: unico objeto com raio grande e sombra longa."
     ],
-    "dos": ["Do usar var(--accent)/var(--accent-ink) para tudo que e marca.", "Do separar conteudo por reguas e por troca de faixa de fundo.", "Do manter 2px de raio; so aparelhos fogem disso.", "Do mostrar a vitrine real e rotular o que e sintetico.", "Do usar foco visivel de 3px e respeitar prefers-reduced-motion."],
-    "donts": ["Don't montar grade de cartoes com icone e titulo para listar recursos.", "Don't usar gradientes decorativos ou verde diluido.", "Don't aplicar Big Shoulders em texto corrido nem Plex Mono em titulos.", "Don't afirmar prova social, numeros ou preco na landing.", "Don't aplicar arredondamento largo do Bootstrap."]
+    "rules": [
+      {"name": "The Blue-As-Fill Rule", "body": "Azul so preenche (botao, aba ativa, faixa). Nunca escreva texto ou icone em azul sobre Asfalto. Desvio conhecido e aceito: e a razao de links e rotulos irem em Nevoa.", "section": "colors"},
+      {"name": "The Amber-Spice Rule", "body": "Ambar e tempero: barra, uma frase, numerais, foco. Nunca fundo de botao nem faixa.", "section": "colors"},
+      {"name": "The Muted-Mist Rule", "body": "Texto pequeno sobre escuro usa Nevoa a 78%, nao branco puro nem cinza mais escuro; titulos e botoes usam branco.", "section": "colors"},
+      {"name": "The Two-Systems Rule", "body": "Tokens --spi-* valem fora do celular; --ink/--paper/--accent valem dentro dele e em todo o produto. Nao cruze.", "section": "colors"},
+      {"name": "The Borrowed Accent Rule", "body": "No produto, componentes usam var(--accent)/var(--accent-ink), nunca o hex, para a cor da garagem se propagar.", "section": "colors"},
+      {"name": "The Slogan-Caps Rule", "body": "Na landing so o h1 e caixa alta; os demais titulos ficam em caixa mista.", "section": "typography"},
+      {"name": "The Mono-For-Data Rule", "body": "Plex Mono e para dados: enderecos, numeros, selos de estado. Nao decora titulos.", "section": "typography"},
+      {"name": "The Object-Shadow Rule", "body": "Sombra so em coisa que flutua ou imita aparelho. Secoes, listas, campos e faixas ficam sem sombra.", "section": "elevation"}
+    ],
+    "dos": [
+      "Do usar Asfalto como campo, Azul em preenchimentos, Ambar em ate 5% da tela, Nevoa nas secoes claras.",
+      "Do manter a barra Ambar curta (4rem x 6px) acima do titulo e a ultima linha do slogan em Ambar.",
+      "Do usar Nevoa a 78% para texto pequeno sobre escuro e branco para titulos e botoes.",
+      "Do dar foco visivel de 3px em Ambar sobre escuro (Azul sobre Nevoa) e respeitar prefers-reduced-motion.",
+      "Do separar conteudo por reguas e troca de faixa, com o easing cubic-bezier(0.16, 1, 0.3, 1) em toda transicao.",
+      "Do mostrar o produto real e rotular o que e sintetico (\"Demonstracao\").",
+      "Do manter dentro do celular o vocabulario do produto (tinta, papel, verde, Big Shoulders, 2px)."
+    ],
+    "donts": [
+      "Don't escrever texto ou icone em azul sobre Asfalto.",
+      "Don't usar Ambar como fundo de botao ou faixa.",
+      "Don't usar grade de cartoes com icone para listar recursos.",
+      "Don't afirmar prova social, numeros, depoimentos ou preco que nao existem.",
+      "Don't aplicar tokens --spi-* no produto nem --accent verde nas superficies da SPI.",
+      "Don't usar Big Shoulders na landing nem Space Grotesk no produto."
+    ]
   }
 }

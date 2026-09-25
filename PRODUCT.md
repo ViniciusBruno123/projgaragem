@@ -31,7 +31,9 @@ Onboarding manual: os sócios cadastram garagem e dono pelo Django admin (sem ca
 - Deploy/domínio adiados até existir um cliente pagante.
 
 ## Brand Commitments
-Nome atual `projgaragem` (setting `PLATAFORMA_NOME`); nome comercial ainda não definido. Identidade visual já existente no produto (paper/ink + verde, Big Shoulders / Public Sans / IBM Plex Mono).
+A plataforma é vendida pela **SPI Tech** ("Soluções digitais"), cuja identidade é obrigatória na landing page (raiz `/`): Asfalto #0A0D11 (fundo, ~60%), Azul Profundo #1A45B8 (marca, ~25%), Âmbar #D8920E (detalhes pontuais, até 5%), Névoa #E3E7EC (fundo claro), Grafite #3B4450 (texto secundário); títulos em Space Grotesk 600, texto em IBM Plex Sans 400; monograma "S" reto com bloco âmbar (cursor de terminal), logotipo horizontal "SPI | TECH" (arquivo em `static/img/spi-monograma.svg`); barra âmbar curta acima do título; slogan "Mais visto. Mais procurado. Mais vendido.". Instagram @spi.tech; WhatsApp em `.env` (`PLATAFORMA_WHATSAPP`, `PLATAFORMA_WHATSAPP_2`).
+
+O produto em si (vitrines das garagens e painel) mantém a identidade própria já existente (paper/ink + verde, Big Shoulders / Public Sans / IBM Plex Mono); cada garagem tem a sua cor. Nome técnico `projgaragem` (setting `PLATAFORMA_NOME`, usado nos textos legais); nome comercial do produto ainda não definido.
 
 ## Evidence on Hand
 Sem clientes, depoimentos, números ou casos reais — **não fabricar**. Existem vitrines de demonstração (Motos do João e Central Motors) com logos e banners em `design_assets_demo/` e dados no banco local.
