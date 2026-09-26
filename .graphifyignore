@@ -1,0 +1,15 @@
+# O que o graphify não deve indexar (além do que o .gitignore já exclui)
+venv/
+media/
+staticfiles/
+.impeccable/
+design_assets_demo/
+test-artifacts/
+db.sqlite3
+*.png
+*.jpg
+*.jpeg
+*.webp
+.claude/
+node_modules/
+graphify-out/

@@ -16,3 +16,6 @@ test-artifacts/
 .impeccable/hook.cache.json
 .impeccable/config.local.json
 design_assets_demo/
+
+# grafo de conhecimento do graphify (regenerável: graphify extract . --code-only)
+graphify-out/
