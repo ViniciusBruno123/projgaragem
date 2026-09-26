@@ -104,6 +104,36 @@ html:has(.lp) {
   font-size: 0.65rem;
 }
 
+/* --- Assinatura: nome do produto (Farol) + "por" + logotipo da SPI Tech --- */
+.lp-assinatura {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--spi-nevoa);
+  text-decoration: none;
+}
+.lp-assinatura:hover {
+  color: #fff;
+}
+.lp-produto {
+  font-family: var(--lp-titulo);
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.lp-por {
+  font-size: 0.9rem;
+  color: #aab2bf;
+}
+.lp-assinatura--rodape .lp-produto {
+  font-size: 1.35rem;
+}
+.lp-assinatura--rodape .lp-por {
+  font-size: 0.8rem;
+}
+
 /* --- Botões: primário em Azul Profundo; "claro" para fundos azuis --- */
 .lp-btn {
   display: inline-flex;
@@ -723,6 +753,9 @@ html:has(.lp) {
   .lp-seletor { width: 100%; }
   .lp-seletor button { flex: 1; min-width: 0; padding-inline: 0.5rem; }
   .lp-acoes .lp-btn, .lp-btn--claro { width: 100%; }
+  .lp-produto { font-size: 1.55rem; }
+  .lp-assinatura { gap: 0.5rem; }
+  .lp-assinatura .lp-logo-tech, .lp-assinatura .lp-logo-div { display: none; }
   .lp-btn-longo { display: none; }
   .lp-btn-curto { display: inline; }
   .lp-logo-tile { width: 2.6rem; height: 2.6rem; }

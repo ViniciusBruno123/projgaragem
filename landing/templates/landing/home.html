@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}SPI Tech — Vitrine de veículos para garagens de Catanduva{% endblock %}
-{% block meta_description %}Vitrine própria para a sua garagem: o cliente vê os veículos, simula a parcela e manda a proposta direto para o seu WhatsApp. Feito para garagens de Catanduva e região.{% endblock %}
+{% block title %}{{ plataforma_nome }}, por SPI Tech — Vitrine de veículos para garagens de Catanduva{% endblock %}
+{% block meta_description %}O {{ plataforma_nome }} é a vitrine própria para a sua garagem: o cliente vê os veículos, simula a parcela e manda a proposta direto para o seu WhatsApp. Feito para garagens de Catanduva e região.{% endblock %}
 
 {% block extra_head %}
-<meta property="og:title" content="SPI Tech — Vitrine de veículos para garagens">
+<meta property="og:title" content="{{ plataforma_nome }}, por SPI Tech — Vitrine de veículos para garagens">
 <meta property="og:description" content="O cliente vê os veículos, simula a parcela e manda a proposta direto para o WhatsApp da sua garagem.">
 <meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -30,9 +30,13 @@
     <section class="lp-hero" aria-labelledby="lp-titulo">
         <div class="container">
             <div class="lp-topo">
-                <a class="lp-logo" href="{% url 'landing:home' %}" aria-label="SPI Tech, início">
-                    <span class="lp-logo-tile"><img src="{% static 'img/spi-monograma.svg' %}" alt="" width="30" height="28"></span>
-                    <span class="lp-logo-nome">SPI</span><span class="lp-logo-div" aria-hidden="true"></span><span class="lp-logo-tech">TECH</span>
+                <a class="lp-assinatura" href="{% url 'landing:home' %}" aria-label="{{ plataforma_nome }}, por SPI Tech, início">
+                    <span class="lp-produto">{{ plataforma_nome }}</span>
+                    <span class="lp-por">por</span>
+                    <span class="lp-logo lp-logo--pequeno">
+                        <span class="lp-logo-tile"><img src="{% static 'img/spi-monograma.svg' %}" alt="" width="30" height="28"></span>
+                        <span class="lp-logo-nome">SPI</span><span class="lp-logo-div" aria-hidden="true"></span><span class="lp-logo-tech">TECH</span>
+                    </span>
                 </a>
                 <a class="lp-btn lp-btn--pequeno" href="{% if link_whatsapp %}{{ link_whatsapp }}{% else %}#contato{% endif %}"{% if link_whatsapp %} target="_blank" rel="noopener"{% endif %}>
                     {% if link_whatsapp %}<svg class="lp-ico" aria-hidden="true"><use href="#lp-whatsapp"/></svg>{% endif %}
@@ -45,8 +49,8 @@
                     <span class="lp-barra" aria-hidden="true"></span>
                     <h1 id="lp-titulo">Mais visto.<br>Mais procurado.<br><em>Mais vendido.</em></h1>
                     <p class="lp-lead">
-                        Vitrine própria para a sua garagem: o cliente vê o estoque, simula a parcela
-                        e faz a proposta, que chega direto no seu WhatsApp.
+                        O {{ plataforma_nome }} é a vitrine própria da sua garagem: o cliente vê o estoque,
+                        simula a parcela e faz a proposta, que chega direto no seu WhatsApp.
                     </p>
                     <div class="lp-acoes">
                         <a class="lp-btn" href="{% if link_whatsapp %}{{ link_whatsapp }}{% else %}#contato{% endif %}"{% if link_whatsapp %} target="_blank" rel="noopener"{% endif %}>
@@ -279,11 +283,15 @@
 
     <footer class="lp-rodape">
         <div class="container">
-            <a class="lp-logo lp-logo--pequeno" href="{% url 'landing:home' %}" aria-label="SPI Tech, início">
-                <span class="lp-logo-tile"><img src="{% static 'img/spi-monograma.svg' %}" alt="" width="22" height="21"></span>
-                <span class="lp-logo-nome">SPI</span><span class="lp-logo-div" aria-hidden="true"></span><span class="lp-logo-tech">TECH</span>
-            </a>
-            <span>Soluções digitais para garagens de Catanduva e região.</span>
+            <a class="lp-assinatura lp-assinatura--rodape" href="{% url 'landing:home' %}" aria-label="{{ plataforma_nome }}, por SPI Tech, início">
+                    <span class="lp-produto">{{ plataforma_nome }}</span>
+                    <span class="lp-por">por</span>
+                    <span class="lp-logo lp-logo--pequeno">
+                        <span class="lp-logo-tile"><img src="{% static 'img/spi-monograma.svg' %}" alt="" width="22" height="21"></span>
+                        <span class="lp-logo-nome">SPI</span><span class="lp-logo-div" aria-hidden="true"></span><span class="lp-logo-tech">TECH</span>
+                    </span>
+                </a>
+            <span>Vitrines de veículos para garagens de Catanduva e região.</span>
             <span class="lp-rodape-links">
                 {% if instagram_url %}<a href="{{ instagram_url }}" target="_blank" rel="noopener">{{ instagram_arroba }}</a>{% endif %}
                 <a href="{% url 'termos_uso' %}">Termos de uso</a>

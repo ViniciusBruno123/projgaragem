@@ -191,7 +191,7 @@ PLANO_MENSALIDADE_PADRAO = env('PLANO_MENSALIDADE_PADRAO', default='99.90')
 TAXA_JUROS_ESTIMADA = Decimal('2.00')
 
 # Identificação da plataforma nos textos legais (termos de uso e privacidade)
-PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='projgaragem')
+PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='Farol')
 PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')
 
 # Landing page (raiz do site): WhatsApp dos sócios (só dígitos com DDI, ex: 5517999999999; em
