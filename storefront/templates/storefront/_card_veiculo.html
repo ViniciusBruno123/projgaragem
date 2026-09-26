@@ -1,3 +1,4 @@
+{% load vitrine_extras %}
 <div class="vehicle-card">
     {% if veiculo.aceita_troca %}<span class="tag tag--foto">Aceita troca</span>{% endif %}
     {% url 'storefront:detalhe_veiculo' garagem_slug=veiculo.garagem.slug veiculo_slug=veiculo.slug as url_detalhe %}
@@ -14,8 +15,13 @@
         <h3 class="title">{{ veiculo.titulo }}</h3>
         {% include "storefront/_specs.html" %}
         <p class="price-tag num">R$ {{ veiculo.preco|floatformat:"2g" }}</p>
-        <a href="{{ url_detalhe }}" class="btn btn-accent mt-auto">
-            Ver detalhes
-        </a>
+        {% whatsapp_veiculo veiculo as link_whatsapp %}
+        <div class="card-acoes mt-auto">
+            <a href="{{ url_detalhe }}" class="btn btn-accent">Ver detalhes</a>
+            <a href="{{ link_whatsapp }}" class="btn btn-outline-ink" target="_blank" rel="noopener" aria-label="Chamar no WhatsApp sobre {{ veiculo.titulo }}">
+                <svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+                <span class="card-acoes-texto">WhatsApp</span>
+            </a>
+        </div>
     </div>
 </div>

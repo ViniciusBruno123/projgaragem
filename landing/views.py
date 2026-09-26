@@ -7,26 +7,17 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from tenants.models import Garagem
+from tenants.services import formatar_telefone
 
 from .forms import InteresseGaragemForm
 
 MENSAGEM_WHATSAPP = "Olá! Vi o {nome} e quero saber como colocar a minha garagem no ar."
 
 
-def _formata_telefone(digitos):
-    """5517992078701 -> (17) 99207-8701, para exibir. Fora do padrão brasileiro, devolve como veio."""
-    numero = digitos[2:] if digitos.startswith('55') and len(digitos) in (12, 13) else digitos
-    if len(numero) == 11:
-        return f'({numero[:2]}) {numero[2:7]}-{numero[7:]}'
-    if len(numero) == 10:
-        return f'({numero[:2]}) {numero[2:6]}-{numero[6:]}'
-    return digitos
-
-
 def _contatos():
     """Números de WhatsApp da plataforma (principal primeiro) para a seção de contato."""
     return [
-        {'texto': _formata_telefone(n), 'url': f'https://wa.me/{n}'}
+        {'texto': formatar_telefone(n), 'url': f'https://wa.me/{n}'}
         for n in (settings.PLATAFORMA_WHATSAPP, settings.PLATAFORMA_WHATSAPP_2) if n
     ]
 

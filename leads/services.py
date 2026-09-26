@@ -1,13 +1,19 @@
 import urllib.parse
 
+from django.utils.formats import number_format
 
-def gerar_link_whatsapp(garagem, veiculo=None, nome=""):
+
+def gerar_link_whatsapp(garagem, veiculo=None, nome="", url_anuncio=""):
+    """url_anuncio (absoluta) vai na mensagem para a garagem abrir o mesmo anúncio que o cliente viu."""
     numero = garagem.telefone_whatsapp
     if veiculo:
+        preco = number_format(veiculo.preco, 2, use_l10n=True, force_grouping=True)
         texto = (
-            f"Olá! Tenho interesse no veículo {veiculo.titulo} ({veiculo.ano_modelo}) "
-            "anunciado no site."
+            f"Olá! Tenho interesse no veículo {veiculo.titulo} ({veiculo.ano_modelo}), "
+            f"R$ {preco}, anunciado no site."
         )
+        if url_anuncio:
+            texto += f" {url_anuncio}"
     else:
         texto = "Olá! Gostaria de mais informações sobre os veículos disponíveis."
     if nome:

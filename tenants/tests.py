@@ -78,3 +78,15 @@ class LinkGoogleMapsTests(TestCase):
             google_place_id='ChIJabc123',
         )
         self.assertIn('query_place_id=ChIJabc123', garagem.link_google_maps)
+
+
+class FormatarTelefoneTests(TestCase):
+    def test_celular_e_fixo_com_ddi(self):
+        from .services import formatar_telefone
+        self.assertEqual(formatar_telefone('5517992078701'), '(17) 99207-8701')
+        self.assertEqual(formatar_telefone('551732001234'), '(17) 3200-1234')
+
+    def test_fora_do_padrao_devolve_como_veio(self):
+        from .services import formatar_telefone
+        self.assertEqual(formatar_telefone('123'), '123')
+        self.assertEqual(formatar_telefone(''), '')

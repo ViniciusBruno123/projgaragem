@@ -52,6 +52,19 @@
 {% if banners|length > 1 %}<script src="{% static 'js/banners_capa.js' %}"></script>{% endif %}
 {% endwith %}
 
+{% if garagem.horario_funcionamento or garagem.telefone_whatsapp %}
+    <div class="faixa-info">
+        <div class="container">
+            {% if garagem.horario_funcionamento %}
+                <span><svg class="ico" aria-hidden="true"><use href="#i-relogio"/></svg>{{ garagem.horario_funcionamento }}</span>
+            {% endif %}
+            {% if garagem.telefone_whatsapp %}
+                <a href="https://wa.me/{{ garagem.telefone_whatsapp }}" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg>{{ garagem.telefone_whatsapp|telefone_br }}</a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
 {% if not garagem.logo_visivel_na_capa and not garagem.nome_visivel_na_capa %}
     {% comment %}
         Nem logo nem nome à mostra (ex: faixa já tem a marca desenhada nela) — sem isso o topo

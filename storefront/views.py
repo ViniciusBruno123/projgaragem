@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
 
 from financing.forms import SimulacaoFinanciamentoForm
@@ -21,19 +22,49 @@ def politica_privacidade(request, garagem_slug):
     })
 
 
+def _marcas_rapidas(garagem, parametros):
+    """Atalhos das marcas com mais veículos em estoque (até 8), para filtrar com um toque.
+    Clicar na marca já ativa a desativa. Só aparecem com pelo menos duas marcas."""
+    marcas = list(
+        garagem.veiculos.filter(disponivel=True).values('marca')
+        .annotate(total=Count('id')).order_by('-total', 'marca')[:8]
+    )
+    if len(marcas) < 2:
+        return []
+    ativa = parametros.get('marca', '')
+    atalhos = []
+    for item in marcas:
+        destino = parametros.copy()
+        if item['marca'] == ativa:
+            destino.pop('marca', None)
+        else:
+            destino['marca'] = item['marca']
+        atalhos.append({
+            'marca': item['marca'], 'total': item['total'],
+            'ativa': item['marca'] == ativa, 'url': '?' + destino.urlencode(),
+        })
+    return atalhos
+
+
 def frontpage(request, garagem_slug):
     garagem = get_garagem_ativa_ou_404(garagem_slug)
     filtro = FiltroVeiculosForm(request.GET or None, garagem=garagem)
     # prefetch_related evita 1 consulta por card (foto principal + prévia do hover, ver
     # Veiculo.fotos_extra_urls) numa garagem com dezenas de veículos.
     veiculos_disponiveis = filtro.aplicar(garagem.veiculos.filter(disponivel=True).prefetch_related('fotos'))
+    ordem = filtro.ordem()
+    filtros_ativos = filtro.ativos(request.GET)
 
     return render(request, 'storefront/frontpage.html', {
         'garagem': garagem,
         'filtro': filtro,
-        'filtro_ativo': any(request.GET.values()),
-        'veiculos_destaque': veiculos_disponiveis.filter(destaque=True).order_by(*ORDEM_VITRINE),
-        'demais_veiculos': veiculos_disponiveis.filter(destaque=False).order_by(*ORDEM_VITRINE),
+        'filtro_ativo': bool(filtros_ativos),
+        'filtros_ativos': filtros_ativos,
+        'marcas_rapidas': _marcas_rapidas(garagem, request.GET),
+        'total_encontrado': veiculos_disponiveis.count(),
+        'agrupar_por_tipo': ordem is None,
+        'veiculos_destaque': veiculos_disponiveis.filter(destaque=True).order_by(*(ordem or ORDEM_VITRINE)),
+        'demais_veiculos': veiculos_disponiveis.filter(destaque=False).order_by(*(ordem or ORDEM_VITRINE)),
     })
 
 

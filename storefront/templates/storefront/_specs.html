@@ -1,6 +1,7 @@
 {% comment %}
 Dados do veículo em linha, com ícone no lugar do rótulo.
-Espera `veiculo`; com `detalhado` mostra também as unidades (km, cc).
+Espera `veiculo`; com `detalhado` mostra também as unidades (km, cc), a cor e as portas
+(o card da lista fica só com o essencial, para não virar um parágrafo).
 {% endcomment %}
 <ul class="spec-strip{% if detalhado %} spec-strip--detalhado{% endif %}">
     <li title="Ano">
@@ -26,4 +27,24 @@ Espera `veiculo`; com `detalhado` mostra também as unidades (km, cc).
         <svg class="ico" aria-hidden="true"><use href="#i-combustivel"/></svg>
         <span class="visually-hidden">Combustível:</span>{{ veiculo.get_combustivel_display }}
     </li>
+    {% if veiculo.cambio %}
+        <li title="Câmbio">
+            <svg class="ico" aria-hidden="true"><use href="#i-cambio"/></svg>
+            <span class="visually-hidden">Câmbio:</span>{{ veiculo.get_cambio_display }}
+        </li>
+    {% endif %}
+    {% if detalhado %}
+        {% if veiculo.cor %}
+            <li title="Cor">
+                <svg class="ico" aria-hidden="true"><use href="#i-cor"/></svg>
+                <span class="visually-hidden">Cor:</span>{{ veiculo.cor }}
+            </li>
+        {% endif %}
+        {% if veiculo.portas %}
+            <li title="Portas">
+                <svg class="ico" aria-hidden="true"><use href="#i-porta"/></svg>
+                <span class="visually-hidden">Portas:</span>{{ veiculo.portas }} portas
+            </li>
+        {% endif %}
+    {% endif %}
 </ul>

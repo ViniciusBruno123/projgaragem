@@ -111,7 +111,7 @@ class VeiculoForm(forms.ModelForm):
         model = Veiculo
         fields = [
             'tipo', 'titulo', 'marca', 'modelo', 'ano_fabricacao', 'ano_modelo',
-            'quilometragem', 'combustivel', 'cilindrada', 'potencia_motor', 'preco', 'descricao',
+            'quilometragem', 'combustivel', 'cambio', 'cor', 'portas', 'cilindrada', 'potencia_motor', 'preco', 'descricao',
             'destaque', 'disponivel', 'aceita_troca',
         ]
         widgets = {'descricao': forms.Textarea(attrs={'rows': 4})}

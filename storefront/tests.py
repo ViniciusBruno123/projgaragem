@@ -583,3 +583,118 @@ class AvaliarVeiculoCtaTests(TestCase):
         self.assertContains(resp, reverse('storefront:enviar_avaliacao_veiculo', kwargs={
             'garagem_slug': self.garagem.slug, 'veiculo_slug': self.veiculo.slug,
         }))
+
+
+class InspiracaoVitrineTests(TestCase):
+    """Ordenação, contador, chips de filtro e de marca, câmbio/cor/portas, WhatsApp no card e
+    faixa de horário/telefone — ideias vindas da análise de um site de garagem da região."""
+
+    def setUp(self):
+        dono = User.objects.create_user('dono_insp', 'dono_insp@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Insp', slug='garagem-insp', telefone_whatsapp='5517992078701',
+            email_contato='dono_insp@example.com', horario_funcionamento='Seg a Sex, 9h às 18h',
+        )
+        base = dict(garagem=self.garagem, ano_fabricacao=2020, combustivel=Veiculo.Combustivel.FLEX)
+        self.moto = Veiculo.objects.create(
+            tipo=Veiculo.Tipo.MOTO, titulo='Honda CG 160', slug='cg', marca='Honda', modelo='CG',
+            ano_modelo=2021, quilometragem=8000, cilindrada=160, preco='15000.00', **base,
+        )
+        self.gol = Veiculo.objects.create(
+            tipo=Veiculo.Tipo.CARRO, titulo='VW Gol', slug='gol', marca='Volkswagen', modelo='Gol',
+            ano_modelo=2019, quilometragem=40000, potencia_motor='1.6', preco='45000.00',
+            cambio=Veiculo.Cambio.MANUAL, cor='Prata', portas=4, **base,
+        )
+        self.argo = Veiculo.objects.create(
+            tipo=Veiculo.Tipo.CARRO, titulo='Fiat Argo', slug='argo', marca='Fiat', modelo='Argo',
+            ano_modelo=2022, quilometragem=20000, potencia_motor='1.0', preco='60000.00',
+            cambio=Veiculo.Cambio.AUTOMATICO, **base,
+        )
+        self.url = reverse('storefront:frontpage', kwargs={'garagem_slug': self.garagem.slug})
+
+    def _ordem_dos_titulos(self, resp):
+        html = resp.content.decode()
+        return sorted(['Honda CG 160', 'VW Gol', 'Fiat Argo'], key=lambda t: html.index(f'<h3 class="title">{t}</h3>'))
+
+    # câmbio, cor, portas
+    def test_filtro_por_cambio_so_lista_os_cambios_em_estoque(self):
+        resp = self.client.get(self.url, {'cambio': 'manual'})
+        self.assertContains(resp, 'VW Gol')
+        self.assertNotContains(resp, 'Fiat Argo')
+        opcoes = [valor for valor, _ in resp.context['filtro'].fields['cambio'].choices]
+        self.assertEqual(opcoes, ['', 'manual', 'automatico'])
+
+    def test_card_mostra_cambio_e_pagina_do_veiculo_mostra_cor_e_portas(self):
+        card = self.client.get(self.url)
+        self.assertContains(card, 'Manual')
+        self.assertNotContains(card, 'Prata')
+        detalhe = self.client.get(reverse('storefront:detalhe_veiculo', kwargs={'garagem_slug': 'garagem-insp', 'veiculo_slug': 'gol'}))
+        self.assertContains(detalhe, 'Prata')
+        self.assertContains(detalhe, '4 portas')
+
+    def test_moto_nao_aceita_portas(self):
+        self.moto.portas = 4
+        with self.assertRaises(Exception):
+            self.moto.full_clean()
+
+    # ordenar e contador
+    def test_ordenar_por_menor_preco_mistura_os_tipos(self):
+        resp = self.client.get(self.url, {'ordenar': 'preco'})
+        self.assertFalse(resp.context['agrupar_por_tipo'])
+        self.assertEqual(self._ordem_dos_titulos(resp), ['Honda CG 160', 'VW Gol', 'Fiat Argo'])
+
+    def test_ordenar_por_maior_preco(self):
+        resp = self.client.get(self.url, {'ordenar': '-preco'})
+        self.assertEqual(self._ordem_dos_titulos(resp), ['Fiat Argo', 'VW Gol', 'Honda CG 160'])
+
+    def test_sem_ordenar_continua_agrupando_por_tipo(self):
+        self.assertTrue(self.client.get(self.url).context['agrupar_por_tipo'])
+
+    def test_contador_de_veiculos(self):
+        self.assertContains(self.client.get(self.url), '3 veículos')
+        filtrado = self.client.get(self.url, {'marca': 'Fiat'})
+        self.assertContains(filtrado, '1 veículo encontrado')
+
+    def test_ordenar_sozinho_nao_conta_como_filtro_ativo(self):
+        resp = self.client.get(self.url, {'ordenar': 'preco'})
+        self.assertFalse(resp.context['filtro_ativo'])
+        self.assertEqual(resp.context['filtros_ativos'], [])
+
+    # chips de filtros ativos e de marca
+    def test_chip_de_filtro_ativo_traz_o_link_que_remove_so_ele(self):
+        resp = self.client.get(self.url, {'marca': 'Fiat', 'cambio': 'automatico'})
+        chips = {c['rotulo']: c for c in resp.context['filtros_ativos']}
+        self.assertEqual(chips['Marca']['valor'], 'Fiat')
+        self.assertEqual(chips['Câmbio']['valor'], 'Automático')
+        self.assertEqual(chips['Marca']['remover'], '?cambio=automatico')
+
+    def test_chips_de_marca_com_contagem_e_alternancia(self):
+        resp = self.client.get(self.url)
+        marcas = {m['marca']: m for m in resp.context['marcas_rapidas']}
+        self.assertEqual(set(marcas), {'Honda', 'Volkswagen', 'Fiat'})
+        self.assertEqual(marcas['Fiat']['url'], '?marca=Fiat')
+        ativa = self.client.get(self.url, {'marca': 'Fiat'})
+        fiat = next(m for m in ativa.context['marcas_rapidas'] if m['marca'] == 'Fiat')
+        self.assertTrue(fiat['ativa'])
+        self.assertEqual(fiat['url'], '?')
+
+    # WhatsApp no card e faixa de contato
+    def test_card_tem_botao_de_whatsapp_com_preco_e_link_do_anuncio(self):
+        from urllib.parse import parse_qs, urlparse
+        resp = self.client.get(self.url)
+        html = resp.content.decode()
+        self.assertIn('https://wa.me/5517992078701?text=', html)
+        trecho = next(l for l in re.findall(r'https://wa\.me/5517992078701\?text=[^"]+', html) if 'Argo' in parse_qs(urlparse(l.replace('&amp;', '&')).query)['text'][0])
+        texto = parse_qs(urlparse(trecho.replace('&amp;', '&')).query)['text'][0]
+        self.assertIn('R$ 60.000,00', texto)
+        self.assertIn('/g/garagem-insp/veiculos/argo/', texto)
+
+    def test_faixa_com_horario_e_telefone_formatado(self):
+        resp = self.client.get(self.url)
+        self.assertContains(resp, 'Seg a Sex, 9h às 18h')
+        self.assertContains(resp, '(17) 99207-8701')
+
+    def test_botoes_do_topo(self):
+        resp = self.client.get(self.url)
+        self.assertContains(resp, 'Ver estoque')
+        self.assertContains(resp, 'Vender ou trocar')

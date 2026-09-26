@@ -999,3 +999,114 @@ html {
 #simulador-financiamento {
   scroll-margin-top: 5rem;
 }
+
+/* --- Vitrine: faixa de horário/telefone, ações do topo, resultado, chips e ações do card --- */
+.faixa-info {
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+.faixa-info .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.faixa-info span,
+.faixa-info a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.faixa-info a:hover {
+  color: var(--accent);
+}
+.faixa-info .ico {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--ink-soft);
+}
+.acoes-topo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.resultado {
+  scroll-margin-top: 1rem;
+  margin-bottom: 1.25rem;
+}
+.resultado-total {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0 0 0.6rem;
+}
+.chips a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.chips a:hover {
+  border-color: var(--ink);
+}
+.chips-filtro a {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.chips-filtro .chips-limpar {
+  background: transparent;
+  color: var(--ink);
+  border-style: dashed;
+}
+.chips-marca a.ativa {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.chips-marca .num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+.card-acoes {
+  display: flex;
+  gap: 0.5rem;
+}
+.card-acoes .btn:first-child {
+  flex: 1;
+}
+.card-acoes .btn + .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.card-acoes .ico {
+  width: 1.25em;
+  height: 1.25em;
+}
+@media (max-width: 400px) {
+  .card-acoes-texto {
+    display: none;
+  }
+}

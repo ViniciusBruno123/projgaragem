@@ -756,3 +756,30 @@ class LimiteDeVeiculosNoCadastroTests(TestCase):
         resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados_veiculo_novo())
         self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
         self.assertEqual(self.garagem.veiculos.count(), 51)
+
+
+class VeiculoFormCambioCorPortasTests(TestCase):
+    def _dados(self, **extra):
+        dados = {
+            'tipo': 'carro', 'titulo': 'VW Gol', 'marca': 'Volkswagen', 'modelo': 'Gol',
+            'ano_fabricacao': 2019, 'ano_modelo': 2019, 'quilometragem': 40000, 'combustivel': 'flex',
+            'preco': '45000.00', 'cambio': 'manual', 'cor': 'Prata', 'portas': 4, 'potencia_motor': '1.6',
+        }
+        dados.update(extra)
+        return dados
+
+    def test_carro_aceita_cambio_cor_e_portas(self):
+        from .forms import VeiculoForm
+        form = VeiculoForm(self._dados())
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_campos_novos_sao_opcionais(self):
+        from .forms import VeiculoForm
+        form = VeiculoForm(self._dados(cambio='', cor='', portas=''))
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_moto_com_portas_e_recusada(self):
+        from .forms import VeiculoForm
+        form = VeiculoForm(self._dados(tipo='moto', potencia_motor='', cilindrada=160))
+        self.assertFalse(form.is_valid())
+        self.assertIn('portas', form.errors)

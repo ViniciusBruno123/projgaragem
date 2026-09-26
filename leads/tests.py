@@ -198,3 +198,44 @@ class FotosAvaliacaoTests(TestCase):
         })
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(Avaliacao.objects.count(), 0)
+
+
+class MensagemWhatsappDoVeiculoTests(TestCase):
+    """A mensagem do WhatsApp leva título, preço e o link do anúncio."""
+
+    def setUp(self):
+        dono = User.objects.create_user('dono_msg', 'dono_msg@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Msg', slug='garagem-msg',
+            telefone_whatsapp='5517999999999', email_contato='dono_msg@example.com',
+        )
+        self.veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo=Veiculo.Tipo.MOTO, titulo='Honda CG 160', slug='cg-160',
+            marca='Honda', modelo='CG', ano_fabricacao=2022, ano_modelo=2022, quilometragem=1000,
+            combustivel=Veiculo.Combustivel.FLEX, cilindrada=160, preco='15000.00',
+        )
+
+    def _texto(self, link):
+        from urllib.parse import parse_qs, urlparse
+        return parse_qs(urlparse(link).query)['text'][0]
+
+    def test_mensagem_inclui_preco_e_link(self):
+        from .services import gerar_link_whatsapp
+        texto = self._texto(gerar_link_whatsapp(self.garagem, self.veiculo, url_anuncio='https://x.com/g/garagem-msg/veiculos/cg-160/'))
+        self.assertIn('Honda CG 160 (2022), R$ 15.000,00', texto)
+        self.assertTrue(texto.endswith('https://x.com/g/garagem-msg/veiculos/cg-160/'))
+
+    def test_sem_link_a_mensagem_continua_valida(self):
+        from .services import gerar_link_whatsapp
+        self.assertNotIn('http', self._texto(gerar_link_whatsapp(self.garagem, self.veiculo)))
+
+    def test_proposta_de_um_veiculo_redireciona_com_o_link_do_anuncio(self):
+        url = reverse('storefront:enviar_proposta', kwargs={'garagem_slug': 'garagem-msg', 'veiculo_slug': 'cg-160'})
+        resp = self.client.post(url, {
+            'nome': 'Ana', 'telefone': '17988887777', 'email': '', 'mensagem': '', 'aceito_privacidade': 'on',
+            'site': '', 'iniciado_em': str(time.time() - 60),
+        })
+        self.assertEqual(resp.status_code, 302)
+        texto = self._texto(resp['Location'])
+        self.assertIn('R$ 15.000,00', texto)
+        self.assertIn('/g/garagem-msg/veiculos/cg-160/', texto)

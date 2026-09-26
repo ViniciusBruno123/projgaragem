@@ -6,9 +6,13 @@
 
 {% block vitrine_content %}
 <div class="container">
+    <div class="acoes-topo pt-4">
+        <a href="#estoque" class="btn btn-accent">Ver estoque</a>
+        <a href="{% url 'storefront:enviar_avaliacao' garagem_slug=garagem.slug %}" class="btn btn-outline-ink">Vender ou trocar</a>
+    </div>
     <details class="filtro-mobile my-4" open{% if not filtro_ativo %} data-fechar-no-mobile{% endif %}>
     <summary class="btn btn-outline-ink w-100">Filtrar veículos{% if filtro_ativo %} (filtros ativos){% endif %}</summary>
-    <form method="get" class="filter-bar row row-cols-1 row-cols-md-3 row-cols-lg-8 g-2 align-items-end">
+    <form method="get" class="filter-bar row row-cols-1 row-cols-md-3 row-cols-lg-6 g-2 align-items-end">
         {% for field in filtro %}
             <div class="col">
                 <label class="form-label mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -23,6 +27,27 @@
         </div>
     </form>
     </details>
+
+    <div class="resultado" id="estoque">
+        <p class="resultado-total num mb-2" aria-live="polite">
+            {{ total_encontrado }} veículo{{ total_encontrado|pluralize }}{% if filtro_ativo %} encontrado{{ total_encontrado|pluralize }}{% endif %}
+        </p>
+        {% if filtros_ativos %}
+            <ul class="chips chips-filtro" aria-label="Filtros ativos">
+                {% for f in filtros_ativos %}
+                    <li><a href="{{ f.remover }}">{{ f.rotulo }}: {{ f.valor }} <span aria-hidden="true">&times;</span><span class="visually-hidden">(remover este filtro)</span></a></li>
+                {% endfor %}
+                <li><a href="{% url 'storefront:frontpage' garagem_slug=garagem.slug %}" class="chips-limpar">Limpar tudo</a></li>
+            </ul>
+        {% endif %}
+        {% if marcas_rapidas %}
+            <ul class="chips chips-marca" aria-label="Filtrar por marca">
+                {% for m in marcas_rapidas %}
+                    <li><a href="{{ m.url }}"{% if m.ativa %} class="ativa" aria-current="true"{% endif %}>{{ m.marca }} <span class="num">{{ m.total }}</span></a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 
     {% if veiculos_destaque %}
         <div class="section-heading">
@@ -51,16 +76,27 @@
             <h2>Outros veículos</h2>
             <span class="count num">{{ demais_veiculos|length }}</span>
         </div>
-        {% regroup demais_veiculos by tipo as demais_por_tipo %}
-        {% for grupo in demais_por_tipo %}
+        {% if agrupar_por_tipo %}
+            {% regroup demais_veiculos by tipo as demais_por_tipo %}
+            {% for grupo in demais_por_tipo %}
+                <div class="row">
+                    {% for veiculo in grupo.list %}
+                        <div class="col-sm-6 col-lg-4 col-xxl-3 mb-4">
+                            {% include "storefront/_card_veiculo.html" %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            {% comment %}Ordenado por preço, ano ou km: motos e carros se misturam, então sem agrupar por tipo.{% endcomment %}
             <div class="row">
-                {% for veiculo in grupo.list %}
+                {% for veiculo in demais_veiculos %}
                     <div class="col-sm-6 col-lg-4 col-xxl-3 mb-4">
                         {% include "storefront/_card_veiculo.html" %}
                     </div>
                 {% endfor %}
             </div>
-        {% endfor %}
+        {% endif %}
     {% endif %}
 
     {% if not veiculos_destaque and not demais_veiculos %}

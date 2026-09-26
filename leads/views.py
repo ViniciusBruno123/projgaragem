@@ -3,6 +3,7 @@ import time
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from tenants.services import get_garagem_ativa_ou_404
 from vehicles.imagens import FotoInvalida, otimizar_foto_com_limite
@@ -44,7 +45,12 @@ def enviar_proposta(request, garagem_slug, veiculo_slug=None):
                     fail_silently=True,
                 )
 
-            return redirect(gerar_link_whatsapp(garagem, veiculo, proposta.nome))
+            url_anuncio = ''
+            if veiculo:
+                url_anuncio = request.build_absolute_uri(
+                    reverse('storefront:detalhe_veiculo', kwargs={'garagem_slug': garagem.slug, 'veiculo_slug': veiculo.slug})
+                )
+            return redirect(gerar_link_whatsapp(garagem, veiculo, proposta.nome, url_anuncio))
     else:
         form = PropostaForm(initial={'iniciado_em': time.time()})
 

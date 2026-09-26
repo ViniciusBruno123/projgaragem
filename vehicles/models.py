@@ -15,6 +15,12 @@ class Veiculo(models.Model):
         DIESEL = 'diesel', 'Diesel'
         ELETRICO = 'eletrico', 'Elétrico'
 
+    class Cambio(models.TextChoices):
+        MANUAL = 'manual', 'Manual'
+        AUTOMATICO = 'automatico', 'Automático'
+        CVT = 'cvt', 'CVT'
+        AUTOMATIZADO = 'automatizado', 'Automatizado'
+
     garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE, related_name='veiculos')
     tipo = models.CharField(max_length=5, choices=Tipo.choices, default=Tipo.MOTO)
     titulo = models.CharField('Título', max_length=150)
@@ -25,6 +31,12 @@ class Veiculo(models.Model):
     ano_modelo = models.PositiveSmallIntegerField('Ano do modelo')
     quilometragem = models.PositiveIntegerField('Quilometragem (km)')
     combustivel = models.CharField('Combustível', max_length=10, choices=Combustivel.choices)
+    cambio = models.CharField('Câmbio', max_length=12, choices=Cambio.choices, blank=True)
+    cor = models.CharField('Cor', max_length=30, blank=True)
+    portas = models.PositiveSmallIntegerField(
+        'Portas', null=True, blank=True, choices=[(2, '2 portas'), (3, '3 portas'), (4, '4 portas'), (5, '5 portas')],
+        help_text="Apenas para carros.",
+    )
     cilindrada = models.PositiveSmallIntegerField(
         'Cilindrada (cc)', null=True, blank=True, help_text="Cilindradas (cc) — apenas para motos. Ex: 160"
     )
@@ -76,6 +88,8 @@ class Veiculo(models.Model):
             errors['potencia_motor'] = 'Potência do motor é um campo exclusivo para carros.'
         if self.tipo == self.Tipo.CARRO and self.cilindrada:
             errors['cilindrada'] = 'Cilindrada é um campo exclusivo para motos.'
+        if self.tipo == self.Tipo.MOTO and self.portas:
+            errors['portas'] = 'Portas é um campo exclusivo para carros.'
         if errors:
             raise ValidationError(errors)
 
