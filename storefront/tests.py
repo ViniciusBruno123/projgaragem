@@ -697,4 +697,4 @@ class InspiracaoVitrineTests(TestCase):
     def test_botoes_do_topo(self):
         resp = self.client.get(self.url)
         self.assertContains(resp, 'Ver estoque')
-        self.assertContains(resp, 'Vender ou trocar')
+        self.assertContains(resp, 'Vender ou Trocar')

@@ -783,3 +783,74 @@ class VeiculoFormCambioCorPortasTests(TestCase):
         form = VeiculoForm(self._dados(tipo='moto', potencia_motor='', cilindrada=160))
         self.assertFalse(form.is_valid())
         self.assertIn('portas', form.errors)
+
+
+class CadastroDeVeiculoEmEtapasTests(TestCase):
+    """O cadastro é feito em etapas e cada tipo só tem os campos que lhe pertencem."""
+
+    def setUp(self):
+        dono = User.objects.create_user('dono_etapas', 'dono_etapas@example.com', 'senha12345')
+        self.garagem = Garagem.objects.create(
+            dono=dono, nome='Garagem Etapas', slug='garagem-etapas',
+            telefone_whatsapp='5517999999999', email_contato='dono_etapas@example.com',
+        )
+        self.client.login(username='dono_etapas', password='senha12345')
+
+    def _dados(self, **extra):
+        return {
+            'tipo': 'carro', 'titulo': 'VW Gol', 'marca': 'Volkswagen', 'modelo': 'Gol',
+            'ano_fabricacao': 2019, 'ano_modelo': 2019, 'quilometragem': 40000, 'combustivel': 'flex',
+            'preco': '45000.00', 'disponivel': 'on', 'potencia_motor': '1.6', 'portas': 4,
+            'fotos-TOTAL_FORMS': 0, 'fotos-INITIAL_FORMS': 0, 'fotos-MIN_NUM_FORMS': 0, 'fotos-MAX_NUM_FORMS': 1000,
+            **extra,
+        }
+
+    def test_pagina_tem_botoes_de_tipo_e_campos_marcados_por_tipo(self):
+        resp = self.client.get(reverse('dashboard:veiculo_create'))
+        self.assertContains(resp, 'data-wizard')
+        self.assertContains(resp, 'Que tipo de veículo?')
+        self.assertContains(resp, 'data-tipo="carro"')
+        self.assertContains(resp, 'data-tipo="moto"')
+        html = resp.content.decode()
+        for campo, tipo in [('cilindrada', 'moto'), ('portas', 'carro'), ('potencia_motor', 'carro')]:
+            self.assertRegex(html, rf'campo--{campo}" data-so-tipo="{tipo}"')
+        self.assertNotIn('data-edicao', html)
+
+    def test_edicao_abre_direto_com_o_tipo_ja_escolhido(self):
+        veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo='moto', titulo='CG', marca='Honda', modelo='CG', ano_fabricacao=2022,
+            ano_modelo=2022, quilometragem=1, combustivel='flex', cilindrada=160, preco='1000',
+        )
+        resp = self.client.get(reverse('dashboard:veiculo_update', kwargs={'pk': veiculo.pk}))
+        self.assertContains(resp, 'data-edicao')
+        self.assertContains(resp, 'data-tipo-escolhido')
+
+    def test_carro_com_cilindrada_e_recusado_no_servidor(self):
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados(cilindrada=160))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('cilindrada', resp.context['form'].errors)
+        self.assertEqual(Veiculo.objects.count(), 0)
+
+    def test_moto_com_portas_ou_potencia_e_recusada_no_servidor(self):
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados(tipo='moto', cilindrada=160))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(set(resp.context['form'].errors), {'portas', 'potencia_motor'})
+        self.assertEqual(Veiculo.objects.count(), 0)
+
+    def test_erro_em_uma_etapa_marca_essa_etapa_para_o_navegador_abrir(self):
+        resp = self.client.post(reverse('dashboard:veiculo_create'), self._dados(preco=''))
+        self.assertContains(resp, 'data-etapa="anuncio" data-tem-erro')
+        self.assertNotContains(resp, 'data-etapa="dados" data-tem-erro')
+
+    def test_trocar_moto_por_carro_limpa_o_que_era_so_da_moto(self):
+        veiculo = Veiculo.objects.create(
+            garagem=self.garagem, tipo='moto', titulo='CG', marca='Honda', modelo='CG', ano_fabricacao=2022,
+            ano_modelo=2022, quilometragem=1, combustivel='flex', cilindrada=160, preco='1000',
+        )
+        # o navegador não envia os campos desativados (a cilindrada some ao escolher "carro")
+        resp = self.client.post(reverse('dashboard:veiculo_update', kwargs={'pk': veiculo.pk}), self._dados(titulo='CG virou carro'))
+        self.assertRedirects(resp, reverse('dashboard:veiculo_list'))
+        veiculo.refresh_from_db()
+        self.assertEqual(veiculo.tipo, 'carro')
+        self.assertIsNone(veiculo.cilindrada)
+        self.assertEqual(veiculo.portas, 4)

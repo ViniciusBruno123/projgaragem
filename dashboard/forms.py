@@ -107,6 +107,19 @@ class VeiculoPainelFiltroForm(forms.Form):
 
 
 class VeiculoForm(forms.ModelForm):
+    # O cadastro é feito em etapas (ver veiculo_form.html e static/js/veiculo_wizard.js): primeiro o
+    # tipo (carro ou moto), depois grupos de campos. Cada campo que só existe para um tipo fica
+    # marcado aqui — o navegador o esconde e desativa quando é do outro tipo, e o servidor recusa
+    # (Veiculo.clean) se ele chegar preenchido mesmo assim.
+    ETAPAS = [
+        ('dados', 'Identificação', ['marca', 'modelo', 'titulo', 'ano_fabricacao', 'ano_modelo']),
+        ('detalhes', 'Detalhes', [
+            'quilometragem', 'combustivel', 'cambio', 'cor', 'portas', 'potencia_motor', 'cilindrada',
+        ]),
+        ('anuncio', 'Preço e anúncio', ['preco', 'descricao', 'destaque', 'disponivel', 'aceita_troca']),
+    ]
+    SO_DO_TIPO = {'cilindrada': Veiculo.Tipo.MOTO, 'portas': Veiculo.Tipo.CARRO, 'potencia_motor': Veiculo.Tipo.CARRO}
+
     class Meta:
         model = Veiculo
         fields = [
@@ -115,10 +128,8 @@ class VeiculoForm(forms.ModelForm):
             'destaque', 'disponivel', 'aceita_troca',
         ]
         widgets = {'descricao': forms.Textarea(attrs={'rows': 4})}
-        help_texts = {
-            'cilindrada': 'Preencha apenas se o tipo for Moto.',
-            'potencia_motor': 'Preencha apenas se o tipo for Carro.',
-        }
+        # Os campos de um tipo só aparecem para esse tipo, então o "apenas para..." não precisa repetir.
+        help_texts = {'portas': '', 'cilindrada': 'Ex: 160', 'potencia_motor': 'Em litros. Ex: 1.0, 1.6, 2.0'}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -129,6 +140,18 @@ class VeiculoForm(forms.ModelForm):
                 field.widget.attrs.setdefault('class', 'form-select')
             else:
                 field.widget.attrs.setdefault('class', 'form-control')
+
+    def etapas(self):
+        """Os grupos de campos do cadastro, na ordem das etapas, para o template desenhar."""
+        return [
+            {
+                'chave': chave,
+                'titulo': titulo,
+                'campos': [{'campo': self[nome], 'so_tipo': self.SO_DO_TIPO.get(nome, '')} for nome in nomes],
+                'tem_erro': any(self[nome].errors for nome in nomes),
+            }
+            for chave, titulo, nomes in self.ETAPAS
+        ]
 
 
 class FotoVeiculoForm(BaseFotoVeiculoForm):

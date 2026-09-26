@@ -11,64 +11,132 @@
 {% block painel_content %}
 <h1>{% if object %}Editar veículo{% else %}Novo veículo{% endif %}</h1>
 
-<form method="post" enctype="multipart/form-data">
+{% comment %}
+Cadastro em etapas (static/js/veiculo_wizard.js): tipo -> identificação -> detalhes -> preço -> fotos.
+Sem JavaScript a página continua sendo um formulário comum, com todas as etapas em sequência e o
+campo "Tipo" como lista. Campos que só existem para um tipo trazem data-so-tipo: o script os
+esconde e desativa quando o tipo escolhido é o outro, e o servidor também os recusa (Veiculo.clean).
+{% endcomment %}
+<form method="post" enctype="multipart/form-data" class="wizard" id="veiculo-form" novalidate
+    data-wizard{% if object.pk %} data-edicao{% endif %}{% if object.pk or form.is_bound %} data-tipo-escolhido{% endif %}>
     {% csrf_token %}
-    {% for field in form %}
-        <div class="mb-3">
-            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-            {% if field.errors %}
-                <div class="text-danger small">{{ field.errors }}</div>
-            {% endif %}
+
+    <ol class="wizard-passos" data-passos hidden aria-label="Etapas do cadastro">
+        <li><button type="button" data-passo="0">Tipo</button></li>
+        {% for etapa in form.etapas %}
+            <li><button type="button" data-passo="{{ forloop.counter }}">{{ etapa.titulo }}</button></li>
+        {% endfor %}
+        <li><button type="button" data-passo="{{ form.etapas|length|add:1 }}">Fotos</button></li>
+    </ol>
+
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+    <section class="etapa" data-etapa="tipo" {% if form.tipo.errors %}data-tem-erro{% endif %} aria-labelledby="etapa-tipo-titulo">
+        <h2 class="etapa-titulo" id="etapa-tipo-titulo" tabindex="-1">Que tipo de veículo?</h2>
+        <div class="tipo-opcoes" data-tipo-opcoes hidden>
+            <button type="button" class="tipo-opcao" data-tipo="carro" aria-pressed="false">
+                <svg class="tipo-icone" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+                    <path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5"/>
+                </svg>
+                <span>Carro</span>
+            </button>
+            <button type="button" class="tipo-opcao" data-tipo="moto" aria-pressed="false">
+                <svg class="tipo-icone" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 16a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M16 16a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
+                    <path d="M7.5 14h5l4 -4h-10.5m1.5 4l4 -4"/><path d="M13 6h2l1.5 3l2 4"/>
+                </svg>
+                <span>Moto</span>
+            </button>
         </div>
+        <div class="campo" data-tipo-select>
+            <label class="form-label" for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>
+            {{ form.tipo }}
+            {% if form.tipo.errors %}<div class="text-danger small">{{ form.tipo.errors }}</div>{% endif %}
+        </div>
+    </section>
+
+    {% for etapa in form.etapas %}
+        <section class="etapa" data-etapa="{{ etapa.chave }}" {% if etapa.tem_erro %}data-tem-erro{% endif %} aria-labelledby="etapa-{{ etapa.chave }}-titulo">
+            <h2 class="etapa-titulo" id="etapa-{{ etapa.chave }}-titulo" tabindex="-1">{{ etapa.titulo }}</h2>
+            <div class="etapa-campos">
+                {% for item in etapa.campos %}
+                    {% with campo=item.campo %}
+                        <div class="campo campo--{{ campo.name }}" {% if item.so_tipo %}data-so-tipo="{{ item.so_tipo }}"{% endif %}>
+                            {% if campo.field.widget.input_type == 'checkbox' %}
+                                <div class="form-check">
+                                    {{ campo }}
+                                    <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                                {{ campo }}
+                            {% endif %}
+                            {% if campo.name == 'titulo' and not object.pk %}
+                                <div class="form-text">Sugerido a partir da marca, modelo e ano; pode editar.</div>
+                            {% endif %}
+                            {% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}
+                            {% if campo.errors %}<div class="text-danger small">{{ campo.errors }}</div>{% endif %}
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </section>
     {% endfor %}
 
-    <h2 class="h5 mt-4">Fotos</h2>
-    <p class="text-muted small">Uma foto nova entra sempre no fim da ordem de exibição. Marque "Principal" para
-        escolher a capa do veículo.</p>
-    {{ formset.management_form }}
-    {% if formset.non_form_errors %}
-        <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
-    {% endif %}
-    <div class="row row-cols-1 row-cols-md-2 g-2 mb-3">
-        {% for foto_form in formset %}
-            <div class="col">
-                <div class="foto-form border rounded p-2">
-                    {% if foto_form.instance.pk and foto_form.instance.imagem %}
-                        <div class="foto-form-atual">
-                            <img src="{{ foto_form.instance.imagem.url }}" alt="Foto atual">
-                            <span class="text-muted small">Foto atual — envie outra só se quiser trocar.</span>
-                        </div>
-                    {% endif %}
-                    {{ foto_form.imagem }}
-                    {% if foto_form.imagem.errors %}<div class="text-danger small">{{ foto_form.imagem.errors }}</div>{% endif %}
-
-                    <div class="foto-form-linha">
-                        <div class="form-check mb-0">
-                            {{ foto_form.principal }}
-                            <label class="form-check-label small" for="{{ foto_form.principal.id_for_label }}">Principal</label>
-                        </div>
-                        <div class="foto-form-ordem">
-                            <label class="small text-muted mb-0" for="{{ foto_form.ordem.id_for_label }}">Ordem</label>
-                            {{ foto_form.ordem }}
-                        </div>
-                        {% if foto_form.instance.pk %}
-                            <div class="form-check mb-0 ms-auto">
-                                {{ foto_form.DELETE }}
-                                <label class="form-check-label small text-danger" for="{{ foto_form.DELETE.id_for_label }}">Excluir</label>
+    <section class="etapa" data-etapa="fotos" {% if formset.total_error_count %}data-tem-erro{% endif %} aria-labelledby="etapa-fotos-titulo">
+        <h2 class="etapa-titulo" id="etapa-fotos-titulo" tabindex="-1">Fotos</h2>
+        <p class="text-muted small">Uma foto nova entra sempre no fim da ordem de exibição. Marque "Principal" para
+            escolher a capa do veículo.</p>
+        {{ formset.management_form }}
+        {% if formset.non_form_errors %}
+            <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+        {% endif %}
+        <div class="row row-cols-1 row-cols-md-2 g-2 mb-3">
+            {% for foto_form in formset %}
+                <div class="col">
+                    <div class="foto-form border rounded p-2">
+                        {% if foto_form.instance.pk and foto_form.instance.imagem %}
+                            <div class="foto-form-atual">
+                                <img src="{{ foto_form.instance.imagem.url }}" alt="Foto atual">
+                                <span class="text-muted small">Foto atual — envie outra só se quiser trocar.</span>
                             </div>
                         {% endif %}
-                    </div>
-                    {% if foto_form.ordem.errors %}<div class="text-danger small">{{ foto_form.ordem.errors }}</div>{% endif %}
-                    {% for hidden in foto_form.hidden_fields %}{{ hidden }}{% endfor %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+                        {{ foto_form.imagem }}
+                        {% if foto_form.imagem.errors %}<div class="text-danger small">{{ foto_form.imagem.errors }}</div>{% endif %}
 
-    <button type="submit" class="btn btn-accent">Salvar</button>
-    <a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-outline-ink">Cancelar</a>
+                        <div class="foto-form-linha">
+                            <div class="form-check mb-0">
+                                {{ foto_form.principal }}
+                                <label class="form-check-label small" for="{{ foto_form.principal.id_for_label }}">Principal</label>
+                            </div>
+                            <div class="foto-form-ordem">
+                                <label class="small text-muted mb-0" for="{{ foto_form.ordem.id_for_label }}">Ordem</label>
+                                {{ foto_form.ordem }}
+                            </div>
+                            {% if foto_form.instance.pk %}
+                                <div class="form-check mb-0 ms-auto">
+                                    {{ foto_form.DELETE }}
+                                    <label class="form-check-label small text-danger" for="{{ foto_form.DELETE.id_for_label }}">Excluir</label>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if foto_form.ordem.errors %}<div class="text-danger small">{{ foto_form.ordem.errors }}</div>{% endif %}
+                        {% for hidden in foto_form.hidden_fields %}{{ hidden }}{% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="wizard-nav" data-nav hidden>
+        <button type="button" class="btn btn-outline-ink" data-voltar>Voltar</button>
+        <button type="button" class="btn btn-accent" data-continuar>Continuar</button>
+    </div>
+    <div class="wizard-final" data-final>
+        <button type="submit" class="btn btn-accent">Salvar veículo</button>
+        <a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-outline-ink">Cancelar</a>
+    </div>
 </form>
 
 {% include "dashboard/_modal_cortar_foto.html" %}
@@ -77,4 +145,5 @@
 {% block extra_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script src="{% static 'js/cortar_foto.js' %}"></script>
+<script src="{% static 'js/veiculo_wizard.js' %}"></script>
 {% endblock %}

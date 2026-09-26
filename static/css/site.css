@@ -1110,3 +1110,138 @@ html {
     display: none;
   }
 }
+
+/* --- Painel: cadastro de veículo em etapas (ver static/js/veiculo_wizard.js) --- */
+.wizard {
+  max-width: 760px;
+}
+.wizard-passos {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0;
+  margin: 0 0 1.75rem;
+  counter-reset: passo;
+}
+.wizard-passos li {
+  counter-increment: passo;
+  flex: 1 1 0;
+  min-width: 6.5rem;
+}
+.wizard-passos button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-top: 3px solid var(--line);
+  padding: 0.5rem 0.1rem 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.wizard-passos button::before {
+  content: counter(passo) ". ";
+  font-family: var(--font-mono);
+}
+.wizard-passos button:disabled {
+  opacity: 0.55;
+}
+.wizard-passos button:not(:disabled) {
+  cursor: pointer;
+}
+.wizard-passo--feito {
+  border-top-color: var(--accent) !important;
+  color: var(--ink) !important;
+}
+.wizard-passo--atual {
+  border-top-color: var(--ink) !important;
+  color: var(--ink) !important;
+  font-weight: 700;
+}
+.etapa-titulo {
+  font-size: 1.6rem;
+  margin: 0 0 1.25rem;
+  outline: none;
+}
+.etapa-campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+.etapa-campos .campo {
+  margin-bottom: 1rem;
+}
+.campo--titulo, .campo--descricao, .campo--destaque, .campo--disponivel, .campo--aceita_troca {
+  grid-column: 1 / -1;
+}
+.campo--destaque .form-text, .campo--aceita_troca .form-text, .campo--disponivel .form-text {
+  margin-top: 0;
+}
+.tipo-opcoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.tipo-opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 11rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+.tipo-opcao:hover {
+  border-color: var(--ink);
+}
+.tipo-opcao--escolhida {
+  border-color: var(--accent);
+  background: var(--paper-2);
+}
+.tipo-icone {
+  width: 4rem;
+  height: 4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.wizard-final {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.wizard--ativo .wizard-final {
+  margin-top: 0;
+}
+@media (max-width: 575.98px) {
+  .etapa-campos { grid-template-columns: 1fr; }
+  .tipo-opcao { min-height: 8.5rem; font-size: 1.35rem; }
+  .tipo-icone { width: 3rem; height: 3rem; }
+  /* No celular só a etapa atual mostra o nome; as outras ficam só com o número (cabe numa linha). */
+  .wizard-passos li { min-width: 0; }
+  .wizard-passos li:has(.wizard-passo--atual) { flex: 3 1 0; }
+  .wizard-passos button { font-size: 0.8rem; }
+  .wizard-passos button:not(.wizard-passo--atual) { font-size: 0; }
+  .wizard-passos button:not(.wizard-passo--atual)::before { font-size: 0.8rem; }
+  .wizard-nav .btn, .wizard-final .btn { flex: 1; }
+}

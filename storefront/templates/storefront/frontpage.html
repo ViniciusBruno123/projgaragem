@@ -8,7 +8,7 @@
 <div class="container">
     <div class="acoes-topo pt-4">
         <a href="#estoque" class="btn btn-accent">Ver estoque</a>
-        <a href="{% url 'storefront:enviar_avaliacao' garagem_slug=garagem.slug %}" class="btn btn-outline-ink">Vender ou trocar</a>
+        <a href="{% url 'storefront:enviar_avaliacao' garagem_slug=garagem.slug %}" class="btn btn-outline-ink">Vender ou Trocar</a>
     </div>
     <details class="filtro-mobile my-4" open{% if not filtro_ativo %} data-fechar-no-mobile{% endif %}>
     <summary class="btn btn-outline-ink w-100">Filtrar veículos{% if filtro_ativo %} (filtros ativos){% endif %}</summary>
