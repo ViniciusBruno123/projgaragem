@@ -333,6 +333,37 @@ a:hover {
   width: 1.6em;
   height: 1.6em;
 }
+/* Em telas de celular esses botões ficam fixos por cima do conteúdo o tempo todo (ao rolar a
+   página), então proporcionalmente pesam mais e atrapalham mais a leitura do que no desktop —
+   menores e mais transparentes aqui, sem sumir (ainda dá pra tocar neles). */
+@media (max-width: 575.98px) {
+  .social-flutuante .social-float,
+  .menu-lateral-toggle,
+  .pagina-inicial-flutuante {
+    opacity: 0.8;
+  }
+  .social-flutuante .social-float {
+    width: 2.3rem;
+    height: 2.3rem;
+  }
+  .menu-lateral-toggle {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+  .pagina-inicial-flutuante {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+  .social-flutuante .social-float .ico,
+  .menu-lateral-toggle .ico {
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .pagina-inicial-flutuante .ico {
+    width: 1.3em;
+    height: 1.3em;
+  }
+}
 /* Fundo sólido na cor de destaque da própria garagem (--accent, customizável por ela) — deixa
    o menu com a cara da vitrine em vez de um cinza neutro, e evita ter que decidir contraste
    contra uma foto de capa (não tem foto nenhuma atrás dele, é sempre a cor sólida). */

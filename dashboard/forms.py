@@ -189,7 +189,7 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
         model = Garagem
         fields = [
             'logo', 'ocultar_logo_capa', 'ocultar_nome_capa', 'telefone_whatsapp',
-            'endereco', 'latitude', 'longitude', 'google_place_id', 'horario_funcionamento',
+            'endereco', 'horario_funcionamento',
             'instagram_url', 'facebook_url', 'cor_destaque', 'cor_titulo', 'fonte_titulo',
             'taxa_juros_mensal_padrao',
         ]
@@ -213,10 +213,7 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
             'cor_titulo': forms.TextInput(attrs={'type': 'color', 'style': 'height: 2.5rem; padding: 0.25rem;'}),
             'fonte_titulo': SelectComPreviaDeFonte,
             'taxa_juros_mensal_padrao': forms.NumberInput(attrs={'step': '0.01', 'min': '0', 'placeholder': 'Ex: 1,99'}),
-            'endereco': forms.HiddenInput(),
-            'latitude': forms.HiddenInput(),
-            'longitude': forms.HiddenInput(),
-            'google_place_id': forms.HiddenInput(),
+            'endereco': forms.TextInput(attrs={'placeholder': 'Ex: Rua Coroados, 398 - Vila Amâncio, Catanduva'}),
         }
 
     def __init__(self, *args, **kwargs):

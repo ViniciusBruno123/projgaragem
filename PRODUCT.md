@@ -36,7 +36,7 @@ A plataforma é vendida pela **SPI Tech** ("Soluções digitais"), cuja identida
 O produto em si (vitrines das garagens e painel) mantém a identidade própria já existente (paper/ink + verde, Big Shoulders / Public Sans / IBM Plex Mono); cada garagem tem a sua cor. Nome comercial do produto: **Farol**, escolhido em 25/09/2026 "por ora" (provisório; ainda sem pesquisa no INPI nem domínio registrado), sempre apresentado como "Farol, por SPI Tech". Vive no setting `PLATAFORMA_NOME` (textos legais e mensagem de WhatsApp). Nome técnico do repositório: `projgaragem`. **O significado da sigla SPI nunca pode aparecer para clientes ou no repositório.**
 
 ## Evidence on Hand
-Sem clientes, depoimentos, números ou casos reais — **não fabricar**. Existem vitrines de demonstração (Motos do João e Central Motors) com logos e banners em `design_assets_demo/` e dados no banco local.
+Sem clientes, depoimentos, números ou casos reais — **não fabricar**. Existem vitrines de demonstração (Lanterna Motos e Central Motors) com logos e banners em `design_assets_demo/` e dados no banco local.
 
 ## Product Principles
 - Falar a língua do dono de garagem: estoque, proposta, WhatsApp — sem jargão de software.

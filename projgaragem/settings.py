@@ -199,15 +199,19 @@ PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')
 PLATAFORMA_WHATSAPP = re.sub(r'\D', '', env('PLATAFORMA_WHATSAPP', default=''))
 PLATAFORMA_WHATSAPP_2 = re.sub(r'\D', '', env('PLATAFORMA_WHATSAPP_2', default=''))
 PLATAFORMA_INSTAGRAM = env('PLATAFORMA_INSTAGRAM', default='')
-LANDING_DEMO_SLUG = env('LANDING_DEMO_SLUG', default='motos-do-joao')
+LANDING_DEMO_SLUG = env('LANDING_DEMO_SLUG', default='lanterna-motos')
 LANDING_DEMO_SLUG_2 = env('LANDING_DEMO_SLUG_2', default='central-motors-demo')
 
 # A vitrine de demonstração aparece dentro de um iframe da própria landing (mesma origem).
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 
-# E-mail
-if DEBUG:
+# E-mail. Em desenvolvimento (DEBUG=True) os e-mails NÃO são enviados: aparecem no terminal onde o
+# servidor roda (backend "console"). Para receber de verdade no desenvolvimento, coloque
+# ENVIAR_EMAIL_REAL=True no .env junto com os dados do SMTP (ver .env.example). Em produção o padrão
+# já é enviar de verdade.
+ENVIAR_EMAIL_REAL = env.bool('ENVIAR_EMAIL_REAL', default=not DEBUG)
+if not ENVIAR_EMAIL_REAL:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='contato@projgaragem.local')
 else:

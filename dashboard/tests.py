@@ -854,3 +854,28 @@ class CadastroDeVeiculoEmEtapasTests(TestCase):
         self.assertEqual(veiculo.tipo, 'carro')
         self.assertIsNone(veiculo.cilindrada)
         self.assertEqual(veiculo.portas, 4)
+
+
+class SeletorDeEnderecoDigitadoTests(TestCase):
+    """Endereço é um campo de texto simples (sem mapa nem chave paga): ver decisão em
+    revertar-mapa-de-endereco-para-campo-digitado (custo/reembolso do Google Maps)."""
+
+    def setUp(self):
+        dono = User.objects.create_user('dono_end', 'dono_end@example.com', 'senha12345')
+        Garagem.objects.create(
+            dono=dono, nome='Garagem End', slug='garagem-end', cidade='Catanduva',
+            telefone_whatsapp='5517999999999', email_contato='dono_end@example.com',
+        )
+        self.client.login(username='dono_end', password='senha12345')
+
+    def test_endereco_e_campo_de_texto_normal(self):
+        resp = self.client.get(reverse('dashboard:dados_garagem'))
+        self.assertContains(resp, 'name="endereco"')
+        self.assertNotContains(resp, 'maps.googleapis.com')
+        self.assertNotContains(resp, 'leaflet')
+
+    def test_endereco_digitado_gera_link_pelo_texto(self):
+        from tenants.models import Garagem as G
+        garagem = G.objects.get(slug='garagem-end')
+        garagem.endereco = 'Rua Coroados, 398 - Parque Flamingo, Catanduva'
+        self.assertIn('query=Rua%20Coroados%2C%20398', garagem.link_google_maps)

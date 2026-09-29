@@ -56,18 +56,15 @@ class Garagem(models.Model):
     endereco = models.CharField(max_length=200, blank=True)
     latitude = models.DecimalField(
         max_digits=10, decimal_places=7, null=True, blank=True,
-        help_text="Preenchida automaticamente ao definir o endereço no mapa (painel da garagem).",
+        help_text="Sem uso atualmente — sobra de uma versão anterior do painel, que tinha um seletor com mapa.",
     )
     longitude = models.DecimalField(
         max_digits=10, decimal_places=7, null=True, blank=True,
-        help_text="Preenchida automaticamente ao definir o endereço no mapa (painel da garagem).",
+        help_text="Sem uso atualmente — sobra de uma versão anterior do painel, que tinha um seletor com mapa.",
     )
     google_place_id = models.CharField(
         'ID do lugar no Google Maps', max_length=255, blank=True,
-        help_text=(
-            "Deixado por uma versão anterior do seletor de endereço (baseado no Google Maps); "
-            "quando presente, deixa o link \"Como chegar\" da vitrine mais preciso."
-        ),
+        help_text="Sem uso atualmente — sobra de uma versão anterior do painel, que tinha um seletor com mapa.",
     )
     horario_funcionamento = models.CharField(
         max_length=150, blank=True, help_text="Ex: Seg a Sex, 8h às 18h"
@@ -141,19 +138,16 @@ class Garagem(models.Model):
 
     @property
     def link_google_maps(self):
-        """Link "Como chegar" para o botão flutuante da vitrine — o mais preciso disponível:
-        place_id (escolhido pela busca do Google Maps) > coordenadas > texto do endereço."""
+        """Link "Como chegar" para o botão flutuante da vitrine: busca no Google Maps pelo texto
+        do endereço. (latitude/longitude/google_place_id são de uma versão anterior do painel,
+        que tinha um seletor com mapa; não são mais preenchidos, por isso não entram aqui —
+        senão o link ficaria preso a um ponto antigo mesmo depois de editar o endereço.)"""
         from urllib.parse import quote
 
-        if self.google_place_id:
-            consulta = quote(self.endereco or self.nome)
-            return f"https://www.google.com/maps/search/?api=1&query={consulta}&query_place_id={self.google_place_id}"
-        if self.latitude is not None and self.longitude is not None:
-            return f"https://www.google.com/maps/search/?api=1&query={self.latitude},{self.longitude}"
-        if self.endereco:
-            consulta = quote(f"{self.endereco}, {self.cidade}")
-            return f"https://www.google.com/maps/search/?api=1&query={consulta}"
-        return ''
+        if not self.endereco:
+            return ''
+        consulta = quote(f"{self.endereco}, {self.cidade}")
+        return f"https://www.google.com/maps/search/?api=1&query={consulta}"
 
     def clean(self):
         from django.core.exceptions import ValidationError

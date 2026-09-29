@@ -47,8 +47,8 @@ class LimiteDeVeiculosPorPlanoTests(TestCase):
 
 
 class LinkGoogleMapsTests(TestCase):
-    """Prioridade do link "Como chegar": place_id > coordenadas > texto do endereço.
-    Sem nenhum dos três, não há link (o botão flutuante nem aparece — ver storefront/tests.py)."""
+    """O link "Como chegar" busca sempre pelo texto do endereço. Sem endereço, não há link (o
+    botão flutuante nem aparece — ver storefront/tests.py)."""
 
     def _garagem(self, **extra):
         dono = User.objects.create_user(
@@ -59,25 +59,24 @@ class LinkGoogleMapsTests(TestCase):
             telefone_whatsapp='5517999999999', email_contato=dono.email, **extra,
         )
 
-    def test_sem_endereco_nem_coordenadas_nao_tem_link(self):
+    def test_sem_endereco_nao_tem_link(self):
         self.assertEqual(self._garagem().link_google_maps, '')
 
-    def test_com_endereco_de_texto_livre_busca_por_texto(self):
+    def test_com_endereco_busca_por_texto(self):
         garagem = self._garagem(endereco='Rua das Motos, 123', cidade='Catanduva')
         self.assertIn('query=Rua', garagem.link_google_maps)
         self.assertIn('Catanduva', garagem.link_google_maps)
-        self.assertNotIn('query_place_id', garagem.link_google_maps)
 
-    def test_com_coordenadas_usa_lat_lng(self):
-        garagem = self._garagem(endereco='Rua X', latitude='-21.1376000', longitude='-48.9756000')
-        self.assertIn('query=-21.1376000,-48.9756000', garagem.link_google_maps)
-
-    def test_com_place_id_usa_place_id(self):
+    def test_ignora_coordenadas_e_place_id_antigos(self):
+        # Lixo deixado por uma versão anterior do painel (seletor com mapa, removido): o link
+        # segue o texto atual do endereço, nunca coordenadas/place_id que ficaram desatualizados.
         garagem = self._garagem(
-            endereco='Rua X', latitude='-21.1376000', longitude='-48.9756000',
-            google_place_id='ChIJabc123',
+            endereco='Rua Nova, 500', cidade='Catanduva',
+            latitude='-21.1376000', longitude='-48.9756000', google_place_id='ChIJabc123',
         )
-        self.assertIn('query_place_id=ChIJabc123', garagem.link_google_maps)
+        self.assertIn('query=Rua%20Nova%2C%20500', garagem.link_google_maps)
+        self.assertNotIn('query_place_id', garagem.link_google_maps)
+        self.assertNotIn('-21.1376000', garagem.link_google_maps)
 
 
 class FormatarTelefoneTests(TestCase):
