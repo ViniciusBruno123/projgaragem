@@ -48,6 +48,19 @@
         });
     }
 
+    // Celular do herói: o iframe sempre renderiza a 360x800 (20:9) e é reduzido para caber na
+    // moldura — sem isso, o iframe herdava a largura da moldura (que muda com a altura da tela)
+    // e a vitrine renderizava um layout mobile diferente do que aparece num celular de verdade.
+    var celular = document.querySelector('.lp-celular');
+    var iframeHero = document.getElementById('lp-iframe');
+    var ajustarHero = function () {
+        if (iframeHero) iframeHero.style.transform = 'scale(' + (celular.clientWidth / 360) + ')';
+    };
+    if (celular && iframeHero) {
+        ajustarHero();
+        window.addEventListener('resize', ajustarHero);
+    }
+
     // Vitrines em miniatura: o iframe tem a largura de um celular (360px) e é reduzido para
     // caber na moldura, mantendo o layout de celular da vitrine.
     var minis = Array.prototype.slice.call(document.querySelectorAll('.lp-mini'));

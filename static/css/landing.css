@@ -304,10 +304,15 @@ html:has(.lp) {
   font-family: var(--font-body);
 }
 .lp-tela iframe {
-  width: 100%;
-  height: 100%;
+  /* Tamanho fixo (360x800, 20:9) e depois reduzido por transform (ver landing.js) — assim a
+     vitrine sempre renderiza como se estivesse numa tela de verdade, com o mesmo layout mobile
+     que aparece no celular do visitante, e não um recorte mais estreito conforme a moldura muda
+     de tamanho. */
+  width: 360px;
+  height: 800px;
   border: 0;
   display: block;
+  transform-origin: 0 0;
 }
 .lp-tela-vazia {
   padding: 2rem 1.5rem;
