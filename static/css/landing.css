@@ -284,9 +284,11 @@ html:has(.lp) {
   gap: 1.25rem;
 }
 .lp-celular {
+  /* Largura calculada para nunca passar de 78% da altura da tela, sempre em 20:9 —
+     é a proporção que definimos como a resolução do celular de demonstração. */
   position: relative;
-  width: min(300px, 100%);
-  height: clamp(560px, 76vh, 640px);
+  width: min(330px, calc(78vh * 9 / 20), 100%);
+  aspect-ratio: 9 / 20;
   background: #05070a;
   border: 9px solid #05070a;
   border-radius: 36px;
@@ -789,7 +791,7 @@ html:has(.lp) {
   .lp-hero { padding-bottom: 3.5rem; }
   .lp-lados { display: none; }
   .lp-acoes { margin-bottom: 0; }
-  .lp-celular { height: min(640px, 80vh); }
+  .lp-celular { width: min(330px, calc(80vh * 9 / 20), 100%); }
 }
 @media (max-width: 767.98px) {
   .lp-secao, .lp-contato { padding: 3.75rem 0; }
