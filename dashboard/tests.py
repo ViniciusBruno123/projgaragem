@@ -2,6 +2,7 @@ import shutil
 import tempfile
 from datetime import date
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
 from django.test import TestCase, override_settings
@@ -543,7 +544,7 @@ class LoginAdminComCodigoTests(TestCase):
     def test_manda_o_codigo_para_o_email_configurado(self):
         self._errar_senha_ate_bloquear()
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].to, ['spitechfarol@gmail.com'])
+        self.assertEqual(mail.outbox[0].to, [settings.EMAIL_CODIGO_ACESSO_ADMIN])
         self.assertIn('admin_seguro', mail.outbox[0].body)
 
     def test_nao_reenvia_codigo_enquanto_o_anterior_ainda_vale(self):
