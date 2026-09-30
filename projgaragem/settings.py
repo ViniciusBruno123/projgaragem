@@ -288,7 +288,7 @@ SENTRY_DSN = env('SENTRY_DSN', default='')
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
-    from sentry_sdk.integrations.logging import LoggingIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration, ignore_logger
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
@@ -300,3 +300,7 @@ if SENTRY_DSN:
         traces_sample_rate=env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.0),
         send_default_pii=False,  # dados de veículo/proposta são de terceiros (LGPD); não envia dados pessoais
     )
+    # Bot batendo direto no IP do servidor (não no domínio) sempre cai em DisallowedHost — o
+    # Django já bloqueia certo (só aceita os hosts em ALLOWED_HOSTS), não é um erro de verdade,
+    # é ruído de internet. Sem isso, cada bot desses manda um e-mail de alerta.
+    ignore_logger('django.security.DisallowedHost')
