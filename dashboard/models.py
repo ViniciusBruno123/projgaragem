@@ -20,3 +20,17 @@ class TentativaLoginFalha(models.Model):
 
     def __str__(self):
         return f"{self.usuario or '(sem usuário)'} — {self.ip} em {self.criado_em:%d/%m/%Y %H:%M}"
+
+
+class CodigoAcessoAdmin(models.Model):
+    """Código avulso mandado por e-mail para liberar o login do /admin/ depois de várias
+    tentativas erradas — ver dashboard/security.py. Some (fica inválido) depois de usado ou
+    de expirar, o que vier primeiro."""
+
+    usuario = models.CharField(max_length=150, db_index=True)
+    codigo = models.CharField(max_length=6)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Código de acesso do admin'
+        verbose_name_plural = 'Códigos de acesso do admin'

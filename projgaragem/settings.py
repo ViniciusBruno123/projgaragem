@@ -185,6 +185,12 @@ MERCADOPAGO_ACCESS_TOKEN = env('MERCADOPAGO_ACCESS_TOKEN', default='')
 MERCADOPAGO_WEBHOOK_SECRET = env('MERCADOPAGO_WEBHOOK_SECRET', default='')
 PLATFORM_ADMIN_EMAIL = env('PLATFORM_ADMIN_EMAIL')
 DIAS_ATRASO_PARA_AVISO_ADMIN = env.int('DIAS_ATRASO_PARA_AVISO_ADMIN', default=5)
+
+# Depois de várias tentativas erradas no login do /admin/ (Django admin, não o /painel/ de cada
+# garagem), a próxima tentativa exige um código mandado por e-mail para este endereço — ver
+# dashboard/security.py. Caixa compartilhada entre os sócios, de propósito (não o e-mail pessoal
+# do PLATFORM_ADMIN_EMAIL).
+EMAIL_CODIGO_ACESSO_ADMIN = env('EMAIL_CODIGO_ACESSO_ADMIN', default='spitechfarol@gmail.com')
 PLANO_MENSALIDADE_PADRAO = env('PLANO_MENSALIDADE_PADRAO', default='99.90')
 
 # Usada no simulador só se a garagem não informar taxa e o Banco Central nunca tiver sido consultado
@@ -193,6 +199,10 @@ TAXA_JUROS_ESTIMADA = Decimal('2.00')
 # Identificação da plataforma nos textos legais (termos de uso e privacidade)
 PLATAFORMA_NOME = env('PLATAFORMA_NOME', default='Farol')
 PLATAFORMA_CNPJ = env('PLATAFORMA_CNPJ', default='')
+# E-mail de contato mostrado nos Termos de Uso/Privacidade (dúvidas, pedidos de dados, avisar de
+# acesso indevido) — caixa compartilhada dos sócios, de propósito, diferente do
+# PLATFORM_ADMIN_EMAIL (esse é só para os alertas internos: erro 500, garagem atrasada).
+PLATAFORMA_EMAIL_CONTATO = env('PLATAFORMA_EMAIL_CONTATO', default='spitechfarol@gmail.com')
 
 # Landing page (raiz do site): WhatsApp dos sócios (só dígitos com DDI, ex: 5517999999999; em
 # branco, o botão da landing leva ao formulário) e a garagem cuja vitrine aparece no celular.

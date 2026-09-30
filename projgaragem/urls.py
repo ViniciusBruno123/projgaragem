@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
+from dashboard.security import AdminLoginComCodigoForm
 from storefront.sitemaps import GaragemSitemap, VeiculoSitemap
 from tenants.views import termos_uso
 
@@ -16,6 +17,10 @@ sitemaps = {
     'garagens': GaragemSitemap,
     'veiculos': VeiculoSitemap,
 }
+
+# Login do /admin/ (Django admin) com trava extra por e-mail depois de tentativas demais —
+# ver dashboard/security.py.
+admin.site.login_form = AdminLoginComCodigoForm
 
 urlpatterns = [
     path('admin/', admin.site.urls),

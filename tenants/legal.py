@@ -10,6 +10,6 @@ def contexto_plataforma():
     return {
         'plataforma_nome': settings.PLATAFORMA_NOME,
         'plataforma_cnpj': settings.PLATAFORMA_CNPJ,
-        'plataforma_email': settings.PLATFORM_ADMIN_EMAIL,
+        'plataforma_email': settings.PLATAFORMA_EMAIL_CONTATO,
         'atualizado_em': ATUALIZADO_EM,
     }

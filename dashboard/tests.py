@@ -14,7 +14,7 @@ from tenants.models import Banner, Garagem
 from vehicles.models import FotoVeiculo, Veiculo
 from vehicles.tests import gerar_foto
 
-from .models import TentativaLoginFalha
+from .models import CodigoAcessoAdmin, TentativaLoginFalha
 from .security import LIMITE_POR_USUARIO
 
 
@@ -510,6 +510,66 @@ class LimiteDeTentativasDeLoginTests(TestCase):
         resp = self.client.post(self.url, {'username': 'dono_seguro', 'password': 'senha-correta-123'})
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(TentativaLoginFalha.objects.filter(usuario='dono_seguro').count(), 0)
+
+
+class LoginAdminComCodigoTests(TestCase):
+    """O /admin/ (Django admin da plataforma) usa o mesmo limite de tentativas do /painel/, mas
+    em vez de só bloquear, passa a exigir um código mandado por e-mail — ver dashboard/security.py
+    (AdminLoginComCodigoForm)."""
+
+    def setUp(self):
+        User.objects.create_superuser('admin_seguro', 'admin_seguro@example.com', 'senha-correta-123')
+        self.url = reverse('admin:login')
+
+    def _errar_senha_ate_bloquear(self):
+        # LIMITE_POR_USUARIO tentativas registram as falhas; a seguinte (ainda errada) é a que
+        # encontra o bloqueio e dispara o código por e-mail.
+        for _ in range(LIMITE_POR_USUARIO + 1):
+            self.client.post(self.url, {'username': 'admin_seguro', 'password': 'errada'})
+
+    def test_login_com_senha_certa_funciona_sem_precisar_de_codigo(self):
+        resp = self.client.post(self.url, {'username': 'admin_seguro', 'password': 'senha-correta-123'})
+        self.assertEqual(resp.status_code, 302)
+
+    def test_apos_tentativas_demais_a_senha_certa_sozinha_nao_basta(self):
+        self._errar_senha_ate_bloquear()
+        mail.outbox.clear()
+
+        resp = self.client.post(self.url, {'username': 'admin_seguro', 'password': 'senha-correta-123'})
+        self.assertContains(resp, 'Mandamos um código de acesso por e-mail')
+        # Continua sem sessão autenticada.
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_manda_o_codigo_para_o_email_configurado(self):
+        self._errar_senha_ate_bloquear()
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['spitechfarol@gmail.com'])
+        self.assertIn('admin_seguro', mail.outbox[0].body)
+
+    def test_nao_reenvia_codigo_enquanto_o_anterior_ainda_vale(self):
+        self._errar_senha_ate_bloquear()
+        self.assertEqual(len(mail.outbox), 1)
+        self.client.post(self.url, {'username': 'admin_seguro', 'password': 'ainda errada'})
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_senha_certa_com_codigo_certo_consegue_entrar(self):
+        self._errar_senha_ate_bloquear()
+        codigo = CodigoAcessoAdmin.objects.get(usuario='admin_seguro').codigo
+
+        resp = self.client.post(self.url, {
+            'username': 'admin_seguro', 'password': 'senha-correta-123', 'codigo_acesso': codigo,
+        })
+        self.assertEqual(resp.status_code, 302)
+        self.assertFalse(CodigoAcessoAdmin.objects.filter(usuario='admin_seguro').exists())
+
+    def test_codigo_errado_continua_bloqueado(self):
+        self._errar_senha_ate_bloquear()
+
+        resp = self.client.post(self.url, {
+            'username': 'admin_seguro', 'password': 'senha-correta-123', 'codigo_acesso': '000000',
+        })
+        self.assertContains(resp, 'Mandamos um código de acesso por e-mail')
+        self.assertNotIn('_auth_user_id', self.client.session)
 
 
 class RecuperarSenhaTests(TestCase):
