@@ -132,12 +132,14 @@
                             </div>
                         </div>
 
-                        <div class="lp-seletor" role="tablist" aria-label="Ver o sistema pelo lado de quem">
-                            <button type="button" role="tab" id="aba-cliente" aria-selected="true" aria-controls="lado-cliente" data-lado="cliente" data-legenda="Vitrine de demonstração">O cliente vê</button>
-                            {% if simulacao_url %}<button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" data-legenda="Vitrine de demonstração" tabindex="-1">Ele simula</button>{% endif %}
-                            <button type="button" role="tab" id="aba-dono" aria-selected="false" aria-controls="lado-dono" data-lado="dono" data-legenda="Painel com dados de demonstração" tabindex="-1">Você recebe</button>
+                        <div class="lp-controles">
+                            <div class="lp-seletor" role="tablist" aria-label="Ver o sistema pelo lado de quem">
+                                <button type="button" role="tab" id="aba-cliente" aria-selected="true" aria-controls="lado-cliente" data-lado="cliente" data-legenda="Vitrine de demonstração">O cliente vê</button>
+                                {% if simulacao_url %}<button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" data-legenda="Vitrine de demonstração" tabindex="-1">Ele simula</button>{% endif %}
+                                <button type="button" role="tab" id="aba-dono" aria-selected="false" aria-controls="lado-dono" data-lado="dono" data-legenda="Painel com dados de demonstração" tabindex="-1">Você recebe</button>
+                            </div>
+                            <p class="lp-legenda" id="lp-legenda" aria-live="polite">Vitrine de demonstração</p>
                         </div>
-                        <p class="lp-legenda" id="lp-legenda" aria-live="polite">Vitrine de demonstração</p>
                     </div>
                 </div>
             </div>

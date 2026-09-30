@@ -494,10 +494,44 @@ html:has(.lp) {
   background: var(--spi-azul);
   color: #fff;
 }
+.lp-controles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
 .lp-legenda {
   margin: -0.5rem 0 0;
   font-size: 0.9rem;
   color: var(--spi-nevoa-suave);
+}
+
+/* A partir do lg, as abas saem de baixo do celular e vão para o lado — sobra altura pra tela
+   crescer (mesma proporção 20:9), que é o que fica mais visível na tela do computador. */
+@media (min-width: 992px) {
+  .lp-palco {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .lp-celular {
+    width: min(360px, calc(82vh * 9 / 20), 100%);
+  }
+  .lp-controles {
+    align-items: flex-start;
+    max-width: 8rem;
+  }
+  .lp-seletor {
+    flex-direction: column;
+    width: 100%;
+  }
+  .lp-seletor button {
+    width: 100%;
+    min-width: 0;
+  }
+  .lp-legenda {
+    margin: 0;
+  }
 }
 
 /* --- Seção clara (Névoa): cada garagem com a sua cara --- */
