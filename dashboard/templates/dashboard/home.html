@@ -5,8 +5,12 @@
 {% block painel_content %}
 <h1>Olá, {{ garagem.nome }}</h1>
 <p>
-    Você tem <strong>{{ total_veiculos }}</strong> de <strong>{{ limite_veiculos }}</strong> veículos do seu plano
-    ({{ garagem.get_plano_display }}) cadastrados.
+    {% if limite_veiculos %}
+        Você tem <strong>{{ total_veiculos }}</strong> de <strong>{{ limite_veiculos }}</strong> veículos do seu plano
+        ({{ garagem.get_plano_display }}) cadastrados.
+    {% else %}
+        Você tem <strong>{{ total_veiculos }}</strong> veículos cadastrados. Seu plano ({{ garagem.get_plano_display }}) não tem limite de estoque.
+    {% endif %}
 </p>
 <a href="{% url 'dashboard:veiculo_list' %}" class="btn btn-accent">Gerenciar veículos</a>
 {% endblock %}

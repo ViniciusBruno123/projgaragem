@@ -51,7 +51,7 @@ class RespeitaLimiteDoPlanoMixin:
 
     def dispatch(self, request, *args, **kwargs):
         limite = self.garagem.limite_veiculos
-        if self.garagem.veiculos.count() >= limite:
+        if limite is not None and self.garagem.veiculos.count() >= limite:
             messages.warning(
                 request,
                 f"Seu plano permite até {limite} veículos cadastrados. "

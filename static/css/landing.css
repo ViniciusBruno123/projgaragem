@@ -285,11 +285,11 @@ html:has(.lp) {
 }
 .lp-celular {
   position: relative;
-  width: min(360px, 100%);
-  height: clamp(520px, 72vh, 660px);
+  width: min(300px, 100%);
+  height: clamp(560px, 76vh, 640px);
   background: #05070a;
-  border: 10px solid #05070a;
-  border-radius: 40px;
+  border: 9px solid #05070a;
+  border-radius: 36px;
   box-shadow: 0 40px 60px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px #2a3240;
 }
 .lp-tela {
@@ -467,15 +467,16 @@ html:has(.lp) {
   gap: 3px;
 }
 .lp-seletor button {
-  min-width: 7.5rem;
-  padding: 0.65rem 1rem;
+  min-width: 5.75rem;
+  padding: 0.6rem 0.65rem;
   background: transparent;
   color: var(--spi-nevoa);
   border: 0;
   border-radius: 2px;
   font-family: var(--lp-texto);
   font-weight: 600;
-  font-size: 0.98rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
   cursor: pointer;
   transition: background 200ms var(--lp-ease), color 200ms var(--lp-ease);
 }
@@ -617,6 +618,50 @@ html:has(.lp) {
   line-height: 1.55;
   color: #e6ecfb;
   max-width: 24rem;
+}
+
+/* --- Perguntas frequentes: Névoa, acordeão nativo (details/summary) --- */
+.lp-faq {
+  display: grid;
+  max-width: 46rem;
+}
+.lp-faq details {
+  border-top: 1px solid #b9c0ca;
+  padding: 1.1rem 0;
+}
+.lp-faq details:last-child {
+  border-bottom: 1px solid #b9c0ca;
+}
+.lp-faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  font-family: var(--lp-titulo);
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+.lp-faq summary::-webkit-details-marker {
+  display: none;
+}
+.lp-faq summary::after {
+  content: "+";
+  flex: none;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--spi-azul);
+  transition: transform 200ms var(--lp-ease);
+}
+.lp-faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+.lp-faq p {
+  margin: 0.75rem 0 0;
+  max-width: 40rem;
+  line-height: 1.55;
+  color: var(--spi-grafite);
 }
 
 /* --- Contato: Asfalto --- */

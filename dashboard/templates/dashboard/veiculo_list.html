@@ -6,7 +6,10 @@
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
         <h1 class="mb-0">Meus veículos</h1>
-        <p class="text-muted small mb-0">{{ total_veiculos }} de {{ limite_veiculos }} veículos do seu plano.</p>
+        <p class="text-muted small mb-0">
+            {% if limite_veiculos %}{{ total_veiculos }} de {{ limite_veiculos }} veículos do seu plano.
+            {% else %}{{ total_veiculos }} veículos — seu plano não tem limite.{% endif %}
+        </p>
     </div>
     {% if no_limite %}
         <span class="btn btn-outline-ink disabled" tabindex="-1" aria-disabled="true"

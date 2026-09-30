@@ -191,7 +191,6 @@ DIAS_ATRASO_PARA_AVISO_ADMIN = env.int('DIAS_ATRASO_PARA_AVISO_ADMIN', default=5
 # dashboard/security.py. Caixa compartilhada entre os sócios, de propósito (não o e-mail pessoal
 # do PLATFORM_ADMIN_EMAIL).
 EMAIL_CODIGO_ACESSO_ADMIN = env('EMAIL_CODIGO_ACESSO_ADMIN', default='spitechfarol@gmail.com')
-PLANO_MENSALIDADE_PADRAO = env('PLANO_MENSALIDADE_PADRAO', default='99.90')
 
 # Usada no simulador só se a garagem não informar taxa e o Banco Central nunca tiver sido consultado
 TAXA_JUROS_ESTIMADA = Decimal('2.00')

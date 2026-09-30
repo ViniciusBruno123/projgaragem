@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -36,14 +38,19 @@ class LimiteDeVeiculosPorPlanoTests(TestCase):
             telefone_whatsapp='5517999999999', email_contato=dono.email, **extra,
         )
 
-    def test_plano_padrao_e_basico_com_limite_de_50(self):
+    def test_plano_padrao_e_basico_com_limite_de_100(self):
         garagem = self._garagem()
         self.assertEqual(garagem.plano, Garagem.Plano.BASICO)
-        self.assertEqual(garagem.limite_veiculos, 50)
+        self.assertEqual(garagem.limite_veiculos, 100)
 
     def test_limites_dos_outros_planos(self):
-        self.assertEqual(self._garagem(plano=Garagem.Plano.INTERMEDIARIO).limite_veiculos, 100)
-        self.assertEqual(self._garagem(plano=Garagem.Plano.AVANCADO).limite_veiculos, 300)
+        self.assertEqual(self._garagem(plano=Garagem.Plano.INTERMEDIARIO).limite_veiculos, 500)
+        self.assertIsNone(self._garagem(plano=Garagem.Plano.AVANCADO).limite_veiculos)
+
+    def test_precos_dos_planos(self):
+        self.assertEqual(self._garagem().preco_mensal, Decimal('200.00'))
+        self.assertEqual(self._garagem(plano=Garagem.Plano.INTERMEDIARIO).preco_mensal, Decimal('300.00'))
+        self.assertIsNone(self._garagem(plano=Garagem.Plano.AVANCADO).preco_mensal)
 
 
 class LinkGoogleMapsTests(TestCase):

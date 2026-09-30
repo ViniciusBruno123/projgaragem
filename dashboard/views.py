@@ -105,7 +105,7 @@ class VeiculoListView(GaragemRequiredMixin, ListView):
         ctx['filtro_ativo'] = any(self.request.GET.values())
         ctx['total_veiculos'] = self.garagem.veiculos.count()
         ctx['limite_veiculos'] = self.garagem.limite_veiculos
-        ctx['no_limite'] = ctx['total_veiculos'] >= ctx['limite_veiculos']
+        ctx['no_limite'] = ctx['limite_veiculos'] is not None and ctx['total_veiculos'] >= ctx['limite_veiculos']
         return ctx
 
 

@@ -19,13 +19,18 @@ class Garagem(models.Model):
         INTERMEDIARIO = 'intermediario', 'Intermediário'
         AVANCADO = 'avancado', 'Avançado'
 
-    # Quantos veículos cada plano permite cadastrar (ver Garagem.limite_veiculos). Mudar o
-    # plano é feito pelo administrador no /admin/, junto com o valor da mensalidade cobrada
-    # — não há hoje uma tabela de preço por plano, só o limite de estoque.
+    # Quantos veículos cada plano permite cadastrar (ver Garagem.limite_veiculos) e o valor da
+    # mensalidade (ver Garagem.preco_mensal). Mudar o plano é feito pelo administrador no
+    # /admin/. None = sem limite / sem preço fixo (o Avançado é "a combinar" com o cliente).
     LIMITE_VEICULOS_POR_PLANO = {
-        Plano.BASICO: 50,
-        Plano.INTERMEDIARIO: 100,
-        Plano.AVANCADO: 300,
+        Plano.BASICO: 100,
+        Plano.INTERMEDIARIO: 500,
+        Plano.AVANCADO: None,
+    }
+    PRECO_POR_PLANO = {
+        Plano.BASICO: Decimal('200.00'),
+        Plano.INTERMEDIARIO: Decimal('300.00'),
+        Plano.AVANCADO: None,
     }
 
     class FonteTitulo(models.TextChoices):
@@ -126,7 +131,13 @@ class Garagem(models.Model):
 
     @property
     def limite_veiculos(self):
+        """None = sem limite (plano Avançado)."""
         return self.LIMITE_VEICULOS_POR_PLANO[self.plano]
+
+    @property
+    def preco_mensal(self):
+        """None = "a combinar" (plano Avançado, sem valor fixo)."""
+        return self.PRECO_POR_PLANO[self.plano]
 
     @property
     def logo_visivel_na_capa(self):
