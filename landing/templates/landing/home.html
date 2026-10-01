@@ -45,7 +45,7 @@
             </div>
 
             <div class="row align-items-start gy-5 gx-lg-5 lp-hero-corpo">
-                <div class="col-lg-7">
+                <div class="col-lg-6">
                     <span class="lp-barra" aria-hidden="true"></span>
                     <h1 id="lp-titulo">Mais visto.<br>Mais procurado.<br><em>Mais vendido.</em></h1>
                     <p class="lp-lead">
@@ -109,7 +109,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-5">
+                <div class="col-lg-6">
                     <div class="lp-palco" data-lado-ativo="cliente">
                         <div class="lp-celular">
                             <div class="lp-tela lp-tela--vitrine">
@@ -150,15 +150,14 @@
 
                         <div class="lp-controles">
                             <div class="lp-seletor" role="tablist" aria-label="Ver o sistema pelo lado de quem">
-                                <button type="button" role="tab" id="aba-cliente" aria-selected="true" aria-controls="lado-cliente" data-lado="cliente" data-legenda="Vitrine de demonstração">O cliente vê</button>
+                                <button type="button" role="tab" id="aba-cliente" aria-selected="true" aria-controls="lado-cliente" data-lado="cliente">O cliente vê</button>
                                 {% if simulacao_url %}
-                                <button type="button" role="tab" id="aba-abre" aria-selected="false" aria-controls="lado-abre" data-lado="abre" data-legenda="Vitrine de demonstração" tabindex="-1">Ele abre o anúncio</button>
-                                <button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" data-legenda="Vitrine de demonstração" tabindex="-1">Ele simula</button>
-                                <button type="button" role="tab" id="aba-propoe" aria-selected="false" aria-controls="lado-propoe" data-lado="propoe" data-legenda="Vitrine de demonstração" tabindex="-1">Ele propõe</button>
+                                <button type="button" role="tab" id="aba-abre" aria-selected="false" aria-controls="lado-abre" data-lado="abre" tabindex="-1">Ele abre o anúncio</button>
+                                <button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" tabindex="-1">Ele simula</button>
+                                <button type="button" role="tab" id="aba-propoe" aria-selected="false" aria-controls="lado-propoe" data-lado="propoe" tabindex="-1">Ele propõe</button>
                                 {% endif %}
-                                <button type="button" role="tab" id="aba-dono" aria-selected="false" aria-controls="lado-dono" data-lado="dono" data-legenda="Painel com dados de demonstração" tabindex="-1">Você recebe</button>
+                                <button type="button" role="tab" id="aba-dono" aria-selected="false" aria-controls="lado-dono" data-lado="dono" tabindex="-1">Você recebe</button>
                             </div>
-                            <p class="lp-legenda" id="lp-legenda" aria-live="polite">Vitrine de demonstração</p>
                         </div>
                     </div>
                 </div>

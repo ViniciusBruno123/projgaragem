@@ -1,13 +1,13 @@
-// Landing page: seletor "O cliente vê" / "Ele simula" / "Você recebe". Troca o celular (vitrine ao
-// vivo, na home ou na página de um veículo, ou o painel de demonstração), a lista de texto e a
-// legenda. Sem JS a página continua legível: fica só o lado do cliente.
+// Landing page: seletor "O cliente vê" / "Ele abre o anúncio" / "Ele simula" / "Ele propõe" /
+// "Você recebe". Troca o celular (vitrine ao vivo, na home, no anúncio, no simulador ou no
+// formulário de proposta, ou o painel de demonstração) e a lista de texto. Sem JS a página
+// continua legível: fica só o lado do cliente.
 (function () {
     var palco = document.querySelector('.lp-palco');
     if (palco) {
         var abas = Array.prototype.slice.call(palco.querySelectorAll('[role="tab"]'));
         var telaPainel = palco.querySelector('.lp-tela--painel');
         var iframe = document.getElementById('lp-iframe');
-        var legenda = document.getElementById('lp-legenda');
 
         var mostrar = function (lado, focar) {
             palco.setAttribute('data-lado-ativo', lado);
@@ -29,7 +29,6 @@
                     lista.hidden = !ativa;
                     lista.classList.add('is-troca');
                 }
-                if (ativa && legenda) legenda.textContent = aba.getAttribute('data-legenda');
                 if (ativa && focar) aba.focus();
             });
         };

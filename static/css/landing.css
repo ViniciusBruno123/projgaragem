@@ -219,7 +219,7 @@ html:has(.lp) {
 .lp-hero h1 {
   /* 700 (não os 600 do manual): o slogan em caixa alta fica igual ao dos posts do Instagram. */
   font-weight: 700;
-  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-size: clamp(2.6rem, 6vw, 4.75rem);
   line-height: 1.02;
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -500,19 +500,13 @@ html:has(.lp) {
   align-items: center;
   gap: 0.75rem;
 }
-.lp-legenda {
-  margin: -0.5rem 0 0;
-  font-size: 0.9rem;
-  color: var(--spi-nevoa-suave);
-}
-
 /* A partir do lg, as abas saem de baixo do celular e vão para o lado — sobra altura pra tela
    crescer (mesma proporção 20:9), que é o que fica mais visível na tela do computador. */
 @media (min-width: 992px) {
   .lp-palco {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
   }
   .lp-celular {
     /* Corte + zoom, não um celular maior de verdade: a altura VISÍVEL continua presa aos
@@ -529,7 +523,8 @@ html:has(.lp) {
   }
   .lp-controles {
     align-items: flex-start;
-    max-width: 8rem;
+    flex: 1 1 5.5rem;
+    max-width: 11rem;
   }
   .lp-seletor {
     flex-direction: column;
@@ -538,9 +533,6 @@ html:has(.lp) {
   .lp-seletor button {
     width: 100%;
     min-width: 0;
-  }
-  .lp-legenda {
-    margin: 0;
   }
 }
 
