@@ -50,11 +50,16 @@
                     {% if banner_form.instance.pk and banner_form.instance.imagem %}
                         <div class="foto-form-atual foto-form-atual--banner">
                             <img src="{{ banner_form.instance.imagem.url }}" alt="Banner atual">
+                            {% if banner_form.instance.imagem_retrato %}
+                                <img src="{{ banner_form.instance.imagem_retrato.url }}" alt="Banner atual (celular em pé)" class="foto-form-atual-retrato">
+                            {% endif %}
                             <span class="text-muted small">Banner atual — envie outro só se quiser trocar.</span>
                         </div>
                     {% endif %}
                     {{ banner_form.imagem }}
+                    {{ banner_form.imagem_retrato }}
                     {% if banner_form.imagem.errors %}<div class="text-danger small">{{ banner_form.imagem.errors }}</div>{% endif %}
+                    {% if banner_form.imagem_retrato.errors %}<div class="text-danger small">{{ banner_form.imagem_retrato.errors }}</div>{% endif %}
 
                     <div class="foto-form-linha">
                         <div class="foto-form-ordem">

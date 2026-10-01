@@ -35,7 +35,7 @@
     {% if banners %}
         <div class="site-header-banners" data-intervalo="3000">
             {% for banner in banners %}
-                <div class="site-header-banner-camada{% if forloop.first %} active{% endif %}" style="background-image: url('{{ banner.imagem.url }}');"></div>
+                <div class="site-header-banner-camada{% if forloop.first %} active{% endif %}" style="--bg-paisagem: url('{{ banner.imagem.url }}');{% if banner.imagem_retrato %} --bg-retrato: url('{{ banner.imagem_retrato.url }}');{% endif %}"></div>
             {% endfor %}
         </div>
         <div class="site-header-scrim"></div>

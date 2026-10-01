@@ -252,20 +252,37 @@ class GaragemForm(ImagemOtimizadaMixin, forms.ModelForm):
 class BannerForm(ImagemOtimizadaMixin, forms.ModelForm):
     class Meta:
         model = Banner
-        fields = ['imagem', 'ordem']
+        fields = ['imagem', 'imagem_retrato', 'ordem']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Sempre cortada (cover) numa faixa larga — a altura real do cabeçalho varia com a
-        # largura da tela (não é uma proporção fixa), então 5:1 é uma aproximação: fica perto
-        # do formato de um notebook comum sem obrigar o cabeçalho a virar uma faixa enorme; o
-        # "cover" ainda ajusta um pouco em cada tela (ver static/css/site.css, .site-header--capa).
-        self.fields['imagem'].widget = forms.FileInput(attrs={'accept': 'image/*', 'data-cortar': '5/1'})
+        # Proporção travada em 5:1, sempre (ver static/css/site.css, .site-header--capa) — sem
+        # isso o "cover" cortava uma parte diferente do banner em cada tela. O campo
+        # imagem_retrato (corte à parte, mais alto) é pareado a este via data-cortar-par: ao
+        # confirmar o corte de `imagem`, static/js/cortar_foto.js abre em seguida o corte do
+        # celular em pé, da MESMA foto enviada, sem pedir um segundo upload.
+        self.fields['imagem'].widget = forms.FileInput(attrs={
+            'accept': 'image/*', 'data-cortar': '5/1', 'data-cortar-par': self['imagem_retrato'].auto_id,
+            'data-cortar-titulo': 'Corte para computador e celular deitado',
+        })
         self.fields['imagem'].widget.attrs.setdefault('class', 'form-control')
+        # Proporção do corte vertical: ver static/css/site.css, @media (max-width: 575.98px) —
+        # mais alta que 5:1 pra caber a logo e o nome sem cortar num celular em pé. Campo
+        # escondido (classe do Bootstrap): quem envia é o corte em sequência de `imagem`, não
+        # um segundo seletor de arquivo — ver static/js/cortar_foto.js. Sem JS (Cropper/CDN fora
+        # do ar), fica vazio e a vitrine usa `imagem` também no celular em pé (mesmo corte de hoje).
+        self.fields['imagem_retrato'].widget = forms.FileInput(attrs={
+            'accept': 'image/*', 'data-cortar': '2/1', 'data-cortar-titulo': 'Corte para celular em pé',
+            'class': 'visually-hidden', 'tabindex': '-1', 'aria-hidden': 'true',
+        })
+        self.fields['imagem_retrato'].required = False
         self.fields['ordem'].widget.attrs.setdefault('class', 'form-control form-control-sm input-ordem')
 
     def clean_imagem(self):
         return self._limpar_imagem_otimizada('imagem')
+
+    def clean_imagem_retrato(self):
+        return self._limpar_imagem_otimizada('imagem_retrato')
 
     def has_changed(self):
         """Mesma proteção do FotoVeiculoForm (vehicles/forms.py): "ordem" sozinho não pode

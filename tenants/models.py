@@ -183,7 +183,12 @@ class Banner(models.Model):
     e outros de campanha (ex: "aceitamos avaliação") sem escolher só um."""
 
     garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE, related_name='banners')
-    imagem = models.ImageField('Imagem', upload_to='garagens/capas/')
+    imagem = models.ImageField('Imagem (computador/celular na horizontal)', upload_to='garagens/capas/')
+    # Opcional: sem ela, o celular em pé usa o mesmo corte de `imagem` (ver storefront/_base_vitrine.html)
+    # — banners antigos, cadastrados antes desse campo existir, continuam funcionando sem reenviar nada.
+    imagem_retrato = models.ImageField(
+        'Imagem (celular em pé)', upload_to='garagens/capas/', blank=True, null=True,
+    )
     ordem = models.PositiveSmallIntegerField('Ordem', default=0)
 
     class Meta:

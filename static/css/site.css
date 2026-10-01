@@ -158,9 +158,22 @@ a:hover {
 /* Na proporção 5:1, a faixa some abaixo de ~690px de largura (header = largura/5 < os 90px
    fixos da logo) — sem isso a logo é cortada pela metade pelo overflow:hidden do cabeçalho.
    13vw acompanha a altura da faixa (20vw) com folga pro padding; min() mantém os 90px de
-   sempre acima de ~690px, onde já cabe sobrando. */
-.site-header--capa .brand-logo {
-  height: min(5.625rem, 13vw);
+   sempre acima de ~690px, onde já cabe sobrando. Só entra a partir de 576px: abaixo disso
+   o celular em pé já usa a faixa 2:1 (ver media query abaixo), alta o bastante pra não
+   precisar encolher a logo. */
+@media (min-width: 576px) {
+  .site-header--capa .brand-logo {
+    height: min(5.625rem, 13vw);
+  }
+}
+/* Celular em pé: faixa 2:1 (mais alta que 5:1), com o corte próprio pra essa proporção
+   (Banner.imagem_retrato, ver --bg-retrato abaixo) — sem isso, "cover" cortaria o corte
+   largo (5:1) ainda mais, pegando só uma tira vertical fina dele. Banner antigo sem esse
+   segundo corte (campo opcional) cai nesse caso mesmo — degrada, mas não quebra. */
+@media (max-width: 575.98px) {
+  .site-header--capa {
+    aspect-ratio: 2 / 1;
+  }
 }
 .site-header--capa .container {
   position: relative;
@@ -176,9 +189,14 @@ a:hover {
   inset: 0;
   z-index: 0;
 }
+/* --bg-paisagem/--bg-retrato: definidas inline por camada (ver _base_vitrine.html), uma por
+   corte enviado (Banner.imagem / imagem_retrato). Troca de imagem puramente por CSS, sem JS —
+   abaixo de 576px usa --bg-retrato, com --bg-paisagem como fallback (banner sem o segundo
+   corte, campo opcional). */
 .site-header-banner-camada {
   position: absolute;
   inset: 0;
+  background-image: var(--bg-paisagem);
   background-size: cover;
   background-position: center;
   opacity: 0;
@@ -186,6 +204,11 @@ a:hover {
 }
 .site-header-banner-camada.active {
   opacity: 1;
+}
+@media (max-width: 575.98px) {
+  .site-header-banner-camada {
+    background-image: var(--bg-retrato, var(--bg-paisagem));
+  }
 }
 .site-header-scrim {
   position: absolute;
@@ -765,6 +788,12 @@ a:hover {
   width: 168px;
   height: 34px;
   object-fit: cover;
+}
+/* Prévia do corte vertical (celular em pé, ver tenants.models.Banner.imagem_retrato) ao lado
+   da prévia horizontal — proporção 2:1, igual ao corte, só que em miniatura. */
+.foto-form-atual--banner .foto-form-atual-retrato {
+  width: 68px;
+  height: 34px;
 }
 .thumb-atual {
   display: block;
