@@ -515,7 +515,17 @@ html:has(.lp) {
     justify-content: center;
   }
   .lp-celular {
-    width: min(360px, calc(82vh * 9 / 20), 100%);
+    /* Corte + zoom, não um celular maior de verdade: a altura VISÍVEL continua presa aos
+       mesmos 82vh de sempre (ninguém precisa rolar a mais pra ver o resto do hero) — só a
+       proporção do quadro fica mais baixa (9/15 em vez de 9/20 do celular inteiro), como se
+       tivéssemos cortado um pedaço de baixo da tela. Essa altura "sobrando" é reaproveitada
+       ampliando o conjunto de novo até os mesmos 82vh — e como a largura acompanha a altura
+       pela proporção nova (mais curta), ela cresce junto. O iframe continua renderizando a
+       tela inteira (360x800, ver .lp-tela iframe) por trás; o que corta é o overflow:hidden
+       de .lp-tela, a partir do topo (transform-origin:0 0 em static/js/landing.js) — então o
+       que some é sempre a parte de baixo da vitrine, nunca o cabeçalho. */
+    width: min(440px, calc(82vh * 9 / 15), 100%);
+    aspect-ratio: 9 / 15;
   }
   .lp-controles {
     align-items: flex-start;
