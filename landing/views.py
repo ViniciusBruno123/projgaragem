@@ -93,9 +93,17 @@ def home(request):
         'link_whatsapp': _link_whatsapp(),
         'demo': demo,
         'demo_url': reverse('storefront:frontpage', kwargs={'garagem_slug': demo.slug}) if demo else '',
+        'detalhe_url': (
+            reverse('storefront:detalhe_veiculo', kwargs={'garagem_slug': demo.slug, 'veiculo_slug': veiculo_simulacao.slug})
+        ) if veiculo_simulacao else '',
         'simulacao_url': (
             reverse('storefront:detalhe_veiculo', kwargs={'garagem_slug': demo.slug, 'veiculo_slug': veiculo_simulacao.slug})
             + '#simulador-financiamento'
+        ) if veiculo_simulacao else '',
+        # Mostra o formulário real de proposta (storefront, mesmo que "Tenho interesse" abre)
+        # sem nenhum envio — é só a etapa seguinte da demonstração, não um POST de verdade.
+        'proposta_url': (
+            reverse('storefront:enviar_proposta', kwargs={'garagem_slug': demo.slug, 'veiculo_slug': veiculo_simulacao.slug})
         ) if veiculo_simulacao else '',
         'demo2': demo2,
         'demo2_url': reverse('storefront:frontpage', kwargs={'garagem_slug': demo2.slug}) if demo2 else '',

@@ -64,7 +64,9 @@ class LandingPageTests(TestCase):
         with override_settings(LANDING_DEMO_SLUG='demo'):
             resposta = self.client.get('/')
             self.assertContains(resposta, 'data-src-cliente="/g/demo/"')
+            self.assertContains(resposta, f'data-src-abre="/g/demo/veiculos/{veiculo.slug}/"')
             self.assertContains(resposta, f'data-src-simula="/g/demo/veiculos/{veiculo.slug}/#simulador-financiamento"')
+            self.assertContains(resposta, f'data-src-propoe="/g/demo/veiculos/{veiculo.slug}/proposta/"')
             # o painel de demonstração conta a história dos veículos da própria vitrine
             self.assertContains(resposta, 'Honda Cg 160 · 2022')
         vitrine = self.client.get('/g/demo/')

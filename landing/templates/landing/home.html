@@ -64,20 +64,36 @@
 
                     <div class="lp-lados">
                         <div class="lp-lado" id="lado-cliente" role="tabpanel" aria-labelledby="aba-cliente">
-                            <h2>O que o comprador faz</h2>
+                            <h2>O que ele vê no estoque geral</h2>
                             <ul>
-                                <li>Vê fotos, preço e dados de cada veículo, direto no celular.</li>
-                                <li>Pede a avaliação do usado que quer dar na troca.</li>
-                                <li>Chega até a garagem com um toque no mapa.</li>
+                                <li>Vê todos os veículos disponíveis, com foto, preço e destaque.</li>
+                                <li>Filtra por marca, tipo, faixa de preço e mais.</li>
+                                <li>Endereço e WhatsApp sempre à mão, pra chegar até você.</li>
                             </ul>
                         </div>
                         {% if simulacao_url %}
-                        <div class="lp-lado" id="lado-simula" role="tabpanel" aria-labelledby="aba-simula" hidden>
-                            <h2>Da curiosidade à proposta</h2>
+                        <div class="lp-lado" id="lado-abre" role="tabpanel" aria-labelledby="aba-abre" hidden>
+                            <h2>O que ele vê no anúncio</h2>
                             <ul>
-                                <li>Simula a parcela do financiamento, com a taxa média do Banco Central.</li>
-                                <li>Manda a proposta e cai numa conversa no WhatsApp da garagem.</li>
-                                <li>Tudo isso sem sair da página do veículo.</li>
+                                <li>Vê todas as fotos, km, ano, combustível e opcionais.</li>
+                                <li>Pede a avaliação do usado que quer dar na troca.</li>
+                                <li>Vê veículos semelhantes, se esse não for bem o que procura.</li>
+                            </ul>
+                        </div>
+                        <div class="lp-lado" id="lado-simula" role="tabpanel" aria-labelledby="aba-simula" hidden>
+                            <h2>Simula sem sair da página</h2>
+                            <ul>
+                                <li>Simula a parcela com a taxa média do Banco Central.</li>
+                                <li>Ajusta a entrada e o número de parcelas na hora.</li>
+                                <li>Vê o valor estimado sem precisar cadastrar nada ainda.</li>
+                            </ul>
+                        </div>
+                        <div class="lp-lado" id="lado-propoe" role="tabpanel" aria-labelledby="aba-propoe" hidden>
+                            <h2>Manda a proposta</h2>
+                            <ul>
+                                <li>Preenche nome e telefone, rapidinho.</li>
+                                <li>A mensagem cai direto numa conversa no seu WhatsApp.</li>
+                                <li>Sem cadastro, sem complicação pra ele.</li>
                             </ul>
                         </div>
                         {% endif %}
@@ -98,7 +114,7 @@
                         <div class="lp-celular">
                             <div class="lp-tela lp-tela--vitrine">
                                 {% if demo_url %}
-                                    <iframe id="lp-iframe" src="{{ demo_url }}" data-src-cliente="{{ demo_url }}" data-src-simula="{{ simulacao_url }}" title="Vitrine de demonstração: {{ demo.nome }}"></iframe>
+                                    <iframe id="lp-iframe" src="{{ demo_url }}" data-src-cliente="{{ demo_url }}" data-src-abre="{{ detalhe_url }}" data-src-simula="{{ simulacao_url }}" data-src-propoe="{{ proposta_url }}" title="Vitrine de demonstração: {{ demo.nome }}"></iframe>
                                 {% else %}
                                     <p class="lp-tela-vazia">A vitrine de exemplo não está disponível agora.</p>
                                 {% endif %}
@@ -135,7 +151,11 @@
                         <div class="lp-controles">
                             <div class="lp-seletor" role="tablist" aria-label="Ver o sistema pelo lado de quem">
                                 <button type="button" role="tab" id="aba-cliente" aria-selected="true" aria-controls="lado-cliente" data-lado="cliente" data-legenda="Vitrine de demonstração">O cliente vê</button>
-                                {% if simulacao_url %}<button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" data-legenda="Vitrine de demonstração" tabindex="-1">Ele simula</button>{% endif %}
+                                {% if simulacao_url %}
+                                <button type="button" role="tab" id="aba-abre" aria-selected="false" aria-controls="lado-abre" data-lado="abre" data-legenda="Vitrine de demonstração" tabindex="-1">Ele abre o anúncio</button>
+                                <button type="button" role="tab" id="aba-simula" aria-selected="false" aria-controls="lado-simula" data-lado="simula" data-legenda="Vitrine de demonstração" tabindex="-1">Ele simula</button>
+                                <button type="button" role="tab" id="aba-propoe" aria-selected="false" aria-controls="lado-propoe" data-lado="propoe" data-legenda="Vitrine de demonstração" tabindex="-1">Ele propõe</button>
+                                {% endif %}
                                 <button type="button" role="tab" id="aba-dono" aria-selected="false" aria-controls="lado-dono" data-lado="dono" data-legenda="Painel com dados de demonstração" tabindex="-1">Você recebe</button>
                             </div>
                             <p class="lp-legenda" id="lp-legenda" aria-live="polite">Vitrine de demonstração</p>
